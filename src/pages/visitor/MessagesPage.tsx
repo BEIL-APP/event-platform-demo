@@ -1,0 +1,233 @@
+import { useState } from 'react';
+import { ArrowLeft, MessageSquare, Bell, Send } from 'lucide-react';
+import { VisitorHeader } from '../../components/VisitorHeader';
+import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
+import { useThreads } from '../../hooks/useThreads';
+import { getBooths } from '../../utils/localStorage';
+import type { Thread } from '../../types';
+
+function formatTime(iso: string) {
+  const d = new Date(iso);
+  const now = new Date();
+  const diffMs = now.getTime() - d.getTime();
+  const diffH = diffMs / (1000 * 60 * 60);
+  if (diffH < 1) return '방금 전';
+  if (diffH < 24) return `${Math.floor(diffH)}시간 전`;
+  if (diffH < 48) return '어제';
+  return d.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
+}
+
+export default function MessagesPage() {
+  const { isLoggedIn } = useAuth();
+  const { showToast } = useToast();
+  const { threads, reply } = useThreads();
+  const [selected, setSelected] = useState<Thread | null>(null);
+  const [replyText, setReplyText] = useState('');
+
+  const allBooths = getBooths();
+  const boothMap = Object.fromEntries(allBooths.map((b) => [b.id, b]));
+
+  const hasUnread = threads.some((t) => {
+    const last = t.messages[t.messages.length - 1];
+    return last?.from === 'booth';
+  });
+
+  const handleSendReply = (threadId: string) => {
+    if (!replyText.trim()) return;
+    const updated = reply(threadId, replyText.trim(), 'visitor');
+    if (updated) {
+      setSelected(updated);
+      setReplyText('');
+      showToast('메시지를 보냈어요', 'success');
+    }
+  };
+
+  if (selected) {
+    const booth = boothMap[selected.boothId];
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <VisitorHeader />
+        <div className="max-w-sm mx-auto pb-4">
+          {/* Thread header */}
+          <div className="bg-white px-4 py-3 flex items-center gap-3 border-b border-gray-100">
+            <button
+              onClick={() => { setSelected(null); setReplyText(''); }}
+              className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-sm text-gray-900 truncate">{booth?.name ?? '알 수 없는 부스'}</p>
+              <p className="text-xs text-gray-400">{booth?.category}</p>
+            </div>
+            <span
+              className={`text-xs px-2 py-1 rounded-full font-medium ${
+                selected.status === '처리'
+                  ? 'bg-emerald-50 text-emerald-700'
+                  : selected.status === '보류'
+                  ? 'bg-amber-50 text-amber-700'
+                  : 'bg-gray-100 text-gray-500'
+              }`}
+            >
+              {selected.status}
+            </span>
+          </div>
+
+          {/* Messages */}
+          <div className="px-4 py-4 space-y-3 min-h-[60vh]">
+            {selected.messages.map((msg, i) => (
+              <div
+                key={i}
+                className={`flex ${msg.from === 'visitor' ? 'justify-end' : 'justify-start'}`}
+              >
+                {msg.from === 'booth' && (
+                  <div className="w-7 h-7 bg-brand-100 rounded-full flex items-center justify-center mr-2 shrink-0 mt-1">
+                    <span className="text-xs">🏪</span>
+                  </div>
+                )}
+                <div
+                  className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                    msg.from === 'visitor'
+                      ? 'bg-brand-600 text-white rounded-br-md'
+                      : 'bg-white text-gray-800 rounded-bl-md shadow-card'
+                  }`}
+                >
+                  <p className="text-sm leading-relaxed">{msg.text}</p>
+                  <p
+                    className={`text-xs mt-1.5 ${
+                      msg.from === 'visitor' ? 'text-brand-200' : 'text-gray-400'
+                    }`}
+                  >
+                    {formatTime(msg.at)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Reply input */}
+          <div className="sticky bottom-0 bg-white border-t border-gray-100 px-4 py-3 flex items-end gap-2">
+            <textarea
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+              placeholder="추가 문의나 답변 확인 후 메시지를 보내세요…"
+              className="flex-1 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 resize-none outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400 min-h-[44px] max-h-32"
+              rows={1}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendReply(selected.id);
+                }
+              }}
+            />
+            <button
+              onClick={() => handleSendReply(selected.id)}
+              disabled={!replyText.trim()}
+              className="w-10 h-10 bg-brand-600 text-white rounded-xl flex items-center justify-center hover:bg-brand-700 transition-colors disabled:opacity-40 shrink-0"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <VisitorHeader />
+      <div className="max-w-sm mx-auto px-4 pt-5 pb-20">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h1 className="text-lg font-bold text-gray-900">문의 내역</h1>
+            <p className="text-xs text-gray-400">부스에 남긴 문의와 답변을 확인해요</p>
+          </div>
+          {isLoggedIn && hasUnread && (
+            <div className="flex items-center gap-1.5 bg-brand-50 text-brand-700 text-xs font-medium px-3 py-1.5 rounded-full">
+              <Bell className="w-3 h-3" />
+              새 답변
+            </div>
+          )}
+        </div>
+
+        {threads.length === 0 ? (
+          <div className="text-center py-16">
+            <MessageSquare className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+            <p className="text-sm text-gray-400">아직 문의가 없어요</p>
+            <p className="text-xs text-gray-300 mt-1">부스 페이지에서 문의를 남겨보세요</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {threads.map((thread) => {
+              const booth = boothMap[thread.boothId];
+              const lastMsg = thread.messages[thread.messages.length - 1];
+              const hasBoothReply = thread.messages.some((m) => m.from === 'booth');
+              const isNew = lastMsg?.from === 'booth';
+              return (
+                <button
+                  key={thread.id}
+                  onClick={() => setSelected(thread)}
+                  className="w-full text-left bg-white rounded-2xl p-4 shadow-card hover:shadow-card-hover transition-shadow"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+                      {booth?.images[0] ? (
+                        <img
+                          src={booth.images[0]}
+                          alt={booth.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              'https://images.unsplash.com/photo-1560472355-536de3962603?w=100&q=80';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-lg">🏪</div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-0.5">
+                        <p className="font-semibold text-sm text-gray-900 truncate">
+                          {booth?.name ?? '알 수 없는 부스'}
+                        </p>
+                        <span className="text-xs text-gray-400 shrink-0 ml-2">
+                          {formatTime(thread.lastUpdated)}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 truncate">{lastMsg?.text}</p>
+                      <div className="flex items-center gap-2 mt-1.5">
+                        {isLoggedIn && isNew && (
+                          <span className="flex items-center gap-1 text-xs text-brand-600 bg-brand-50 rounded-full px-2 py-0.5">
+                            <Bell className="w-2.5 h-2.5" /> 새 답변
+                          </span>
+                        )}
+                        {hasBoothReply && (
+                          <span className="text-xs text-emerald-600 bg-emerald-50 rounded-full px-2 py-0.5">
+                            답변 완료
+                          </span>
+                        )}
+                        <span
+                          className={`text-xs rounded-full px-2 py-0.5 ${
+                            thread.status === '처리'
+                              ? 'text-emerald-600 bg-emerald-50'
+                              : thread.status === '보류'
+                              ? 'text-amber-600 bg-amber-50'
+                              : 'text-gray-500 bg-gray-100'
+                          }`}
+                        >
+                          {thread.status}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
