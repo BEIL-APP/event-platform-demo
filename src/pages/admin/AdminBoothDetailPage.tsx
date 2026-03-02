@@ -1,6 +1,9 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Download, Eye, Heart, MessageSquare, ExternalLink, FileDown } from 'lucide-react';
+import {
+  ArrowLeft, Download, Eye, Heart, MessageSquare, ExternalLink, FileDown,
+  Upload, Trash2, Calendar, ToggleLeft, ToggleRight, Paperclip,
+} from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { AdminLayout } from '../../components/AdminLayout';
 import { useBooth } from '../../hooks/useBooths';
@@ -8,7 +11,15 @@ import { useBoothAnalytics } from '../../hooks/useAnalytics';
 import { useThreads } from '../../hooks/useThreads';
 import { useToast } from '../../contexts/ToastContext';
 import { exportBoothThreadsCSV, exportAnalyticsCSV } from '../../utils/csv';
-import { getAnalytics } from '../../utils/localStorage';
+import {
+  getAnalytics,
+  getBoothPolicy,
+  saveBoothPolicy,
+  getBoothAttachments,
+  saveAttachment,
+  deleteAttachment,
+} from '../../utils/localStorage';
+import type { BoothPolicy, Attachment } from '../../types';
 
 export default function AdminBoothDetailPage() {
   const { boothId } = useParams<{ boothId: string }>();
@@ -17,8 +28,30 @@ export default function AdminBoothDetailPage() {
   const { threads } = useThreads();
   const { showToast } = useToast();
   const qrRef = useRef<HTMLDivElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const boothUrl = `${window.location.origin}/scan/${boothId}`;
+
+  // Policy state
+  const [policy, setPolicy] = useState<BoothPolicy>(() =>
+    getBoothPolicy(boothId ?? '') ?? {
+      boothId: boothId ?? '',
+      startAt: new Date().toISOString().slice(0, 16),
+      endAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+      allowViewAfterEnd: true,
+      allowInquiryAfterEnd: false,
+    }
+  );
+  const [policySaved, setPolicySaved] = useState(false);
+
+  // Attachments state
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+
+  useEffect(() => {
+    if (boothId) {
+      setAttachments(getBoothAttachments(boothId));
+    }
+  }, [boothId]);
 
   const handleDownloadQR = () => {
     const canvas = document.getElementById('booth-qr-canvas') as HTMLCanvasElement;
@@ -45,6 +78,52 @@ export default function AdminBoothDetailPage() {
   const handleExportThreadsCSV = () => {
     exportBoothThreadsCSV(boothId ?? '', threads);
     showToast('문의 데이터가 다운로드됐어요!', 'success');
+  };
+
+  const handleSavePolicy = () => {
+    const updated = { ...policy, boothId: boothId ?? '' };
+    saveBoothPolicy(updated);
+    setPolicy(updated);
+    setPolicySaved(true);
+    setTimeout(() => setPolicySaved(false), 2000);
+    showToast('운영 정책이 저장됐어요!', 'success');
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !boothId) return;
+
+    const sizeKB = file.size / 1024;
+    const sizeStr = sizeKB > 1024
+      ? `${(sizeKB / 1024).toFixed(1)} MB`
+      : `${Math.round(sizeKB)} KB`;
+
+    const att: Attachment = {
+      id: `att-${Date.now()}`,
+      boothId,
+      filename: file.name,
+      type: file.type,
+      size: sizeStr,
+      createdAt: new Date().toISOString(),
+    };
+    saveAttachment(att);
+    setAttachments(getBoothAttachments(boothId));
+    showToast(`${file.name} 업로드 완료!`, 'success');
+    e.target.value = '';
+  };
+
+  const handleDeleteAttachment = (id: string) => {
+    deleteAttachment(id);
+    setAttachments(boothId ? getBoothAttachments(boothId) : []);
+    showToast('파일을 삭제했어요', 'info');
+  };
+
+  const getFileIcon = (filename: string) => {
+    const ext = filename.split('.').pop()?.toLowerCase();
+    if (ext === 'pdf') return '📄';
+    if (['xlsx', 'xls', 'csv'].includes(ext ?? '')) return '📊';
+    if (['pptx', 'ppt'].includes(ext ?? '')) return '📋';
+    return '📎';
   };
 
   if (!booth) {
@@ -90,15 +169,15 @@ export default function AdminBoothDetailPage() {
     },
   ];
 
+  const isPolicyExpired = new Date(policy.endAt) < new Date();
+  const isPolicyActive = new Date(policy.startAt) <= new Date() && !isPolicyExpired;
+
   return (
     <AdminLayout>
       <div className="p-8 max-w-3xl">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
-          <Link
-            to="/admin/booths"
-            className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
-          >
+          <Link to="/admin/booths" className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </Link>
           <div className="flex-1">
@@ -107,6 +186,16 @@ export default function AdminBoothDetailPage() {
               <span className="text-xs font-medium text-brand-600 bg-brand-50 rounded-full px-2.5 py-1">
                 {booth.category}
               </span>
+              {isPolicyExpired && (
+                <span className="text-xs font-medium text-gray-500 bg-gray-100 rounded-full px-2.5 py-1">
+                  운영 종료
+                </span>
+              )}
+              {isPolicyActive && (
+                <span className="text-xs font-medium text-green-600 bg-green-50 rounded-full px-2.5 py-1">
+                  운영중
+                </span>
+              )}
             </div>
             <p className="text-sm text-gray-400 mt-0.5">{booth.tagline}</p>
           </div>
@@ -135,7 +224,6 @@ export default function AdminBoothDetailPage() {
               </button>
             </div>
 
-            {/* QR */}
             <div ref={qrRef} className="flex justify-center mb-4">
               <div className="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm inline-block">
                 <QRCodeCanvas
@@ -182,6 +270,151 @@ export default function AdminBoothDetailPage() {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* ─── 운영 기간 설정 ────────────────────────────────────────────────────── */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+          <div className="flex items-center gap-2 mb-5">
+            <Calendar className="w-4 h-4 text-brand-600" />
+            <h2 className="text-sm font-semibold text-gray-800">운영 기간 설정</h2>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mb-5">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1.5">운영 시작</label>
+              <input
+                type="datetime-local"
+                value={policy.startAt}
+                onChange={(e) => setPolicy((p) => ({ ...p, startAt: e.target.value }))}
+                className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1.5">운영 종료</label>
+              <input
+                type="datetime-local"
+                value={policy.endAt}
+                onChange={(e) => setPolicy((p) => ({ ...p, endAt: e.target.value }))}
+                className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+              />
+            </div>
+          </div>
+
+          <p className="text-xs font-medium text-gray-600 mb-3">종료 후 정책</p>
+          <div className="space-y-3 mb-5">
+            <div className="flex items-center justify-between p-3.5 bg-gray-50 rounded-xl">
+              <div>
+                <p className="text-sm font-medium text-gray-800">부스 열람 유지</p>
+                <p className="text-xs text-gray-400">종료 후에도 부스 페이지에 접근 가능</p>
+              </div>
+              <button
+                onClick={() => setPolicy((p) => ({ ...p, allowViewAfterEnd: !p.allowViewAfterEnd }))}
+                className={`transition-colors ${policy.allowViewAfterEnd ? 'text-brand-600' : 'text-gray-300'}`}
+              >
+                {policy.allowViewAfterEnd
+                  ? <ToggleRight className="w-8 h-8" />
+                  : <ToggleLeft className="w-8 h-8" />
+                }
+              </button>
+            </div>
+            <div className="flex items-center justify-between p-3.5 bg-gray-50 rounded-xl">
+              <div>
+                <p className="text-sm font-medium text-gray-800">문의 허용</p>
+                <p className="text-xs text-gray-400">종료 후에도 관람객 문의 가능</p>
+              </div>
+              <button
+                onClick={() => setPolicy((p) => ({ ...p, allowInquiryAfterEnd: !p.allowInquiryAfterEnd }))}
+                className={`transition-colors ${policy.allowInquiryAfterEnd ? 'text-brand-600' : 'text-gray-300'}`}
+              >
+                {policy.allowInquiryAfterEnd
+                  ? <ToggleRight className="w-8 h-8" />
+                  : <ToggleLeft className="w-8 h-8" />
+                }
+              </button>
+            </div>
+          </div>
+
+          <button
+            onClick={handleSavePolicy}
+            className={`w-full text-sm font-medium rounded-xl py-3 transition-all ${
+              policySaved
+                ? 'bg-green-500 text-white'
+                : 'bg-brand-600 text-white hover:bg-brand-700'
+            }`}
+          >
+            {policySaved ? '저장됐어요 ✓' : '정책 저장'}
+          </button>
+        </div>
+
+        {/* ─── 파일 첨부 (브로셔) ─────────────────────────────────────────────── */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2">
+              <Paperclip className="w-4 h-4 text-brand-600" />
+              <h2 className="text-sm font-semibold text-gray-800">브로셔 & 첨부 파일</h2>
+            </div>
+            <button
+              onClick={() => fileRef.current?.click()}
+              className="flex items-center gap-1.5 text-xs text-brand-600 hover:text-brand-700 bg-brand-50 hover:bg-brand-100 rounded-lg px-3 py-1.5 transition-colors font-medium"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              파일 추가
+            </button>
+          </div>
+
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".pdf,.pptx,.xlsx,.xls,.doc,.docx,.png,.jpg"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+
+          {attachments.length === 0 ? (
+            <button
+              onClick={() => fileRef.current?.click()}
+              className="w-full border-2 border-dashed border-gray-200 rounded-xl py-8 flex flex-col items-center gap-2 hover:border-brand-300 hover:bg-brand-50 transition-all group"
+            >
+              <Upload className="w-6 h-6 text-gray-300 group-hover:text-brand-400 transition-colors" />
+              <p className="text-sm text-gray-400 group-hover:text-brand-600 transition-colors">
+                클릭하여 파일 업로드
+              </p>
+              <p className="text-xs text-gray-300">PDF, PPTX, XLSX, 이미지 지원</p>
+            </button>
+          ) : (
+            <div className="space-y-2">
+              {attachments.map((att) => (
+                <div
+                  key={att.id}
+                  className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-xl px-4 py-3"
+                >
+                  <span className="text-lg">{getFileIcon(att.filename)}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-800 truncate">{att.filename}</p>
+                    <p className="text-xs text-gray-400">
+                      {att.size} · {new Date(att.createdAt).toLocaleDateString('ko-KR')}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteAttachment(att.id)}
+                    className="p-1.5 text-gray-300 hover:text-red-400 rounded-lg hover:bg-red-50 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={() => fileRef.current?.click()}
+                className="w-full text-center text-xs text-brand-600 py-2 hover:text-brand-700 transition-colors"
+              >
+                + 파일 추가
+              </button>
+            </div>
+          )}
+
+          <p className="text-xs text-gray-400 mt-3">
+            데모: 파일 메타데이터만 저장됩니다. 관람객 페이지에서 다운로드 버튼이 표시됩니다.
+          </p>
         </div>
 
         {/* Export */}
@@ -232,11 +465,15 @@ export default function AdminBoothDetailPage() {
                   {[booth.links.instagram, booth.links.store, booth.links.site].filter(Boolean).length}개 연결
                 </p>
               </div>
+              <div>
+                <p className="text-xs text-gray-400 mb-0.5">첨부 파일</p>
+                <p className="text-sm font-medium text-gray-700">{attachments.length}개</p>
+              </div>
               {booth.nextEvents.length > 0 && (
-                <div className="col-span-2">
+                <div>
                   <p className="text-xs text-gray-400 mb-0.5">다음 이벤트</p>
-                  <p className="text-sm font-medium text-gray-700">
-                    {booth.nextEvents[0].title} · {booth.nextEvents[0].date}
+                  <p className="text-sm font-medium text-gray-700 truncate">
+                    {booth.nextEvents[0].title}
                   </p>
                 </div>
               )}

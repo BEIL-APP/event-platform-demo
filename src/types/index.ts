@@ -18,6 +18,7 @@ export interface Booth {
 export interface Visit {
   boothId: string;
   visitedAt: string;
+  visitorId?: string;
 }
 
 export interface Favorite {
@@ -37,6 +38,8 @@ export interface Thread {
   boothId: string;
   visitorId: 'guest' | 'user';
   visitorName?: string;
+  visitorEmail?: string;
+  consentGiven?: boolean;
   messages: ChatMessage[];
   status: '미처리' | '처리' | '보류';
   tags: string[];
@@ -49,4 +52,48 @@ export interface Analytics {
   scans: number;
   favorites: number;
   inquiries: number;
+}
+
+// ─── New types for extended MVP ───────────────────────────────────────────────
+
+export interface Lead {
+  id: string;
+  boothId: string;
+  source: 'bizcard' | 'inquiry' | 'email_info' | 'survey';
+  name?: string;
+  company?: string;
+  phone?: string;
+  email?: string;
+  memo: string;
+  consent: boolean;
+  createdAt: string;
+}
+
+export interface BoothPolicy {
+  boothId: string;
+  startAt: string;
+  endAt: string;
+  allowViewAfterEnd: boolean;
+  allowInquiryAfterEnd: boolean;
+}
+
+export interface Attachment {
+  id: string;
+  boothId: string;
+  filename: string;
+  type: string;
+  size?: string;
+  createdAt: string;
+}
+
+export interface SurveyResponse {
+  id: string;
+  boothId: string;
+  visitorId: string;
+  answers: {
+    interests?: string[];
+    purpose?: string;
+    wantsContact?: boolean;
+  };
+  createdAt: string;
 }

@@ -1,4 +1,4 @@
-import type { Booth, Thread, Analytics } from '../types';
+import type { Booth, Thread, Analytics, Lead, BoothPolicy, Attachment, SurveyResponse } from '../types';
 
 export const SEED_BOOTHS: Booth[] = [
   {
@@ -36,9 +36,9 @@ export const SEED_BOOTHS: Booth[] = [
       },
     ],
     nextEvents: [
-      { title: '봄 바이어 미팅', date: '2025-03-15', location: 'COEX Hall A' },
+      { title: '봄 바이어 미팅', date: '2026-04-15', location: 'COEX Hall A' },
     ],
-    createdAt: '2025-01-10T09:00:00Z',
+    createdAt: '2026-01-10T09:00:00Z',
   },
   {
     id: 'booth-002',
@@ -73,11 +73,11 @@ export const SEED_BOOTHS: Booth[] = [
     nextEvents: [
       {
         title: '인쇄 & 굿즈 워크숍',
-        date: '2025-03-22',
+        date: '2026-03-22',
         location: 'DDP 디자인홀',
       },
     ],
-    createdAt: '2025-01-12T10:30:00Z',
+    createdAt: '2026-01-12T10:30:00Z',
   },
   {
     id: 'booth-003',
@@ -113,9 +113,9 @@ export const SEED_BOOTHS: Booth[] = [
       },
     ],
     nextEvents: [
-      { title: 'ESG 오피스 세미나', date: '2025-04-05', location: 'GreenSpace 쇼룸' },
+      { title: 'ESG 오피스 세미나', date: '2026-04-05', location: 'GreenSpace 쇼룸' },
     ],
-    createdAt: '2025-01-14T11:00:00Z',
+    createdAt: '2026-01-14T11:00:00Z',
   },
   {
     id: 'booth-004',
@@ -151,11 +151,11 @@ export const SEED_BOOTHS: Booth[] = [
     nextEvents: [
       {
         title: '영업팀 생산성 웨비나',
-        date: '2025-03-28',
+        date: '2026-03-28',
         location: '온라인 (Zoom)',
       },
     ],
-    createdAt: '2025-01-15T09:30:00Z',
+    createdAt: '2026-01-15T09:30:00Z',
   },
   {
     id: 'booth-005',
@@ -189,9 +189,9 @@ export const SEED_BOOTHS: Booth[] = [
       },
     ],
     nextEvents: [
-      { title: '가을 선물세트 주문 마감', date: '2025-09-01', location: '온라인 접수' },
+      { title: '봄 선물세트 주문 마감', date: '2026-04-01', location: '온라인 접수' },
     ],
-    createdAt: '2025-01-16T14:00:00Z',
+    createdAt: '2026-01-16T14:00:00Z',
   },
   {
     id: 'booth-006',
@@ -224,9 +224,9 @@ export const SEED_BOOTHS: Booth[] = [
       },
     ],
     nextEvents: [
-      { title: '기업 웰니스 트렌드 세미나', date: '2025-04-10', location: '여의도 IFC' },
+      { title: '기업 웰니스 트렌드 세미나', date: '2026-04-10', location: '여의도 IFC' },
     ],
-    createdAt: '2025-01-17T10:00:00Z',
+    createdAt: '2026-01-17T10:00:00Z',
   },
 ];
 
@@ -243,59 +243,246 @@ export const SEED_THREADS: Thread[] = [
     boothId: 'booth-001',
     visitorId: 'user',
     visitorName: '김지수',
+    visitorEmail: 'jisu.kim@company.co.kr',
+    consentGiven: true,
     messages: [
       {
         from: 'visitor',
         text: '안녕하세요! 50인 이상 기업 복지 선물 세트 견적을 받고 싶습니다. 명절 시즌 전에 납품이 가능한지 문의드립니다.',
-        at: '2025-02-10T14:22:00Z',
+        at: '2026-02-10T14:22:00Z',
       },
       {
         from: 'booth',
         text: '안녕하세요 김지수님, 관심 가져주셔서 감사합니다! 50세트 이상은 기업가 할인이 적용됩니다. 원하시는 예산 범위와 납품 일정을 알려주시면 맞춤 견적을 드릴게요.',
-        at: '2025-02-10T15:05:00Z',
+        at: '2026-02-10T15:05:00Z',
       },
     ],
     status: '처리',
     tags: ['견적문의', 'B2B'],
     memo: '명절 납품 수요. 50세트 이상 예상.',
-    lastUpdated: '2025-02-10T15:05:00Z',
+    lastUpdated: '2026-02-10T15:05:00Z',
   },
   {
     id: 'thread-002',
     boothId: 'booth-004',
     visitorId: 'guest',
+    visitorEmail: 'tech@startup.io',
+    consentGiven: false,
     messages: [
       {
         from: 'visitor',
         text: 'CRM 연동 시 커스텀 필드도 매핑이 되나요? Salesforce 사용 중입니다.',
-        at: '2025-02-11T09:40:00Z',
+        at: '2026-02-11T09:40:00Z',
       },
     ],
     status: '미처리',
     tags: ['기술문의'],
     memo: '',
-    lastUpdated: '2025-02-11T09:40:00Z',
+    lastUpdated: '2026-02-11T09:40:00Z',
   },
   {
     id: 'thread-003',
     boothId: 'booth-002',
     visitorId: 'user',
     visitorName: '이민준',
+    visitorEmail: 'minjun@brand.kr',
+    consentGiven: true,
     messages: [
       {
         from: 'visitor',
         text: '명함 500장 + 브로셔 200부 합산 견적 부탁드립니다. 파일은 PDF로 있습니다.',
-        at: '2025-02-12T11:00:00Z',
+        at: '2026-02-12T11:00:00Z',
       },
       {
         from: 'booth',
         text: '이민준님 안녕하세요! 파일 전달해 주시면 1영업일 내 견적서 발송해 드리겠습니다. 이메일은 quote@brandkit.kr 입니다.',
-        at: '2025-02-12T11:45:00Z',
+        at: '2026-02-12T11:45:00Z',
       },
     ],
     status: '보류',
     tags: ['견적문의', '대량주문'],
     memo: '파일 수령 대기 중',
-    lastUpdated: '2025-02-12T11:45:00Z',
+    lastUpdated: '2026-02-12T11:45:00Z',
+  },
+];
+
+// ─── Seed Leads ───────────────────────────────────────────────────────────────
+
+export const SEED_LEADS: Lead[] = [
+  {
+    id: 'lead-001',
+    boothId: 'booth-001',
+    source: 'inquiry',
+    name: '김지수',
+    company: '(주)테크웨이브',
+    email: 'jisu.kim@company.co.kr',
+    memo: '문의 스레드 연결: thread-001',
+    consent: true,
+    createdAt: '2026-02-10T14:22:00Z',
+  },
+  {
+    id: 'lead-002',
+    boothId: 'booth-001',
+    source: 'bizcard',
+    name: '박서준',
+    company: '웰니스코리아',
+    phone: '010-5678-1234',
+    email: 'seojun.park@wellness.kr',
+    memo: '복지몰 구축 담당자. 분기별 정기 구매 가능성 높음.',
+    consent: true,
+    createdAt: '2026-02-11T10:30:00Z',
+  },
+  {
+    id: 'lead-003',
+    boothId: 'booth-003',
+    source: 'email_info',
+    email: 'esg@greencorp.co.kr',
+    memo: '이메일 정보 수신 신청',
+    consent: true,
+    createdAt: '2026-02-11T14:00:00Z',
+  },
+  {
+    id: 'lead-004',
+    boothId: 'booth-004',
+    source: 'bizcard',
+    name: '최유진',
+    company: 'SalesForce Korea',
+    phone: '02-1234-5678',
+    email: 'yujin.choi@salesforce.com',
+    memo: 'CRM 파트너십 논의 가능. 다음 주 콜 예정.',
+    consent: true,
+    createdAt: '2026-02-12T09:15:00Z',
+  },
+  {
+    id: 'lead-005',
+    boothId: 'booth-002',
+    source: 'survey',
+    email: 'minjun@brand.kr',
+    name: '이민준',
+    memo: '설문 응답: 대량 인쇄 관심, 연락 희망',
+    consent: true,
+    createdAt: '2026-02-12T11:05:00Z',
+  },
+  {
+    id: 'lead-006',
+    boothId: 'booth-006',
+    source: 'bizcard',
+    name: '정하은',
+    company: '(주)블루칩 HR',
+    phone: '010-9876-5432',
+    email: 'haeun@bluechip-hr.com',
+    memo: '임직원 50명 복지 구독 검토 중. 3월 예산 확정 후 연락.',
+    consent: true,
+    createdAt: '2026-02-13T16:45:00Z',
+  },
+];
+
+// ─── Seed Policies ────────────────────────────────────────────────────────────
+
+export const SEED_POLICIES: BoothPolicy[] = [
+  {
+    boothId: 'booth-001',
+    startAt: '2026-03-01T09:00:00Z',
+    endAt: '2026-03-15T18:00:00Z',
+    allowViewAfterEnd: true,
+    allowInquiryAfterEnd: false,
+  },
+  {
+    boothId: 'booth-002',
+    startAt: '2026-03-01T09:00:00Z',
+    endAt: '2026-03-31T18:00:00Z',
+    allowViewAfterEnd: true,
+    allowInquiryAfterEnd: true,
+  },
+  {
+    boothId: 'booth-003',
+    startAt: '2026-02-15T09:00:00Z',
+    endAt: '2026-02-28T18:00:00Z',
+    allowViewAfterEnd: true,
+    allowInquiryAfterEnd: false,
+  },
+  {
+    boothId: 'booth-004',
+    startAt: '2026-03-01T09:00:00Z',
+    endAt: '2026-04-30T18:00:00Z',
+    allowViewAfterEnd: true,
+    allowInquiryAfterEnd: true,
+  },
+];
+
+// ─── Seed Attachments ─────────────────────────────────────────────────────────
+
+export const SEED_ATTACHMENTS: Attachment[] = [
+  {
+    id: 'att-001',
+    boothId: 'booth-001',
+    filename: 'TeaCo_카탈로그_2026.pdf',
+    type: 'application/pdf',
+    size: '2.4 MB',
+    createdAt: '2026-01-20T10:00:00Z',
+  },
+  {
+    id: 'att-002',
+    boothId: 'booth-001',
+    filename: 'TeaCo_기업선물패키지_가격표.xlsx',
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    size: '380 KB',
+    createdAt: '2026-01-20T10:05:00Z',
+  },
+  {
+    id: 'att-003',
+    boothId: 'booth-004',
+    filename: 'DataFlow_제품소개서.pdf',
+    type: 'application/pdf',
+    size: '5.1 MB',
+    createdAt: '2026-01-22T14:30:00Z',
+  },
+  {
+    id: 'att-004',
+    boothId: 'booth-003',
+    filename: 'GreenSpace_ESG리포트_2025.pdf',
+    type: 'application/pdf',
+    size: '3.7 MB',
+    createdAt: '2026-01-25T09:00:00Z',
+  },
+];
+
+// ─── Seed Survey Responses ────────────────────────────────────────────────────
+
+export const SEED_SURVEYS: SurveyResponse[] = [
+  {
+    id: 'survey-001',
+    boothId: 'booth-001',
+    visitorId: 'guest-seed-1',
+    answers: { interests: ['기업선물', '복지'], purpose: '구매검토', wantsContact: true },
+    createdAt: '2026-02-10T15:00:00Z',
+  },
+  {
+    id: 'survey-002',
+    boothId: 'booth-001',
+    visitorId: 'guest-seed-2',
+    answers: { interests: ['복지', '건강'], purpose: '정보수집', wantsContact: false },
+    createdAt: '2026-02-11T10:00:00Z',
+  },
+  {
+    id: 'survey-003',
+    boothId: 'booth-004',
+    visitorId: 'guest-seed-3',
+    answers: { interests: ['SaaS', '영업자동화'], purpose: '파트너십', wantsContact: true },
+    createdAt: '2026-02-11T11:30:00Z',
+  },
+  {
+    id: 'survey-004',
+    boothId: 'booth-003',
+    visitorId: 'guest-seed-4',
+    answers: { interests: ['ESG', '오피스'], purpose: '구매검토', wantsContact: true },
+    createdAt: '2026-02-12T13:00:00Z',
+  },
+  {
+    id: 'survey-005',
+    boothId: 'booth-002',
+    visitorId: 'guest-seed-5',
+    answers: { interests: ['인쇄', '명함'], purpose: '견적', wantsContact: true },
+    createdAt: '2026-02-12T14:00:00Z',
   },
 ];

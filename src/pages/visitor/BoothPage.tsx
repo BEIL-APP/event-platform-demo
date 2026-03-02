@@ -10,6 +10,13 @@ import {
   Calendar,
   MapPin,
   ArrowLeft,
+  Mail,
+  FileDown,
+  ClipboardList,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  LogIn,
 } from 'lucide-react';
 import { VisitorHeader } from '../../components/VisitorHeader';
 import { Modal } from '../../components/Modal';
@@ -18,7 +25,41 @@ import { useToast } from '../../contexts/ToastContext';
 import { useBooth } from '../../hooks/useBooths';
 import { useFavorites } from '../../hooks/useFavorites';
 import { useThreads } from '../../hooks/useThreads';
-import { addVisit } from '../../utils/localStorage';
+import {
+  addVisit,
+  getBoothPolicy,
+  getBoothAttachments,
+  getBoothSurveys,
+  saveLead,
+  saveSurvey,
+  getGuestId,
+} from '../../utils/localStorage';
+import type { BoothPolicy, Attachment, SurveyResponse } from '../../types';
+
+const INTEREST_CHIPS = ['구매검토', '파트너십', 'B2B 납품', '정보수집', '기업복지', 'ESG', '스타트업', '대기업'];
+const PURPOSE_OPTIONS = [
+  { value: '구매검토', label: '구매 / 계약 검토' },
+  { value: '정보수집', label: '제품 정보 수집' },
+  { value: '파트너십', label: '파트너십 / 협력' },
+  { value: '견적', label: '견적 요청' },
+];
+
+function isPolicyActive(policy: BoothPolicy): boolean {
+  const now = new Date();
+  return new Date(policy.startAt) <= now && now <= new Date(policy.endAt);
+}
+
+function isPolicyExpired(policy: BoothPolicy): boolean {
+  return new Date(policy.endAt) < new Date();
+}
+
+function getFileIcon(filename: string): string {
+  const ext = filename.split('.').pop()?.toLowerCase();
+  if (ext === 'pdf') return '📄';
+  if (['xlsx', 'xls', 'csv'].includes(ext ?? '')) return '📊';
+  if (['pptx', 'ppt'].includes(ext ?? '')) return '📋';
+  return '📎';
+}
 
 export default function BoothPage() {
   const { boothId } = useParams<{ boothId: string }>();
@@ -31,9 +72,33 @@ export default function BoothPage() {
   const [imgIndex, setImgIndex] = useState(0);
   const [fav, setFav] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [showLoginNudge, setShowLoginNudge] = useState(false);
+
+  // Inquiry modal
   const [showInquiry, setShowInquiry] = useState(false);
   const [inquiryText, setInquiryText] = useState('');
+  const [inquiryEmail, setInquiryEmail] = useState('');
+  const [inquiryConsent, setInquiryConsent] = useState(false);
+  const [inquiryAbuseCheck, setInquiryAbuseCheck] = useState(false);
   const [inquirySent, setInquirySent] = useState(false);
+
+  // Email info modal
+  const [showEmailInfo, setShowEmailInfo] = useState(false);
+  const [emailInfoAddr, setEmailInfoAddr] = useState('');
+  const [emailInfoConsent, setEmailInfoConsent] = useState(false);
+  const [emailInfoSent, setEmailInfoSent] = useState(false);
+
+  // Survey modal
+  const [showSurvey, setShowSurvey] = useState(false);
+  const [surveyInterests, setSurveyInterests] = useState<string[]>([]);
+  const [surveyPurpose, setSurveyPurpose] = useState('');
+  const [surveyWantsContact, setSurveyWantsContact] = useState(false);
+  const [surveySent, setSurveySent] = useState(false);
+
+  // Policy & data
+  const [policy, setPolicy] = useState<BoothPolicy | undefined>();
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [surveyDone, setSurveyDone] = useState(false);
   const tracked = useRef(false);
 
   useEffect(() => {
@@ -43,7 +108,15 @@ export default function BoothPage() {
   }, [boothId]);
 
   useEffect(() => {
-    if (boothId) setFav(checkFav(boothId));
+    if (boothId) {
+      setFav(checkFav(boothId));
+      setPolicy(getBoothPolicy(boothId));
+      setAttachments(getBoothAttachments(boothId));
+      // Check if already surveyed this session
+      const surveys = getBoothSurveys(boothId);
+      const guestId = getGuestId();
+      setSurveyDone(surveys.some((s) => s.visitorId === guestId));
+    }
   }, [boothId, checkFav]);
 
   if (!booth) {
@@ -60,8 +133,18 @@ export default function BoothPage() {
     );
   }
 
+  const expired = policy ? isPolicyExpired(policy) : false;
+  const active = policy ? isPolicyActive(policy) : true;
+  const inquiryAllowed = !expired || (policy?.allowInquiryAfterEnd ?? true);
+
+  // ─── Handlers ─────────────────────────────────────────────────────────────
+
   const handleToggleFav = () => {
     if (!boothId) return;
+    if (!isLoggedIn) {
+      setShowLoginNudge(true);
+      setTimeout(() => setShowLoginNudge(false), 4000);
+    }
     const next = toggleFav(boothId);
     setFav(next);
     showToast(next ? '관심 부스에 저장했어요 ✓' : '관심 부스에서 제거했어요', next ? 'success' : 'info');
@@ -69,17 +152,90 @@ export default function BoothPage() {
 
   const handleSendInquiry = () => {
     if (!inquiryText.trim() || !boothId) return;
-    createInquiry(boothId, inquiryText.trim(), isLoggedIn);
+    if (!isLoggedIn && (!inquiryEmail.includes('@') || !inquiryAbuseCheck)) return;
+
+    createInquiry(boothId, inquiryText.trim(), isLoggedIn, {
+      email: isLoggedIn ? undefined : inquiryEmail,
+      consent: inquiryConsent,
+    });
     setInquirySent(true);
     setInquiryText('');
-    showToast('문의가 전달됐어요! 답변을 기다려주세요.', 'success');
+    showToast('문의가 전달됐어요!', 'success');
   };
 
-  const handleCloseModal = () => {
+  const handleCloseInquiry = () => {
     setShowInquiry(false);
     setInquirySent(false);
     setInquiryText('');
+    setInquiryEmail('');
+    setInquiryConsent(false);
+    setInquiryAbuseCheck(false);
   };
+
+  const handleSendEmailInfo = () => {
+    if (!emailInfoAddr.includes('@') || !emailInfoConsent || !boothId) return;
+    // Save as lead
+    saveLead({
+      id: `lead-${Date.now()}`,
+      boothId,
+      source: 'email_info',
+      email: emailInfoAddr,
+      memo: '이메일 정보 수신 신청',
+      consent: true,
+      createdAt: new Date().toISOString(),
+    });
+    setEmailInfoSent(true);
+    showToast('자료 발송 완료! 잠시 후 메일을 확인해주세요.', 'success');
+  };
+
+  const handleCloseEmailInfo = () => {
+    setShowEmailInfo(false);
+    setEmailInfoSent(false);
+    setEmailInfoAddr('');
+    setEmailInfoConsent(false);
+  };
+
+  const handleSendSurvey = () => {
+    if (!boothId) return;
+    const guestId = getGuestId();
+    const response: SurveyResponse = {
+      id: `survey-${Date.now()}`,
+      boothId,
+      visitorId: guestId,
+      answers: {
+        interests: surveyInterests,
+        purpose: surveyPurpose || undefined,
+        wantsContact: surveyWantsContact,
+      },
+      createdAt: new Date().toISOString(),
+    };
+    saveSurvey(response);
+
+    // If wants contact, save as survey lead
+    if (surveyWantsContact) {
+      saveLead({
+        id: `lead-survey-${Date.now()}`,
+        boothId,
+        source: 'survey',
+        memo: `관심분야: ${surveyInterests.join(', ')} | 목적: ${surveyPurpose}`,
+        consent: surveyWantsContact,
+        createdAt: new Date().toISOString(),
+      });
+    }
+
+    setSurveySent(true);
+    setSurveyDone(true);
+    showToast('설문 완료! 소중한 의견 감사해요.', 'success');
+  };
+
+  const handleCloseSurvey = () => {
+    setShowSurvey(false);
+    setSurveySent(false);
+  };
+
+  const inquiryFormValid = isLoggedIn
+    ? inquiryText.trim().length > 0
+    : inquiryText.trim().length > 0 && inquiryEmail.includes('@') && inquiryAbuseCheck;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -136,21 +292,55 @@ export default function BoothPage() {
               </button>
             </>
           )}
+
+          {/* Expired overlay badge */}
+          {expired && (
+            <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-gray-900/80 text-white text-xs font-medium px-3 py-1.5 rounded-full backdrop-blur-sm">
+              <Clock className="w-3.5 h-3.5" />
+              운영 종료
+            </div>
+          )}
+
+          {/* Active badge */}
+          {!expired && active && policy && (
+            <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-green-500/90 text-white text-xs font-medium px-3 py-1.5 rounded-full backdrop-blur-sm">
+              <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+              운영중
+            </div>
+          )}
         </div>
 
         {/* Content */}
         <div className="bg-white px-5 pt-5 pb-6">
-          {/* Category badge */}
-          <span className="inline-block text-xs font-medium text-brand-600 bg-brand-50 rounded-full px-2.5 py-0.5 mb-3">
-            {booth.category}
-          </span>
+          {/* Category + policy */}
+          <div className="flex items-center gap-2 mb-3">
+            <span className="inline-block text-xs font-medium text-brand-600 bg-brand-50 rounded-full px-2.5 py-0.5">
+              {booth.category}
+            </span>
+            {expired && (
+              <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-500 bg-gray-100 rounded-full px-2.5 py-0.5">
+                <AlertCircle className="w-3 h-3" />
+                {new Date(policy!.endAt).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })} 종료
+              </span>
+            )}
+          </div>
 
           {/* Name + Tagline */}
           <h1 className="text-xl font-bold text-gray-900 mb-1">{booth.name}</h1>
           <p className="text-sm text-gray-500 mb-4 leading-relaxed">{booth.tagline}</p>
 
+          {/* Login nudge (temporary banner) */}
+          {showLoginNudge && (
+            <div className="mb-4 bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3 flex items-center gap-2">
+              <LogIn className="w-4 h-4 text-indigo-500 shrink-0" />
+              <p className="text-xs text-indigo-700">
+                <Link to="/auth" className="font-semibold underline">로그인</Link>하면 기기가 바뀌어도 저장 목록이 유지돼요
+              </p>
+            </div>
+          )}
+
           {/* CTA Buttons */}
-          <div className="flex gap-2 mb-5">
+          <div className="flex gap-2 mb-3">
             <button
               onClick={handleToggleFav}
               className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all ${
@@ -164,25 +354,57 @@ export default function BoothPage() {
             </button>
             <button
               onClick={() => setShowInquiry(true)}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium bg-gray-900 text-white hover:bg-gray-800 transition-colors"
+              disabled={!inquiryAllowed}
+              title={!inquiryAllowed ? '운영 종료 후 문의가 닫혔습니다' : undefined}
+              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium bg-gray-900 text-white hover:bg-gray-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <MessageSquare className="w-4 h-4" />
-              문의하기
+              {!inquiryAllowed ? '문의 마감' : '문의하기'}
             </button>
           </div>
 
-          {/* Save hint */}
-          {!fav && (
-            <p className="text-xs text-gray-400 text-center mb-5">
-              이 부스를 저장하면 나중에 다시 쉽게 찾을 수 있어요
-            </p>
-          )}
+          {/* Email info CTA */}
+          <button
+            onClick={() => setShowEmailInfo(true)}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium border border-brand-200 text-brand-700 bg-brand-50 hover:bg-brand-100 transition-colors mb-5"
+          >
+            <Mail className="w-4 h-4" />
+            이메일로 자료 받기
+          </button>
 
           {/* Description */}
           <div className="mb-6">
             <h2 className="text-sm font-semibold text-gray-800 mb-2">소개</h2>
             <p className="text-sm text-gray-600 leading-relaxed">{booth.description}</p>
           </div>
+
+          {/* Attachments / Brochure */}
+          {attachments.length > 0 && (
+            <div className="mb-6">
+              <h2 className="text-sm font-semibold text-gray-800 mb-3">첨부 자료</h2>
+              <div className="space-y-2">
+                {attachments.map((att) => (
+                  <div
+                    key={att.id}
+                    className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-xl px-4 py-3"
+                  >
+                    <span className="text-xl">{getFileIcon(att.filename)}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-800 truncate">{att.filename}</p>
+                      {att.size && <p className="text-xs text-gray-400">{att.size}</p>}
+                    </div>
+                    <button
+                      onClick={() => showToast('다운로드 기능은 실제 연동 시 제공됩니다 (데모)', 'info')}
+                      className="flex items-center gap-1 text-xs text-brand-600 font-medium hover:text-brand-700 transition-colors"
+                    >
+                      <FileDown className="w-3.5 h-3.5" />
+                      다운로드
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Links */}
           {(booth.links.instagram || booth.links.store || booth.links.site) && (
@@ -259,7 +481,7 @@ export default function BoothPage() {
 
           {/* Next Events */}
           {booth.nextEvents.length > 0 && (
-            <div>
+            <div className="mb-6">
               <h2 className="text-sm font-semibold text-gray-800 mb-3">다음 이벤트</h2>
               <div className="space-y-2">
                 {booth.nextEvents.map((ev, i) => (
@@ -278,21 +500,40 @@ export default function BoothPage() {
               </div>
             </div>
           )}
+
+          {/* Survey CTA */}
+          <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 rounded-2xl px-5 py-4">
+            <div className="flex items-center gap-2 mb-1.5">
+              <ClipboardList className="w-4 h-4 text-brand-600" />
+              <span className="text-sm font-semibold text-gray-800">1분 설문에 참여해보세요</span>
+            </div>
+            <p className="text-xs text-gray-500 mb-3">
+              관심 분야와 방문 목적을 알려주시면 더 좋은 정보를 드릴 수 있어요
+            </p>
+            <button
+              onClick={() => setShowSurvey(true)}
+              disabled={surveyDone}
+              className="w-full bg-brand-600 text-white text-sm font-medium rounded-xl py-2.5 hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {surveyDone ? '설문 완료 ✓' : '설문 참여하기'}
+            </button>
+          </div>
         </div>
 
-        {/* Login nudge banner */}
+        {/* Login nudge banner (bottom) */}
         {!isLoggedIn && (
           <div className="mx-4 mt-3 bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3.5">
             <p className="text-xs text-indigo-700 leading-relaxed">
               <span className="font-medium">로그인하면</span> 문의 답변 알림과 저장 목록을 어디서든
-              확인할 수 있어요.
+              확인할 수 있어요.{' '}
+              <Link to="/auth" className="underline font-medium">지금 가입하기 →</Link>
             </p>
           </div>
         )}
       </div>
 
-      {/* Inquiry Modal */}
-      <Modal open={showInquiry} onClose={handleCloseModal} title="문의 남기기">
+      {/* ─── Inquiry Modal ─────────────────────────────────────────────────────── */}
+      <Modal open={showInquiry} onClose={handleCloseInquiry} title="문의 남기기">
         {inquirySent ? (
           <div className="text-center py-4">
             <div className="text-4xl mb-3">✉️</div>
@@ -303,7 +544,99 @@ export default function BoothPage() {
                 : '답변은 /messages 탭에서 확인하세요. 로그인하면 알림을 받을 수 있어요.'}
             </p>
             <button
-              onClick={handleCloseModal}
+              onClick={handleCloseInquiry}
+              className="w-full bg-brand-600 text-white text-sm font-medium rounded-xl py-3 hover:bg-brand-700 transition-colors"
+            >
+              확인
+            </button>
+          </div>
+        ) : (
+          <>
+            {isLoggedIn ? (
+              <p className="text-xs text-green-600 bg-green-50 rounded-xl px-3 py-2 mb-3">
+                로그인 상태로 문의합니다. 답변 알림을 받을 수 있어요.
+              </p>
+            ) : (
+              <p className="text-xs text-gray-500 mb-3">
+                비로그인 문의 — 이메일 주소를 남기면 답변을 받을 수 있어요.
+              </p>
+            )}
+
+            <textarea
+              value={inquiryText}
+              onChange={(e) => setInquiryText(e.target.value)}
+              placeholder={`${booth.name}에 궁금한 점을 남겨주세요.`}
+              className="w-full h-28 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 resize-none outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400 mb-3"
+            />
+
+            {/* Non-login: email + checks */}
+            {!isLoggedIn && (
+              <div className="space-y-3 mb-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1.5">이메일 주소</label>
+                  <input
+                    type="email"
+                    value={inquiryEmail}
+                    onChange={(e) => setInquiryEmail(e.target.value)}
+                    placeholder="답변을 받을 이메일"
+                    className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
+                  />
+                </div>
+
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={inquiryAbuseCheck}
+                    onChange={(e) => setInquiryAbuseCheck(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 rounded accent-brand-600"
+                  />
+                  <span className="text-xs text-gray-500">
+                    부적절한 문의(스팸, 광고 등)는 이용이 제한될 수 있음을 확인했습니다
+                  </span>
+                </label>
+
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={inquiryConsent}
+                    onChange={(e) => setInquiryConsent(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 rounded accent-brand-600"
+                  />
+                  <span className="text-xs text-gray-500">
+                    (선택) 운영자에게 이메일 제공에 동의합니다
+                    <span className="text-gray-400 block">동의 시 운영자가 리드로 저장합니다</span>
+                  </span>
+                </label>
+              </div>
+            )}
+
+            <button
+              onClick={handleSendInquiry}
+              disabled={!inquiryFormValid}
+              className="w-full bg-brand-600 text-white text-sm font-medium rounded-xl py-3 hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              문의 보내기
+            </button>
+
+            {/* Public Q&A placeholder */}
+            {/* TODO: "공개 질문" 기능 — 이번 MVP 제외, 향후 추가 예정 */}
+          </>
+        )}
+      </Modal>
+
+      {/* ─── Email Info Modal ──────────────────────────────────────────────────── */}
+      <Modal open={showEmailInfo} onClose={handleCloseEmailInfo} title="이메일로 자료 받기">
+        {emailInfoSent ? (
+          <div className="text-center py-4">
+            <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <CheckCircle className="w-7 h-7 text-green-600" />
+            </div>
+            <p className="font-medium text-gray-900 mb-1">발송 완료!</p>
+            <p className="text-sm text-gray-500 mb-5">
+              {emailInfoAddr}으로 카탈로그를 보내드렸어요. (데모: 실제 발송 없음)
+            </p>
+            <button
+              onClick={handleCloseEmailInfo}
               className="w-full bg-brand-600 text-white text-sm font-medium rounded-xl py-3 hover:bg-brand-700 transition-colors"
             >
               확인
@@ -312,22 +645,128 @@ export default function BoothPage() {
         ) : (
           <>
             <p className="text-sm text-gray-500 mb-4">
-              {isLoggedIn ? '로그인 상태로 문의합니다.' : '비로그인으로 문의합니다.'}
+              {booth.name}의 카탈로그와 제품 소개 자료를 이메일로 보내드릴게요.
             </p>
-            <textarea
-              value={inquiryText}
-              onChange={(e) => setInquiryText(e.target.value)}
-              placeholder={`${booth.name}에 궁금한 점을 남겨주세요.`}
-              className="w-full h-32 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 resize-none outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
-            />
+            <div className="mb-4">
+              <label className="block text-xs font-medium text-gray-600 mb-1.5">이메일 주소</label>
+              <input
+                type="email"
+                value={emailInfoAddr}
+                onChange={(e) => setEmailInfoAddr(e.target.value)}
+                placeholder="name@company.com"
+                className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
+              />
+            </div>
+            <label className="flex items-start gap-2 mb-5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={emailInfoConsent}
+                onChange={(e) => setEmailInfoConsent(e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded accent-brand-600"
+              />
+              <span className="text-xs text-gray-500">
+                <span className="font-medium text-gray-700">[필수]</span> 이메일 수신 및
+                부스 운영자에게 정보 제공에 동의합니다
+              </span>
+            </label>
             <button
-              onClick={handleSendInquiry}
-              disabled={!inquiryText.trim()}
-              className="mt-3 w-full bg-brand-600 text-white text-sm font-medium rounded-xl py-3 hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleSendEmailInfo}
+              disabled={!emailInfoAddr.includes('@') || !emailInfoConsent}
+              className="w-full bg-brand-600 text-white text-sm font-medium rounded-xl py-3 hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              문의 보내기
+              자료 받기
             </button>
           </>
+        )}
+      </Modal>
+
+      {/* ─── Survey Modal ─────────────────────────────────────────────────────── */}
+      <Modal open={showSurvey} onClose={handleCloseSurvey} title="1분 설문">
+        {surveySent ? (
+          <div className="text-center py-4">
+            <div className="text-4xl mb-3">🙌</div>
+            <p className="font-medium text-gray-900 mb-1">설문 완료!</p>
+            <p className="text-sm text-gray-500 mb-5">소중한 의견 감사해요.</p>
+            <button
+              onClick={handleCloseSurvey}
+              className="w-full bg-brand-600 text-white text-sm font-medium rounded-xl py-3 hover:bg-brand-700 transition-colors"
+            >
+              확인
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-5">
+            {/* Interests */}
+            <div>
+              <p className="text-sm font-semibold text-gray-800 mb-2.5">관심 분야를 선택해주세요</p>
+              <div className="flex flex-wrap gap-2">
+                {INTEREST_CHIPS.map((chip) => (
+                  <button
+                    key={chip}
+                    onClick={() =>
+                      setSurveyInterests((prev) =>
+                        prev.includes(chip) ? prev.filter((c) => c !== chip) : [...prev, chip]
+                      )
+                    }
+                    className={`text-xs font-medium rounded-full px-3 py-1.5 border transition-all ${
+                      surveyInterests.includes(chip)
+                        ? 'bg-brand-600 text-white border-brand-600'
+                        : 'bg-white text-gray-600 border-gray-200 hover:border-brand-300'
+                    }`}
+                  >
+                    {chip}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Purpose */}
+            <div>
+              <p className="text-sm font-semibold text-gray-800 mb-2.5">방문 목적</p>
+              <div className="space-y-2">
+                {PURPOSE_OPTIONS.map((opt) => (
+                  <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="purpose"
+                      value={opt.value}
+                      checked={surveyPurpose === opt.value}
+                      onChange={() => setSurveyPurpose(opt.value)}
+                      className="w-4 h-4 accent-brand-600"
+                    />
+                    <span className="text-sm text-gray-700">{opt.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Contact toggle */}
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+              <div>
+                <p className="text-sm font-medium text-gray-800">연락 받기를 원해요</p>
+                <p className="text-xs text-gray-400 mt-0.5">운영자가 리드로 저장합니다</p>
+              </div>
+              <button
+                onClick={() => setSurveyWantsContact((v) => !v)}
+                className={`relative w-11 h-6 rounded-full transition-colors ${
+                  surveyWantsContact ? 'bg-brand-600' : 'bg-gray-200'
+                }`}
+              >
+                <span
+                  className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${
+                    surveyWantsContact ? 'left-6' : 'left-1'
+                  }`}
+                />
+              </button>
+            </div>
+
+            <button
+              onClick={handleSendSurvey}
+              className="w-full bg-brand-600 text-white text-sm font-medium rounded-xl py-3 hover:bg-brand-700 transition-colors"
+            >
+              제출하기
+            </button>
+          </div>
         )}
       </Modal>
     </div>

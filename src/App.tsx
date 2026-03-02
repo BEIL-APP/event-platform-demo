@@ -4,6 +4,11 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { initSeedData } from './utils/localStorage';
 
+// Auth pages
+import AuthPage from './pages/auth/AuthPage';
+import SignupPage from './pages/auth/SignupPage';
+import OAuthPage from './pages/auth/OAuthPage';
+
 // Visitor pages
 import BoothPage from './pages/visitor/BoothPage';
 import MyPage from './pages/visitor/MyPage';
@@ -15,6 +20,8 @@ import AdminBoothsPage from './pages/admin/AdminBoothsPage';
 import AdminBoothNewPage from './pages/admin/AdminBoothNewPage';
 import AdminBoothDetailPage from './pages/admin/AdminBoothDetailPage';
 import AdminInboxPage from './pages/admin/AdminInboxPage';
+import AdminLeadsPage from './pages/admin/AdminLeadsPage';
+import AdminLeadsScanPage from './pages/admin/AdminLeadsScanPage';
 
 // Organizer
 import OrganizerPreviewPage from './pages/organizer/OrganizerPreviewPage';
@@ -31,6 +38,11 @@ function AppRoutes() {
       {/* Default redirect */}
       <Route path="/" element={<Navigate to="/scan/booth-001" replace />} />
 
+      {/* Auth */}
+      <Route path="/auth" element={<AuthPage />} />
+      <Route path="/auth/signup" element={<SignupPage />} />
+      <Route path="/auth/oauth" element={<OAuthPage />} />
+
       {/* Visitor */}
       <Route path="/scan/:boothId" element={<BoothPage />} />
       <Route path="/me" element={<MyPage />} />
@@ -44,6 +56,8 @@ function AppRoutes() {
       <Route path="/admin/booths/new" element={<AdminGuard><AdminBoothNewPage /></AdminGuard>} />
       <Route path="/admin/booths/:boothId" element={<AdminGuard><AdminBoothDetailPage /></AdminGuard>} />
       <Route path="/admin/inbox" element={<AdminGuard><AdminInboxPage /></AdminGuard>} />
+      <Route path="/admin/leads" element={<AdminGuard><AdminLeadsPage /></AdminGuard>} />
+      <Route path="/admin/leads/scan" element={<AdminGuard><AdminLeadsScanPage /></AdminGuard>} />
 
       {/* Organizer */}
       <Route path="/organizer/preview" element={<AdminGuard><OrganizerPreviewPage /></AdminGuard>} />

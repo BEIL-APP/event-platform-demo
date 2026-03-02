@@ -1,6 +1,9 @@
-# BoothConnect — B2B 이벤트 플랫폼 데모
+# BoothConnect — B2B 팝업 이벤트 플랫폼 데모
 
-QR 기반 B2B 이벤트 부스 관리 플랫폼 프로토타입입니다. 백엔드 없이 `localStorage`로 동작합니다.
+Vite + React 18 + TypeScript + Tailwind CSS로 구현한 B2B 이벤트 부스 관리 데모입니다.
+백엔드 없이 localStorage 기반으로 동작합니다.
+
+---
 
 ## 빠른 시작
 
@@ -11,56 +14,168 @@ npm run dev
 
 브라우저에서 `http://localhost:5173` 접속
 
+빌드:
+```bash
+npm run build
+```
+
 ---
 
-## 데모 사용법
+## 전체 라우트
 
-### 관람객 체험 (모바일 화면 기준)
-1. **`/scan/booth-001`** — QR 스캔 랜딩 페이지. 방문이 자동 기록되고 통계에 반영됩니다.
-   - 부스 이미지 / 소개 / 링크 / FAQ 확인
-   - **"저장하기"** 버튼으로 관심 부스 등록 (하트 토글)
-   - **"문의하기"** 버튼으로 메시지 전송 (로그인 불필요)
-   - 상단 우측 **로그인 토글**로 비로그인 ↔ 로그인 전환
+| 경로 | 설명 | 대상 |
+|------|------|------|
+| `/auth` | 로그인 유형 선택 (개인/기업) | 공개 |
+| `/auth/signup` | 이메일 가입 폼 | 공개 |
+| `/auth/oauth` | 소셜 로그인 UI (mock) | 공개 |
+| `/scan/:boothId` | 관람객 — 부스 상세 페이지 | 공개 |
+| `/me` | 관람객 — 방문 기록 & 관심 목록 | 공개 |
+| `/messages` | 관람객 — 문의 스레드 목록 | 공개 |
+| `/admin/login` | 운영자 데모 로그인 | 공개 |
+| `/admin/booths` | 운영자 — 부스 목록 | 운영자 |
+| `/admin/booths/new` | 운영자 — 부스 생성 | 운영자 |
+| `/admin/booths/:id` | 운영자 — 부스 상세 (QR·정책·첨부파일) | 운영자 |
+| `/admin/inbox` | 운영자 — 문의 인박스 | 운영자 |
+| `/admin/leads` | 운영자 — 리드 목록 | 운영자 |
+| `/admin/leads/scan` | 운영자 — 명함 스캔 | 운영자 |
+| `/organizer/preview` | 주최자 — 이벤트 통합 대시보드 | 운영자 |
 
-2. **`/me`** — 내 부스 히스토리 & 관심 목록
-   - 탭 전환: 최근 본 부스 / 관심 부스
+---
 
-3. **`/messages`** — 문의 내역 & 채팅 UI
-   - 로그인 상태에서 "새 답변" 뱃지 확인
-   - 스레드 클릭 → 추가 메시지 전송 가능
+## 데모 시나리오 5단계
 
-### 운영자 체험 (데스크톱 레이아웃)
-1. **`/admin/login`** — "데모 로그인으로 시작하기" 클릭
-2. **`/admin/booths`** — 부스 목록 및 전체 통계 요약
-3. **`/admin/booths/new`** — 부스 폼 작성 → 저장 시 QR 즉시 발급
-4. **`/admin/booths/:id`** — QR PNG 다운로드 / 통계 카드 / CSV Export
-5. **`/admin/inbox`** — 문의 인박스
-   - 상태 필터 (미처리 / 처리 / 보류)
-   - 키워드 검색
-   - 태그 추가 / 상태 변경 / 내부 메모
-   - 템플릿 답변 버튼 3개 (자동 입력 후 전송)
-   - 관람객 `/messages`에 실시간 반영
-6. **`/organizer/preview`** — KPI 요약 + 부스별 순위 + 전체 CSV Export
+### 시나리오 1: 관람객 — QR 스캔에서 문의까지
 
-### seed 부스 목록
-| ID | 이름 | 카테고리 |
-|---|---|---|
-| booth-001 | TeaCo | 음료 & 식품 |
-| booth-002 | BrandKit Studio | 인쇄 & 굿즈 |
-| booth-003 | GreenSpace | 친환경 오피스 |
-| booth-004 | DataFlow | IT & SaaS |
-| booth-005 | CraftLeather | 핸드크래프트 |
-| booth-006 | NutritionLab | 웰니스 & 복지 |
+**역할:** 박람회 참관객 (비로그인)
 
-> localStorage 초기화: 브라우저 DevTools → Application → Local Storage → `bep_seeded` 삭제 후 새로고침
+1. `/scan/booth-001` 접속 → TeaCo 부스 페이지 열기
+2. 이미지 캐러셀 스크롤, 소개·FAQ·첨부파일 확인
+3. **"이메일로 자료 받기"** 클릭 → 이메일 입력 + 동의 체크 → "자료 받기" (mock 발송 완료 토스트)
+4. **"1분 설문"** 클릭 → 관심 분야 칩 선택 + 방문 목적 + 연락 희망 토글 → "제출하기"
+5. **"문의하기"** 클릭 → 이메일 입력 + 부정사용 방지 체크 + (선택) 동의 체크 → "문의 보내기"
+
+**확인 포인트:** 비로그인 문의 시 이메일·체크 항목 필수 | 동의 시 운영자 리드에 저장
+
+---
+
+### 시나리오 2: 관람객 — 로그인 후 관심 저장·답변 확인
+
+**역할:** 박람회 참관객 (로그인)
+
+1. `/auth` → **"개인 (관람객)"** → 이메일/비밀번호 입력 후 **"관람객으로 가입하기"**
+2. 자동으로 `/scan/booth-001` 이동
+3. **"저장하기"** 버튼 클릭 → 하트 아이콘 채워짐 + 로그인 유도 배너 (비로그인 시)
+4. `/me` 이동 → "관심 부스" 탭에서 저장된 부스 확인
+5. `/messages` 이동 → 문의 스레드 목록 및 답변 확인
+
+**확인 포인트:** 로그인 시 이메일 입력 없이 문의 가능 | 저장 목록 지속 유지
+
+---
+
+### 시나리오 3: 운영자 — 명함 스캔으로 리드 수집
+
+**역할:** 부스 운영자
+
+1. `/admin/login` → **"데모 로그인"** → 어드민 대시보드
+2. 좌측 사이드바 **"리드 목록"** 클릭 → 기존 시드 리드 6건 확인 (유형별 칩 표시)
+3. 우측 상단 **"명함 스캔"** 클릭 → `/admin/leads/scan`
+4. 이미지 파일 업로드 → 2초 후 mock OCR 추출 결과 표시
+5. 이름·회사·연락처 수정 → 메모 입력 → 연결 부스 선택 → **"리드로 저장"**
+6. `/admin/leads` 돌아와 새로 추가된 리드 확인
+7. **"명함 추첨"** 버튼 클릭 → 랜덤 당첨자 팝업 (티저 기능)
+
+**확인 포인트:** source: 'bizcard' 리드 생성 | 메모 필수 | 추첨은 현재 필터 기준으로 동작
+
+---
+
+### 시나리오 4: 운영자 — 부스 운영 정책·첨부파일 설정
+
+**역할:** 부스 운영자
+
+1. 사이드바 **"내 부스"** → `booth-003 GreenSpace` 클릭
+2. **"운영 기간 설정"** 섹션 → 종료 날짜를 과거로 변경 (예: 2026-02-28) → "정책 저장"
+3. 별도 탭에서 `/scan/booth-003` 접속 → 상단에 **"운영 종료"** 배지 확인 + "문의 마감" 버튼 비활성화
+4. 다시 어드민에서 **"문의 허용"** 토글 ON → 정책 저장 → 관람객 페이지 새로고침 → 문의 버튼 활성화
+5. **"브로셔 & 첨부 파일"** 섹션 → 파일 업로드 (PDF 등) → 파일명·용량 표시
+6. 관람객 페이지 새로고침 → "첨부 자료" 섹션에서 파일 확인 (다운로드 mock)
+
+**확인 포인트:** 정책별 배지·버튼 상태 변화 | 파일 메타데이터만 localStorage 저장
+
+---
+
+### 시나리오 5: 주최자 — 통합 대시보드 데이터 분석
+
+**역할:** 이벤트 주최자 / 마케터
+
+1. 사이드바 **"주최자 프리뷰"** 클릭
+2. 상단 KPI 카드 확인: 총 스캔·고유 방문자·관심 저장·총 문의
+3. 리드 소스 카드: 명함·문의·이메일·설문별 수집 현황
+4. **"시간대별 방문"** 바 차트 (mock) 확인
+5. **"최근 리드"** 섹션 → "전체 보기" → `/admin/leads` 이동
+6. 상단 **"전체 CSV Export"** 클릭 → 통계 파일 다운로드
+7. 부스 통계 테이블에서 스캔·관심·문의·리드·전환율 비교
+
+**확인 포인트:** 고유 방문자 = guestId 기준 unique 집계 | 리드 수 = boothId별 집계
+
+---
+
+## 데이터 구조 (추가)
+
+```typescript
+Lead        { id, boothId, source: 'bizcard'|'inquiry'|'email_info'|'survey',
+              name?, company?, phone?, email?, memo, consent, createdAt }
+BoothPolicy { boothId, startAt, endAt, allowViewAfterEnd, allowInquiryAfterEnd }
+Attachment  { id, boothId, filename, type, size?, createdAt }
+SurveyResponse { id, boothId, visitorId,
+                 answers: { interests?, purpose?, wantsContact? }, createdAt }
+```
+
+### localStorage 키 (prefix: `bep_`)
+
+| 키 | 타입 |
+|----|------|
+| `bep_booths` | Booth[] |
+| `bep_visits` | Visit[] |
+| `bep_favorites` | Favorite[] |
+| `bep_threads` | Thread[] |
+| `bep_analytics` | Analytics[] |
+| `bep_leads` | Lead[] |
+| `bep_policies` | BoothPolicy[] |
+| `bep_attachments` | Attachment[] |
+| `bep_surveys` | SurveyResponse[] |
+| `bep_isLoggedIn` | '0' \| '1' |
+| `bep_isAdmin` | '0' \| '1' |
+| `bep_userEmail` | string |
+| `bep_guestId` | string (persistent anonymous ID) |
+| `bep_seeded` | '1' |
+
+> 데이터 초기화: 브라우저 개발자 도구 → Application → Local Storage → `bep_seeded` 삭제 후 새로고침
+
+---
+
+## 시드 데이터
+
+| 부스 | 카테고리 | 스캔 | 관심 | 문의 |
+|------|---------|------|------|------|
+| TeaCo | 음료 & 식품 | 124 | 42 | 18 |
+| BrandKit Studio | 인쇄 & 굿즈 | 87 | 31 | 12 |
+| GreenSpace | 친환경 오피스 | 203 | 78 | 29 |
+| DataFlow | IT & SaaS | 156 | 54 | 22 |
+| CraftLeather | 핸드크래프트 | 63 | 19 | 8 |
+| NutritionLab | 웰니스 & 복지 | 98 | 37 | 15 |
+
+- 시드 리드: 6건 (명함 3 · 문의 1 · 이메일 1 · 설문 1)
+- 시드 정책: booth-001~004 (booth-003은 종료 상태)
+- 시드 첨부파일: 4건 (TeaCo 2 · DataFlow 1 · GreenSpace 1)
+- 시드 설문: 5건
 
 ---
 
 ## 기술 스택
 
-- **Vite + React 18 + TypeScript**
-- **Tailwind CSS** (포인트 컬러: indigo-600)
-- **react-router-dom v6** (클라이언트 라우팅)
-- **qrcode.react** (실제 QR 코드 생성 + PNG 다운로드)
-- **lucide-react** (아이콘)
-- **localStorage** (모든 데이터 영속성)
+- **빌드**: Vite 5 + TypeScript 5
+- **UI**: React 18 + Tailwind CSS 3 (포인트 컬러: indigo-600 / brand-600)
+- **라우팅**: React Router v6
+- **아이콘**: lucide-react
+- **QR**: qrcode.react (실제 QR 생성 + PNG 다운로드)
+- **스토리지**: localStorage only (no backend, no API)

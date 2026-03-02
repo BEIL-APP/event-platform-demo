@@ -1,0 +1,275 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import {
+  Users,
+  ScanLine,
+  Mail,
+  CreditCard,
+  ClipboardList,
+  Search,
+  Trash2,
+  Dice5,
+  Filter,
+} from 'lucide-react';
+import { AdminLayout } from '../../components/AdminLayout';
+import { useBooths } from '../../hooks/useBooths';
+import { useToast } from '../../contexts/ToastContext';
+import { getLeads, deleteLead } from '../../utils/localStorage';
+import type { Lead } from '../../types';
+
+const SOURCE_LABELS: Record<Lead['source'], string> = {
+  bizcard: '명함 스캔',
+  inquiry: '문의 동의',
+  email_info: '이메일 수신',
+  survey: '설문',
+};
+
+const SOURCE_ICONS: Record<Lead['source'], React.ReactNode> = {
+  bizcard: <CreditCard className="w-3.5 h-3.5" />,
+  inquiry: <Mail className="w-3.5 h-3.5" />,
+  email_info: <Mail className="w-3.5 h-3.5" />,
+  survey: <ClipboardList className="w-3.5 h-3.5" />,
+};
+
+const SOURCE_COLORS: Record<Lead['source'], string> = {
+  bizcard: 'bg-purple-50 text-purple-700',
+  inquiry: 'bg-blue-50 text-blue-700',
+  email_info: 'bg-green-50 text-green-700',
+  survey: 'bg-amber-50 text-amber-700',
+};
+
+export default function AdminLeadsPage() {
+  const { booths } = useBooths();
+  const { showToast } = useToast();
+  const [leads, setLeads] = useState<Lead[]>(() => getLeads());
+  const [search, setSearch] = useState('');
+  const [filterSource, setFilterSource] = useState<Lead['source'] | 'all'>('all');
+  const [filterBooth, setFilterBooth] = useState('all');
+  const [showLottery, setShowLottery] = useState(false);
+  const [lotteryWinner, setLotteryWinner] = useState<Lead | null>(null);
+
+  const boothMap = Object.fromEntries(booths.map((b) => [b.id, b.name]));
+
+  const filtered = leads.filter((l) => {
+    if (filterSource !== 'all' && l.source !== filterSource) return false;
+    if (filterBooth !== 'all' && l.boothId !== filterBooth) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      return (
+        l.name?.toLowerCase().includes(q) ||
+        l.company?.toLowerCase().includes(q) ||
+        l.email?.toLowerCase().includes(q) ||
+        false
+      );
+    }
+    return true;
+  });
+
+  const handleDelete = (id: string) => {
+    deleteLead(id);
+    setLeads(getLeads());
+    showToast('리드를 삭제했어요', 'info');
+  };
+
+  const handleLottery = () => {
+    if (filtered.length === 0) {
+      showToast('추첨할 리드가 없어요', 'error');
+      return;
+    }
+    const winner = filtered[Math.floor(Math.random() * filtered.length)];
+    setLotteryWinner(winner);
+    setShowLottery(true);
+  };
+
+  const countBySource = (src: Lead['source']) => leads.filter((l) => l.source === src).length;
+
+  return (
+    <AdminLayout>
+      <div className="p-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">리드 목록</h1>
+            <p className="text-sm text-gray-400 mt-1">
+              문의 동의 · 명함 스캔 · 이메일 수신 신청 · 설문 응답 기반
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {/* Lottery placeholder */}
+            <button
+              onClick={handleLottery}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-amber-200 bg-amber-50 text-amber-700 text-sm font-medium hover:bg-amber-100 transition-colors"
+            >
+              <Dice5 className="w-4 h-4" />
+              명함 추첨
+              <span className="text-xs bg-amber-200 rounded-full px-1.5 py-0.5 text-amber-800">티저</span>
+            </button>
+            <Link
+              to="/admin/leads/scan"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors shadow-sm"
+            >
+              <ScanLine className="w-4 h-4" />
+              명함 스캔
+            </Link>
+          </div>
+        </div>
+
+        {/* Source stat chips */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          <div className="flex items-center gap-1.5 text-xs bg-white border border-gray-100 rounded-xl px-3 py-2 shadow-sm">
+            <Users className="w-3.5 h-3.5 text-gray-400" />
+            <span className="text-gray-600 font-medium">전체</span>
+            <span className="font-bold text-gray-900">{leads.length}</span>
+          </div>
+          {(['bizcard', 'inquiry', 'email_info', 'survey'] as Lead['source'][]).map((src) => (
+            <div key={src} className={`flex items-center gap-1.5 text-xs rounded-xl px-3 py-2 ${SOURCE_COLORS[src]}`}>
+              {SOURCE_ICONS[src]}
+              <span>{SOURCE_LABELS[src]}</span>
+              <span className="font-bold">{countBySource(src)}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap gap-3 mb-5">
+          <div className="relative flex-1 min-w-48">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="이름, 회사, 이메일 검색"
+              className="w-full text-sm bg-white border border-gray-200 rounded-xl pl-9 pr-4 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-gray-400" />
+            <select
+              value={filterSource}
+              onChange={(e) => setFilterSource(e.target.value as Lead['source'] | 'all')}
+              className="text-sm bg-white border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+            >
+              <option value="all">전체 유형</option>
+              <option value="bizcard">명함 스캔</option>
+              <option value="inquiry">문의 동의</option>
+              <option value="email_info">이메일 수신</option>
+              <option value="survey">설문</option>
+            </select>
+            <select
+              value={filterBooth}
+              onChange={(e) => setFilterBooth(e.target.value)}
+              className="text-sm bg-white border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+            >
+              <option value="all">전체 부스</option>
+              {booths.map((b) => (
+                <option key={b.id} value={b.id}>{b.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Lead Table */}
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          {filtered.length === 0 ? (
+            <div className="py-16 text-center">
+              <Users className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+              <p className="text-sm text-gray-400">조건에 맞는 리드가 없어요</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-gray-50 text-xs font-medium text-gray-500">
+                    <th className="text-left px-5 py-3">이름 / 이메일</th>
+                    <th className="text-left px-4 py-3">회사</th>
+                    <th className="text-left px-4 py-3">전화</th>
+                    <th className="text-left px-4 py-3">유형</th>
+                    <th className="text-left px-4 py-3">부스</th>
+                    <th className="text-left px-4 py-3">메모</th>
+                    <th className="text-left px-4 py-3">수집일</th>
+                    <th className="px-4 py-3" />
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {filtered.map((lead) => (
+                    <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-5 py-3.5">
+                        <p className="text-sm font-medium text-gray-800">{lead.name ?? '-'}</p>
+                        <p className="text-xs text-gray-400">{lead.email ?? '-'}</p>
+                      </td>
+                      <td className="px-4 py-3.5 text-sm text-gray-600">{lead.company ?? '-'}</td>
+                      <td className="px-4 py-3.5 text-sm text-gray-500 font-mono text-xs">{lead.phone ?? '-'}</td>
+                      <td className="px-4 py-3.5">
+                        <span className={`inline-flex items-center gap-1 text-xs font-medium rounded-full px-2.5 py-1 ${SOURCE_COLORS[lead.source]}`}>
+                          {SOURCE_ICONS[lead.source]}
+                          {SOURCE_LABELS[lead.source]}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3.5 text-sm text-gray-600">
+                        {boothMap[lead.boothId] ?? lead.boothId}
+                      </td>
+                      <td className="px-4 py-3.5 text-xs text-gray-500 max-w-[180px] truncate">
+                        {lead.memo || '-'}
+                      </td>
+                      <td className="px-4 py-3.5 text-xs text-gray-400">
+                        {new Date(lead.createdAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <button
+                          onClick={() => handleDelete(lead.id)}
+                          className="p-1.5 text-gray-300 hover:text-red-400 rounded-lg hover:bg-red-50 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Lottery modal */}
+      {showLottery && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-5">
+          <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-xl">
+            <div className="text-5xl mb-4">🎉</div>
+            <h2 className="text-xl font-bold text-gray-900 mb-1">추첨 결과</h2>
+            <p className="text-sm text-gray-500 mb-6">
+              {filtered.length}명 중 1명이 선택됐어요
+            </p>
+            {lotteryWinner && (
+              <div className="bg-brand-50 rounded-2xl p-5 mb-6 text-left">
+                <p className="text-lg font-bold text-brand-700 mb-1">
+                  {lotteryWinner.name ?? '이름 미상'}
+                </p>
+                {lotteryWinner.company && (
+                  <p className="text-sm text-brand-600">{lotteryWinner.company}</p>
+                )}
+                {lotteryWinner.email && (
+                  <p className="text-xs text-gray-500 mt-1">{lotteryWinner.email}</p>
+                )}
+              </div>
+            )}
+            <div className="flex gap-3">
+              <button
+                onClick={handleLottery}
+                className="flex-1 bg-gray-100 text-gray-700 text-sm font-medium rounded-xl py-3 hover:bg-gray-200 transition-colors"
+              >
+                다시 추첨
+              </button>
+              <button
+                onClick={() => { setShowLottery(false); setLotteryWinner(null); }}
+                className="flex-1 bg-brand-600 text-white text-sm font-medium rounded-xl py-3 hover:bg-brand-700 transition-colors"
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </AdminLayout>
+  );
+}
