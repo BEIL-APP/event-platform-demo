@@ -37,9 +37,11 @@ export interface Thread {
   id: string;
   boothId: string;
   visitorId: 'guest' | 'user';
+  visitorGuestId?: string;   // persistent guestId for notification targeting
   visitorName?: string;
   visitorEmail?: string;
   consentGiven?: boolean;
+  blocked?: boolean;         // spam/abuse block flag
   messages: ChatMessage[];
   status: '미처리' | '처리' | '보류';
   tags: string[];
@@ -66,6 +68,7 @@ export interface Lead {
   email?: string;
   memo: string;
   consent: boolean;
+  consentMarketing?: boolean;  // separate marketing consent flag
   createdAt: string;
 }
 
@@ -96,4 +99,32 @@ export interface SurveyResponse {
     wantsContact?: boolean;
   };
   createdAt: string;
+}
+
+export interface AppNotification {
+  id: string;
+  targetGuestId: string;
+  type: 'reply' | 'system';
+  title: string;
+  body: string;
+  read: boolean;
+  boothId?: string;
+  threadId?: string;
+  createdAt: string;
+}
+
+export interface StaffMember {
+  id: string;
+  boothId: string;
+  name: string;
+  email: string;
+  role: 'owner' | 'staff';
+  status: 'active' | 'pending';
+  invitedAt: string;
+}
+
+export interface RateLimit {
+  key: string;
+  count: number;
+  resetAt: string;
 }

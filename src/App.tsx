@@ -13,6 +13,7 @@ import OAuthPage from './pages/auth/OAuthPage';
 import BoothPage from './pages/visitor/BoothPage';
 import MyPage from './pages/visitor/MyPage';
 import MessagesPage from './pages/visitor/MessagesPage';
+import NotificationsPage from './pages/visitor/NotificationsPage';
 
 // Admin pages
 import AdminLoginPage from './pages/admin/AdminLoginPage';
@@ -22,6 +23,7 @@ import AdminBoothDetailPage from './pages/admin/AdminBoothDetailPage';
 import AdminInboxPage from './pages/admin/AdminInboxPage';
 import AdminLeadsPage from './pages/admin/AdminLeadsPage';
 import AdminLeadsScanPage from './pages/admin/AdminLeadsScanPage';
+import AdminBoothTeamPage from './pages/admin/AdminBoothTeamPage';
 
 // Organizer
 import OrganizerPreviewPage from './pages/organizer/OrganizerPreviewPage';
@@ -47,6 +49,7 @@ function AppRoutes() {
       <Route path="/scan/:boothId" element={<BoothPage />} />
       <Route path="/me" element={<MyPage />} />
       <Route path="/messages" element={<MessagesPage />} />
+      <Route path="/notifications" element={<NotificationsPage />} />
 
       {/* Admin auth */}
       <Route path="/admin/login" element={<AdminLoginPage />} />
@@ -58,6 +61,7 @@ function AppRoutes() {
       <Route path="/admin/inbox" element={<AdminGuard><AdminInboxPage /></AdminGuard>} />
       <Route path="/admin/leads" element={<AdminGuard><AdminLeadsPage /></AdminGuard>} />
       <Route path="/admin/leads/scan" element={<AdminGuard><AdminLeadsScanPage /></AdminGuard>} />
+      <Route path="/admin/booths/:boothId/team" element={<AdminGuard><AdminBoothTeamPage /></AdminGuard>} />
 
       {/* Organizer */}
       <Route path="/organizer/preview" element={<AdminGuard><OrganizerPreviewPage /></AdminGuard>} />

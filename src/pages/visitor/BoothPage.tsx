@@ -17,6 +17,7 @@ import {
   Clock,
   AlertCircle,
   LogIn,
+  Share2,
 } from 'lucide-react';
 import { VisitorHeader } from '../../components/VisitorHeader';
 import { Modal } from '../../components/Modal';
@@ -33,6 +34,8 @@ import {
   saveLead,
   saveSurvey,
   getGuestId,
+  checkRateLimit,
+  incrementRateLimit,
 } from '../../utils/localStorage';
 import type { BoothPolicy, Attachment, SurveyResponse } from '../../types';
 
@@ -79,8 +82,10 @@ export default function BoothPage() {
   const [inquiryText, setInquiryText] = useState('');
   const [inquiryEmail, setInquiryEmail] = useState('');
   const [inquiryConsent, setInquiryConsent] = useState(false);
+  const [inquiryConsentMarketing, setInquiryConsentMarketing] = useState(false);
   const [inquiryAbuseCheck, setInquiryAbuseCheck] = useState(false);
   const [inquirySent, setInquirySent] = useState(false);
+  const [inquiryRateLimited, setInquiryRateLimited] = useState(false);
 
   // Email info modal
   const [showEmailInfo, setShowEmailInfo] = useState(false);
@@ -154,10 +159,21 @@ export default function BoothPage() {
     if (!inquiryText.trim() || !boothId) return;
     if (!isLoggedIn && (!inquiryEmail.includes('@') || !inquiryAbuseCheck)) return;
 
+    // Rate limit check: 3 inquiries per day per visitor per booth
+    const guestId = getGuestId();
+    const rateLimitKey = `${guestId}:${boothId}:inquiry`;
+    if (checkRateLimit(rateLimitKey, 3)) {
+      setInquiryRateLimited(true);
+      showToast('하루 3건까지 문의할 수 있어요. 내일 다시 시도해주세요.', 'error');
+      return;
+    }
+
     createInquiry(boothId, inquiryText.trim(), isLoggedIn, {
       email: isLoggedIn ? undefined : inquiryEmail,
       consent: inquiryConsent,
+      consentMarketing: inquiryConsentMarketing,
     });
+    incrementRateLimit(rateLimitKey, 24 * 60 * 60 * 1000);
     setInquirySent(true);
     setInquiryText('');
     showToast('문의가 전달됐어요!', 'success');
@@ -166,10 +182,31 @@ export default function BoothPage() {
   const handleCloseInquiry = () => {
     setShowInquiry(false);
     setInquirySent(false);
+    setInquiryRateLimited(false);
     setInquiryText('');
     setInquiryEmail('');
     setInquiryConsent(false);
+    setInquiryConsentMarketing(false);
     setInquiryAbuseCheck(false);
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    const shareData = { title: booth?.name ?? '', text: booth?.tagline ?? '', url };
+    if (navigator.share && navigator.canShare?.(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch {
+        // user cancelled — ignore
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(url);
+        showToast('링크가 복사됐어요!', 'success');
+      } catch {
+        showToast('링크 복사에 실패했어요', 'error');
+      }
+    }
   };
 
   const handleSendEmailInfo = () => {
@@ -360,6 +397,13 @@ export default function BoothPage() {
             >
               <MessageSquare className="w-4 h-4" />
               {!inquiryAllowed ? '문의 마감' : '문의하기'}
+            </button>
+            <button
+              onClick={handleShare}
+              className="w-12 flex items-center justify-center py-3 rounded-xl text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+              title="공유하기"
+            >
+              <Share2 className="w-4 h-4" />
             </button>
           </div>
 
@@ -569,6 +613,15 @@ export default function BoothPage() {
               className="w-full h-28 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 resize-none outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400 mb-3"
             />
 
+            {/* Rate limit warning */}
+            {inquiryRateLimited && (
+              <div className="mb-3 bg-red-50 border border-red-100 rounded-xl px-3 py-2.5">
+                <p className="text-xs text-red-700">
+                  하루 3건까지 문의할 수 있어요. 내일 다시 시도해주세요.
+                </p>
+              </div>
+            )}
+
             {/* Non-login: email + checks */}
             {!isLoggedIn && (
               <div className="space-y-3 mb-3">
@@ -607,6 +660,21 @@ export default function BoothPage() {
                     <span className="text-gray-400 block">동의 시 운영자가 리드로 저장합니다</span>
                   </span>
                 </label>
+
+                {inquiryConsent && (
+                  <label className="flex items-start gap-2 cursor-pointer pl-6">
+                    <input
+                      type="checkbox"
+                      checked={inquiryConsentMarketing}
+                      onChange={(e) => setInquiryConsentMarketing(e.target.checked)}
+                      className="mt-0.5 w-4 h-4 rounded accent-brand-600"
+                    />
+                    <span className="text-xs text-gray-400">
+                      (선택) 마케팅 정보 수신에 동의합니다
+                      <span className="block">언제든 철회할 수 있어요</span>
+                    </span>
+                  </label>
+                )}
               </div>
             )}
 

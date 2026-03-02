@@ -1,5 +1,12 @@
-import type { Booth, Visit, Favorite, Thread, Analytics, Lead, BoothPolicy, Attachment, SurveyResponse } from '../types';
-import { SEED_BOOTHS, SEED_ANALYTICS, SEED_THREADS, SEED_LEADS, SEED_POLICIES, SEED_ATTACHMENTS, SEED_SURVEYS } from '../data/seed';
+import type {
+  Booth, Visit, Favorite, Thread, Analytics,
+  Lead, BoothPolicy, Attachment, SurveyResponse,
+  AppNotification, StaffMember, RateLimit,
+} from '../types';
+import {
+  SEED_BOOTHS, SEED_ANALYTICS, SEED_THREADS, SEED_LEADS,
+  SEED_POLICIES, SEED_ATTACHMENTS, SEED_SURVEYS, SEED_STAFF,
+} from '../data/seed';
 
 const PREFIX = 'bep_';
 const KEYS = {
@@ -12,6 +19,9 @@ const KEYS = {
   policies: `${PREFIX}policies`,
   attachments: `${PREFIX}attachments`,
   surveys: `${PREFIX}surveys`,
+  notifications: `${PREFIX}notifications`,
+  staff: `${PREFIX}staff`,
+  rateLimits: `${PREFIX}rate_limits`,
   isLoggedIn: `${PREFIX}isLoggedIn`,
   isAdmin: `${PREFIX}isAdmin`,
   userEmail: `${PREFIX}userEmail`,
@@ -56,6 +66,7 @@ export function initSeedData(): void {
   set(KEYS.policies, SEED_POLICIES);
   set(KEYS.attachments, SEED_ATTACHMENTS);
   set(KEYS.surveys, SEED_SURVEYS);
+  set(KEYS.staff, SEED_STAFF);
   set(KEYS.visits, []);
   set(KEYS.favorites, []);
   localStorage.setItem(KEYS.seeded, '1');
@@ -163,12 +174,14 @@ export function createThread(
   boothId: string,
   text: string,
   isLoggedIn: boolean,
-  options?: { email?: string; consent?: boolean; visitorName?: string }
+  options?: { email?: string; consent?: boolean; consentMarketing?: boolean; visitorName?: string }
 ): Thread {
+  const guestId = getGuestId();
   const thread: Thread = {
     id: `thread-${Date.now()}`,
     boothId,
     visitorId: isLoggedIn ? 'user' : 'guest',
+    visitorGuestId: guestId,
     visitorName: isLoggedIn ? (options?.visitorName ?? '나') : undefined,
     visitorEmail: options?.email,
     consentGiven: options?.consent ?? false,
@@ -195,6 +208,7 @@ export function createThread(
       email: options?.email,
       memo: `문의 스레드: ${thread.id}`,
       consent: true,
+      consentMarketing: options?.consentMarketing ?? false,
       createdAt: new Date().toISOString(),
     };
     saveLead(lead);
@@ -211,6 +225,15 @@ export function replyToThread(threadId: string, text: string, from: 'visitor' | 
   threads[idx].lastUpdated = new Date().toISOString();
   set(KEYS.threads, threads);
   return threads[idx];
+}
+
+export function blockThread(threadId: string): void {
+  const threads = getThreads();
+  const idx = threads.findIndex((t) => t.id === threadId);
+  if (idx >= 0) {
+    threads[idx].blocked = !threads[idx].blocked;
+    set(KEYS.threads, threads);
+  }
 }
 
 // ─── Analytics ───────────────────────────────────────────────────────────────
@@ -357,6 +380,112 @@ export function getSurveyAggregate(boothId: string): {
   }
 
   return { total: surveys.length, interests, purposes, wantsContact };
+}
+
+// ─── Notifications ────────────────────────────────────────────────────────────
+
+export function getAllNotifications(): AppNotification[] {
+  return get<AppNotification[]>(KEYS.notifications) ?? [];
+}
+
+export function getNotifications(guestId: string): AppNotification[] {
+  return getAllNotifications()
+    .filter((n) => n.targetGuestId === guestId)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export function saveNotification(notif: AppNotification): void {
+  const all = getAllNotifications();
+  all.unshift(notif);
+  set(KEYS.notifications, all.slice(0, 200));
+}
+
+export function markAllNotificationsRead(guestId: string): void {
+  const all = getAllNotifications();
+  const updated = all.map((n) =>
+    n.targetGuestId === guestId ? { ...n, read: true } : n
+  );
+  set(KEYS.notifications, updated);
+}
+
+export function getUnreadNotificationCount(guestId: string): number {
+  return getAllNotifications().filter((n) => n.targetGuestId === guestId && !n.read).length;
+}
+
+// ─── Staff Members ────────────────────────────────────────────────────────────
+
+export function getAllStaff(): StaffMember[] {
+  return get<StaffMember[]>(KEYS.staff) ?? [];
+}
+
+export function getBoothStaff(boothId: string): StaffMember[] {
+  return getAllStaff().filter((s) => s.boothId === boothId);
+}
+
+export function saveStaff(member: StaffMember): void {
+  const all = getAllStaff();
+  const idx = all.findIndex((s) => s.id === member.id);
+  if (idx >= 0) {
+    all[idx] = member;
+  } else {
+    all.push(member);
+  }
+  set(KEYS.staff, all);
+}
+
+export function deleteStaff(id: string): void {
+  set(KEYS.staff, getAllStaff().filter((s) => s.id !== id));
+}
+
+// ─── Rate Limits ──────────────────────────────────────────────────────────────
+
+function getRateLimits(): RateLimit[] {
+  return get<RateLimit[]>(KEYS.rateLimits) ?? [];
+}
+
+export function checkRateLimit(key: string, max: number): boolean {
+  const all = getRateLimits();
+  const rl = all.find((r) => r.key === key);
+  if (!rl) return false;
+  if (new Date(rl.resetAt) < new Date()) return false; // window expired
+  return rl.count >= max;
+}
+
+export function incrementRateLimit(key: string, windowMs: number): void {
+  const all = getRateLimits();
+  const idx = all.findIndex((r) => r.key === key);
+  const resetAt = new Date(Date.now() + windowMs).toISOString();
+  if (idx >= 0) {
+    if (new Date(all[idx].resetAt) < new Date()) {
+      all[idx] = { key, count: 1, resetAt };
+    } else {
+      all[idx].count += 1;
+    }
+  } else {
+    all.push({ key, count: 1, resetAt });
+  }
+  set(KEYS.rateLimits, all);
+}
+
+// ─── Data Deletion (GDPR-style) ───────────────────────────────────────────────
+
+export function deleteMyData(): void {
+  const guestId = getGuestId();
+  // Clear visits
+  set(KEYS.visits, []);
+  // Clear favorites
+  set(KEYS.favorites, []);
+  // Remove threads associated with this guestId
+  const threads = getThreads().filter((t) => t.visitorGuestId !== guestId);
+  set(KEYS.threads, threads);
+  // Remove leads with matching email (best-effort)
+  // Clear notifications
+  const notifs = getAllNotifications().filter((n) => n.targetGuestId !== guestId);
+  set(KEYS.notifications, notifs);
+  // Reset guestId
+  localStorage.removeItem(KEYS.guestId);
+  // Clear rate limits
+  set(KEYS.rateLimits, getRateLimits().filter((r) => !r.key.startsWith(guestId)));
 }
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────

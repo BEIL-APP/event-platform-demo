@@ -1,10 +1,18 @@
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { QrCode, Heart, MessageSquare, User, LogIn } from 'lucide-react';
+import { QrCode, Heart, MessageSquare, User, LogIn, Bell } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { getGuestId, getUnreadNotificationCount } from '../utils/localStorage';
 
 export function VisitorHeader() {
   const { isLoggedIn, toggleLogin } = useAuth();
   const location = useLocation();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const guestId = getGuestId();
+    setUnreadCount(getUnreadNotificationCount(guestId));
+  }, [location.pathname]);
 
   const navItems = [
     { to: '/me', icon: <Heart className="w-5 h-5" />, label: '관심' },
@@ -22,7 +30,7 @@ export function VisitorHeader() {
           <span className="font-semibold text-gray-900 text-sm">BoothConnect</span>
         </Link>
 
-        {/* Right: nav + login */}
+        {/* Right: nav + bell + login */}
         <div className="flex items-center gap-1">
           {navItems.map((item) => (
             <Link
@@ -38,6 +46,24 @@ export function VisitorHeader() {
               <span className="text-[10px] leading-none">{item.label}</span>
             </Link>
           ))}
+
+          {/* Bell / Notifications */}
+          <Link
+            to="/notifications"
+            className={`relative flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-colors ${
+              location.pathname === '/notifications'
+                ? 'text-brand-600'
+                : 'text-gray-400 hover:text-gray-600'
+            }`}
+          >
+            <Bell className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <span className="absolute top-0 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+            <span className="text-[10px] leading-none">알림</span>
+          </Link>
 
           <button
             onClick={toggleLogin}

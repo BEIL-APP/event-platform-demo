@@ -1,4 +1,4 @@
-import type { Booth, Thread, Analytics, Lead, BoothPolicy, Attachment, SurveyResponse } from '../types';
+import type { Booth, Thread, Analytics, Lead, BoothPolicy, Attachment, SurveyResponse, StaffMember } from '../types';
 
 export const SEED_BOOTHS: Booth[] = [
   {
@@ -242,6 +242,7 @@ export const SEED_THREADS: Thread[] = [
     id: 'thread-001',
     boothId: 'booth-001',
     visitorId: 'user',
+    visitorGuestId: 'guest-seed-demo',
     visitorName: '김지수',
     visitorEmail: 'jisu.kim@company.co.kr',
     consentGiven: true,
@@ -266,6 +267,7 @@ export const SEED_THREADS: Thread[] = [
     id: 'thread-002',
     boothId: 'booth-004',
     visitorId: 'guest',
+    visitorGuestId: 'guest-seed-demo2',
     visitorEmail: 'tech@startup.io',
     consentGiven: false,
     messages: [
@@ -284,6 +286,7 @@ export const SEED_THREADS: Thread[] = [
     id: 'thread-003',
     boothId: 'booth-002',
     visitorId: 'user',
+    visitorGuestId: 'guest-seed-demo3',
     visitorName: '이민준',
     visitorEmail: 'minjun@brand.kr',
     consentGiven: true,
@@ -318,6 +321,7 @@ export const SEED_LEADS: Lead[] = [
     email: 'jisu.kim@company.co.kr',
     memo: '문의 스레드 연결: thread-001',
     consent: true,
+    consentMarketing: false,
     createdAt: '2026-02-10T14:22:00Z',
   },
   {
@@ -330,6 +334,7 @@ export const SEED_LEADS: Lead[] = [
     email: 'seojun.park@wellness.kr',
     memo: '복지몰 구축 담당자. 분기별 정기 구매 가능성 높음.',
     consent: true,
+    consentMarketing: true,
     createdAt: '2026-02-11T10:30:00Z',
   },
   {
@@ -339,6 +344,7 @@ export const SEED_LEADS: Lead[] = [
     email: 'esg@greencorp.co.kr',
     memo: '이메일 정보 수신 신청',
     consent: true,
+    consentMarketing: true,
     createdAt: '2026-02-11T14:00:00Z',
   },
   {
@@ -351,6 +357,7 @@ export const SEED_LEADS: Lead[] = [
     email: 'yujin.choi@salesforce.com',
     memo: 'CRM 파트너십 논의 가능. 다음 주 콜 예정.',
     consent: true,
+    consentMarketing: false,
     createdAt: '2026-02-12T09:15:00Z',
   },
   {
@@ -361,6 +368,7 @@ export const SEED_LEADS: Lead[] = [
     name: '이민준',
     memo: '설문 응답: 대량 인쇄 관심, 연락 희망',
     consent: true,
+    consentMarketing: true,
     createdAt: '2026-02-12T11:05:00Z',
   },
   {
@@ -373,6 +381,7 @@ export const SEED_LEADS: Lead[] = [
     email: 'haeun@bluechip-hr.com',
     memo: '임직원 50명 복지 구독 검토 중. 3월 예산 확정 후 연락.',
     consent: true,
+    consentMarketing: false,
     createdAt: '2026-02-13T16:45:00Z',
   },
 ];
@@ -484,5 +493,55 @@ export const SEED_SURVEYS: SurveyResponse[] = [
     visitorId: 'guest-seed-5',
     answers: { interests: ['인쇄', '명함'], purpose: '견적', wantsContact: true },
     createdAt: '2026-02-12T14:00:00Z',
+  },
+];
+
+// ─── Seed Staff Members ───────────────────────────────────────────────────────
+
+export const SEED_STAFF: StaffMember[] = [
+  {
+    id: 'staff-001',
+    boothId: 'booth-001',
+    name: '이수진',
+    email: 'sujin@teaco.kr',
+    role: 'owner',
+    status: 'active',
+    invitedAt: '2026-01-10T09:00:00Z',
+  },
+  {
+    id: 'staff-002',
+    boothId: 'booth-001',
+    name: '박민호',
+    email: 'minho@teaco.kr',
+    role: 'staff',
+    status: 'active',
+    invitedAt: '2026-01-12T10:00:00Z',
+  },
+  {
+    id: 'staff-003',
+    boothId: 'booth-001',
+    name: '김지영',
+    email: 'jiyoung@agency.com',
+    role: 'staff',
+    status: 'pending',
+    invitedAt: '2026-02-01T14:00:00Z',
+  },
+  {
+    id: 'staff-004',
+    boothId: 'booth-004',
+    name: '최준혁',
+    email: 'junhyuk@dataflow.io',
+    role: 'owner',
+    status: 'active',
+    invitedAt: '2026-01-15T09:30:00Z',
+  },
+  {
+    id: 'staff-005',
+    boothId: 'booth-004',
+    name: '한소영',
+    email: 'soyoung@dataflow.io',
+    role: 'staff',
+    status: 'active',
+    invitedAt: '2026-01-18T11:00:00Z',
   },
 ];

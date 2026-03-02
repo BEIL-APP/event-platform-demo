@@ -16,7 +16,7 @@ export function useThreads() {
   }, []);
 
   const createInquiry = useCallback(
-    (boothId: string, text: string, isLoggedIn: boolean, options?: { email?: string; consent?: boolean; visitorName?: string }): Thread => {
+    (boothId: string, text: string, isLoggedIn: boolean, options?: { email?: string; consent?: boolean; consentMarketing?: boolean; visitorName?: string }): Thread => {
       const t = lsCreate(boothId, text, isLoggedIn, options);
       setThreads(getThreads());
       return t;

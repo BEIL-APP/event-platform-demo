@@ -1,12 +1,12 @@
 import { useState, useMemo } from 'react';
 import {
   Search, Tag, ChevronDown, Send, ArrowLeft,
-  Clock, CheckCircle, PauseCircle, X, MessageSquare,
+  Clock, CheckCircle, PauseCircle, X, MessageSquare, ShieldOff, Shield,
 } from 'lucide-react';
 import { AdminLayout } from '../../components/AdminLayout';
 import { useThreads } from '../../hooks/useThreads';
 import { useToast } from '../../contexts/ToastContext';
-import { getBooths } from '../../utils/localStorage';
+import { getBooths, blockThread, saveNotification } from '../../utils/localStorage';
 import type { Thread } from '../../types';
 
 type StatusFilter = 'all' | '미처리' | '처리' | '보류';
@@ -91,8 +91,33 @@ export default function AdminInboxPage() {
     if (selectedThread.status === '미처리') {
       updateStatus(selectedThread.id, '처리');
     }
+
+    // Send in-app notification to visitor if guestId is tracked
+    if (selectedThread.visitorGuestId) {
+      saveNotification({
+        id: `notif-${Date.now()}`,
+        targetGuestId: selectedThread.visitorGuestId,
+        type: 'reply',
+        title: `${boothMap[selectedThread.boothId]?.name ?? '부스'}에서 답변이 왔어요`,
+        body: replyText.trim().slice(0, 100),
+        read: false,
+        boothId: selectedThread.boothId,
+        threadId: selectedThread.id,
+        createdAt: new Date().toISOString(),
+      });
+    }
+
     setReplyText('');
     showToast('답변이 전송됐어요', 'success');
+  };
+
+  const handleToggleBlock = () => {
+    if (!selectedThread) return;
+    blockThread(selectedThread.id);
+    showToast(
+      selectedThread.blocked ? '차단이 해제됐어요' : '해당 문의를 차단했어요',
+      selectedThread.blocked ? 'info' : 'error'
+    );
   };
 
   const handleTemplateReply = (text: string) => {
@@ -191,6 +216,11 @@ export default function AdminInboxPage() {
                         <p className="text-xs text-gray-500 truncate mb-1.5">{lastMsg?.text}</p>
                         <div className="flex items-center gap-1.5">
                           <StatusBadge status={t.status} />
+                          {t.blocked && (
+                            <span className="text-xs bg-red-50 text-red-600 rounded-full px-2 py-0.5 flex items-center gap-0.5">
+                              <ShieldOff className="w-2.5 h-2.5" /> 차단
+                            </span>
+                          )}
                           {t.tags.slice(0, 2).map((tag) => (
                             <span key={tag} className="text-xs bg-gray-100 text-gray-500 rounded-full px-2 py-0.5">
                               #{tag}
@@ -247,6 +277,21 @@ export default function AdminInboxPage() {
 
               {/* Status actions */}
               <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={handleToggleBlock}
+                  title={selectedThread.blocked ? '차단 해제' : '스팸 차단'}
+                  className={`p-1.5 rounded-xl transition-colors ${
+                    selectedThread.blocked
+                      ? 'bg-red-50 text-red-500 hover:bg-red-100'
+                      : 'text-gray-400 hover:bg-gray-100 hover:text-red-500'
+                  }`}
+                >
+                  {selectedThread.blocked ? (
+                    <Shield className="w-4 h-4" />
+                  ) : (
+                    <ShieldOff className="w-4 h-4" />
+                  )}
+                </button>
                 <select
                   value={selectedThread.status}
                   onChange={(e) => {

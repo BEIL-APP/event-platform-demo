@@ -37,6 +37,23 @@ export default function OrganizerPreviewPage() {
   const allLeads = getLeads();
   const allSurveys = getSurveys();
 
+  // Aggregate all survey interests across all booths
+  const globalInterests: Record<string, number> = {};
+  const globalPurposes: Record<string, number> = {};
+  let globalWantsContact = 0;
+  for (const s of allSurveys) {
+    (s.answers.interests ?? []).forEach((tag) => {
+      globalInterests[tag] = (globalInterests[tag] ?? 0) + 1;
+    });
+    if (s.answers.purpose) {
+      globalPurposes[s.answers.purpose] = (globalPurposes[s.answers.purpose] ?? 0) + 1;
+    }
+    if (s.answers.wantsContact) globalWantsContact++;
+  }
+  const topGlobalInterests = Object.entries(globalInterests).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const topGlobalPurposes = Object.entries(globalPurposes).sort((a, b) => b[1] - a[1]);
+  const maxGlobalInterest = topGlobalInterests[0]?.[1] ?? 1;
+
   const leadsBySource = {
     bizcard: allLeads.filter((l) => l.source === 'bizcard').length,
     inquiry: allLeads.filter((l) => l.source === 'inquiry').length,
@@ -211,6 +228,73 @@ export default function OrganizerPreviewPage() {
             <p className="text-xs text-gray-400 mt-2 text-right">단위: 방문 수 / 시간대</p>
           </div>
         </div>
+
+        {/* Survey Aggregate */}
+        {allSurveys.length > 0 && (
+          <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+            <div className="flex items-center gap-2 mb-5">
+              <ClipboardList className="w-4 h-4 text-brand-600" />
+              <h2 className="text-sm font-semibold text-gray-800">전체 설문 집계</h2>
+              <span className="text-xs text-gray-400 bg-gray-100 rounded-full px-2 py-0.5 ml-auto">
+                총 {allSurveys.length}건
+              </span>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Interest bar chart */}
+              {topGlobalInterests.length > 0 && (
+                <div>
+                  <p className="text-xs font-medium text-gray-500 mb-3">관심 분야 (전체)</p>
+                  <div className="space-y-2">
+                    {topGlobalInterests.map(([tag, count]) => (
+                      <div key={tag}>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs text-gray-700">{tag}</span>
+                          <span className="text-xs font-medium text-gray-500">{count}명</span>
+                        </div>
+                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-brand-400 rounded-full"
+                            style={{ width: `${(count / maxGlobalInterest) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Purpose + wantsContact */}
+              <div>
+                {topGlobalPurposes.length > 0 && (
+                  <div className="mb-4">
+                    <p className="text-xs font-medium text-gray-500 mb-3">방문 목적 분포</p>
+                    <div className="space-y-1.5">
+                      {topGlobalPurposes.map(([purpose, count]) => (
+                        <div key={purpose} className="flex items-center justify-between text-xs">
+                          <span className="text-gray-700">{purpose}</span>
+                          <div className="flex items-center gap-2">
+                            <div className="h-1.5 bg-brand-200 rounded-full" style={{ width: `${(count / allSurveys.length) * 80}px` }} />
+                            <span className="font-medium text-gray-600 w-8 text-right">{count}건</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="bg-green-50 border border-green-100 rounded-xl px-4 py-3">
+                  <p className="text-xs text-gray-500 mb-0.5">연락 희망 응답자</p>
+                  <p className="text-xl font-bold text-green-600">
+                    {globalWantsContact}명
+                    <span className="text-sm font-normal text-green-500 ml-1.5">
+                      ({allSurveys.length > 0 ? Math.round((globalWantsContact / allSurveys.length) * 100) : 0}%)
+                    </span>
+                  </p>
+                  <p className="text-xs text-gray-400 mt-0.5">잠재 리드로 연결 가능</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Lead list quick view */}
         <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">

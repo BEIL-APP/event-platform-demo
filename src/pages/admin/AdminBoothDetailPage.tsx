@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import {
   ArrowLeft, Download, Eye, Heart, MessageSquare, ExternalLink, FileDown,
   Upload, Trash2, Calendar, ToggleLeft, ToggleRight, Paperclip,
+  ClipboardList, Users,
 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { AdminLayout } from '../../components/AdminLayout';
@@ -18,6 +19,7 @@ import {
   getBoothAttachments,
   saveAttachment,
   deleteAttachment,
+  getSurveyAggregate,
 } from '../../utils/localStorage';
 import type { BoothPolicy, Attachment } from '../../types';
 
@@ -46,6 +48,15 @@ export default function AdminBoothDetailPage() {
 
   // Attachments state
   const [attachments, setAttachments] = useState<Attachment[]>([]);
+
+  // Survey aggregate
+  const surveyAgg = boothId ? getSurveyAggregate(boothId) : { total: 0, interests: {}, purposes: {}, wantsContact: 0 };
+  const topInterests = Object.entries(surveyAgg.interests)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6);
+  const topPurposes = Object.entries(surveyAgg.purposes)
+    .sort((a, b) => b[1] - a[1]);
+  const maxInterest = topInterests[0]?.[1] ?? 1;
 
   useEffect(() => {
     if (boothId) {
@@ -415,6 +426,83 @@ export default function AdminBoothDetailPage() {
           <p className="text-xs text-gray-400 mt-3">
             데모: 파일 메타데이터만 저장됩니다. 관람객 페이지에서 다운로드 버튼이 표시됩니다.
           </p>
+        </div>
+
+        {/* ─── 설문 집계 결과 ────────────────────────────────────────────────────── */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2">
+              <ClipboardList className="w-4 h-4 text-brand-600" />
+              <h2 className="text-sm font-semibold text-gray-800">설문 집계 결과</h2>
+              <span className="text-xs text-gray-400 bg-gray-100 rounded-full px-2 py-0.5">
+                총 {surveyAgg.total}건
+              </span>
+            </div>
+            <Link
+              to={`/admin/booths/${boothId}/team`}
+              className="flex items-center gap-1.5 text-xs text-brand-600 hover:text-brand-700 bg-brand-50 hover:bg-brand-100 rounded-lg px-3 py-1.5 transition-colors font-medium"
+            >
+              <Users className="w-3.5 h-3.5" />
+              팀 관리
+            </Link>
+          </div>
+
+          {surveyAgg.total === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-6">아직 설문 응답이 없어요</p>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Interests bar chart */}
+              {topInterests.length > 0 && (
+                <div>
+                  <p className="text-xs font-medium text-gray-500 mb-3">관심 분야</p>
+                  <div className="space-y-2">
+                    {topInterests.map(([tag, count]) => (
+                      <div key={tag}>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs text-gray-700">{tag}</span>
+                          <span className="text-xs font-medium text-gray-500">{count}명</span>
+                        </div>
+                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-brand-400 rounded-full transition-all"
+                            style={{ width: `${(count / maxInterest) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Purpose + wantsContact */}
+              <div>
+                {topPurposes.length > 0 && (
+                  <div className="mb-4">
+                    <p className="text-xs font-medium text-gray-500 mb-3">방문 목적</p>
+                    <div className="space-y-1.5">
+                      {topPurposes.map(([purpose, count]) => (
+                        <div key={purpose} className="flex items-center justify-between text-xs">
+                          <span className="text-gray-700">{purpose}</span>
+                          <span className="font-medium text-brand-600 bg-brand-50 rounded-full px-2 py-0.5">
+                            {count}건
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="bg-green-50 rounded-xl px-4 py-3">
+                  <p className="text-xs text-gray-500 mb-0.5">연락 희망 응답</p>
+                  <p className="text-xl font-bold text-green-600">
+                    {surveyAgg.wantsContact}명
+                    <span className="text-sm font-normal text-green-500 ml-1">
+                      ({surveyAgg.total > 0 ? Math.round((surveyAgg.wantsContact / surveyAgg.total) * 100) : 0}%)
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Export */}

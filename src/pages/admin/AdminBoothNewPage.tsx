@@ -1,10 +1,43 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2, ArrowLeft, Save } from 'lucide-react';
+import { Plus, Trash2, ArrowLeft, Save, Sparkles, Upload, Loader2 } from 'lucide-react';
 import { AdminLayout } from '../../components/AdminLayout';
 import { useBooths } from '../../hooks/useBooths';
 import { useToast } from '../../contexts/ToastContext';
 import type { Booth } from '../../types';
+
+const MOCK_AI_EXTRACTIONS = [
+  {
+    name: 'GreenLeaf Co.',
+    category: '친환경 오피스',
+    tagline: '지속가능한 오피스 환경을 만드는 파트너',
+    description: 'FSC 인증 소재와 재활용 원단으로 제작한 사무용 가구 및 소모품 전문 기업입니다. ESG 경영을 실천하는 기업을 위한 탄소 중립 오피스 솔루션을 제공합니다.',
+    faq: [
+      { question: '납기는 얼마나 걸리나요?', answer: '일반 재고 품목은 3~5영업일, 커스텀 주문은 2~3주 소요됩니다.' },
+      { question: 'ESG 인증서 발급이 가능한가요?', answer: '구매 제품에 대한 탄소 절감량 리포트와 ESG 기여 증명서를 발급합니다.' },
+    ],
+  },
+  {
+    name: 'TechBridge Solutions',
+    category: 'IT & SaaS',
+    tagline: '중소기업을 위한 스마트 디지털 전환',
+    description: 'ERP, CRM, HR 솔루션을 한 플랫폼에서 통합 관리. 평균 도입 후 업무 효율 35% 향상. 30일 무료 트라이얼 및 전담 온보딩 지원.',
+    faq: [
+      { question: '기존 시스템과 연동이 가능한가요?', answer: '100여 개의 외부 서비스와 API 연동을 지원합니다.' },
+      { question: '데이터 보안 정책은?', answer: 'ISO 27001 인증 획득, 데이터는 국내 IDC에 암호화 저장됩니다.' },
+    ],
+  },
+  {
+    name: 'Craft & Co.',
+    category: '핸드크래프트',
+    tagline: '정성이 담긴 수공예 기업 선물',
+    description: '국내 장인이 직접 제작하는 프리미엄 수공예 기업 선물 브랜드. 가죽 소품, 도자기, 천연 비누 등 다양한 카테고리에서 로고 각인 서비스 제공.',
+    faq: [
+      { question: '최소 주문 수량은?', answer: '일반 각인 제품은 20개 이상, 단독 디자인 협업은 50개 이상.' },
+      { question: '샘플 제작이 가능한가요?', answer: '원가로 샘플 1개를 제작해드립니다. 대량 주문 시 샘플 비용은 차감됩니다.' },
+    ],
+  },
+];
 
 const CATEGORIES = [
   '음료 & 식품', '인쇄 & 굿즈', '친환경 오피스', 'IT & SaaS',
@@ -40,6 +73,32 @@ export default function AdminBoothNewPage() {
   const navigate = useNavigate();
   const { addBooth } = useBooths();
   const { showToast } = useToast();
+
+  // AI auto-fill state
+  const [aiExtracting, setAiExtracting] = useState(false);
+  const [aiFileName, setAiFileName] = useState('');
+
+  const handleAiExtract = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAiFileName(file.name);
+    setAiExtracting(true);
+    // Mock 2s AI extraction
+    setTimeout(() => {
+      const extracted = MOCK_AI_EXTRACTIONS[Math.floor(Math.random() * MOCK_AI_EXTRACTIONS.length)];
+      setName(extracted.name);
+      setCategory(extracted.category);
+      setTagline(extracted.tagline);
+      setDescription(extracted.description);
+      setFaq([
+        ...extracted.faq,
+        { question: '', answer: '' },
+      ]);
+      setAiExtracting(false);
+      showToast('AI가 자료에서 정보를 추출했어요! 내용을 확인하고 수정해주세요.', 'success');
+    }, 2000);
+    e.target.value = '';
+  };
 
   const [name, setName] = useState('');
   const [category, setCategory] = useState(CATEGORIES[0]);
@@ -110,6 +169,47 @@ export default function AdminBoothNewPage() {
         </div>
 
         <div className="space-y-6">
+          {/* AI Auto-fill */}
+          <div className="bg-gradient-to-br from-violet-50 to-indigo-50 border border-indigo-100 rounded-2xl p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles className="w-4 h-4 text-violet-600" />
+              <h2 className="text-sm font-semibold text-gray-800">AI 부스 자동 생성</h2>
+              <span className="text-xs text-violet-600 bg-violet-100 rounded-full px-2 py-0.5 ml-auto">베타</span>
+            </div>
+            <p className="text-xs text-gray-500 mb-4">
+              회사 소개서(PDF)나 브로셔 파일을 업로드하면 AI가 부스 정보를 자동으로 채워드려요.
+            </p>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="file"
+                accept=".pdf,.pptx,.docx,.txt"
+                onChange={handleAiExtract}
+                className="hidden"
+                disabled={aiExtracting}
+              />
+              <span className={`flex items-center gap-2 text-sm font-medium rounded-xl px-4 py-2.5 transition-colors ${
+                aiExtracting
+                  ? 'bg-violet-200 text-violet-500 cursor-not-allowed'
+                  : 'bg-violet-600 text-white hover:bg-violet-700 cursor-pointer'
+              }`}>
+                {aiExtracting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    AI 분석 중...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4" />
+                    파일 업로드하여 자동 채우기
+                  </>
+                )}
+              </span>
+              {aiFileName && !aiExtracting && (
+                <span className="text-xs text-gray-500 truncate max-w-[160px]">{aiFileName}</span>
+              )}
+            </label>
+          </div>
+
           {/* Basic Info */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6">
             <h2 className="text-sm font-semibold text-gray-800 mb-5">기본 정보</h2>
