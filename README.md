@@ -62,19 +62,22 @@ npm run build
 
 ---
 
-### 시나리오 2: 관람객 — 로그인 후 관심 저장·알림·내 데이터 삭제
+### 시나리오 2: 관람객 — 로그인 후 관심 저장·컬렉션·알림·데이터 삭제
 
 **역할:** 박람회 참관객 (로그인 또는 비로그인)
 
 1. `/auth` → **"개인 (관람객)"** → 이메일/비밀번호 입력 후 **"관람객으로 가입하기"**
 2. 자동으로 `/scan/booth-001` 이동
 3. **"저장하기"** 버튼 클릭 → 하트 아이콘 채워짐 + 로그인 유도 배너 (비로그인 시)
-4. `/me` 이동 → "관심 부스" 탭에서 저장된 부스 확인 + **공유 버튼** 클릭
-5. `/messages` 이동 → 문의 스레드 목록 및 답변 확인
-6. 운영자가 답변을 달면 헤더 **벨 아이콘**에 빨간 뱃지 표시 → 클릭 시 `/notifications`
-7. `/me` 하단 **"내 데이터 삭제 요청"** → 확인 → 방문 기록·관심·문의 전체 삭제
+4. `/me` → **"최근 본 부스"** 탭 상단 **"AI 관람 요약"** 카드 클릭 → 방문 카테고리 분포 + 관심 기반 추천 부스 확인
+5. **"관심"** 탭 → 저장된 부스 확인 + **공유 버튼** 클릭
+6. **"컬렉션"** 탭 → **"새 컬렉션 만들기"** → 이름 입력 (예: "파트너십 후보") → 생성
+7. 컬렉션 열기 → **"관심 부스에서 추가"** → 부스 선택 추가 | 컬렉션 **공유 버튼** 클릭
+8. `/messages` 이동 → 문의 스레드 목록 및 답변 확인
+9. 운영자가 답변을 달면 헤더 **벨 아이콘**에 빨간 뱃지 표시 → 클릭 시 `/notifications`
+10. `/me` 하단 **"내 데이터 삭제 요청"** → 확인 → 방문 기록·관심·문의 전체 삭제
 
-**확인 포인트:** 로그인 시 이메일 입력 없이 문의 가능 | 저장 목록 지속 유지 | GDPR 스타일 데이터 삭제
+**확인 포인트:** AI 요약은 방문 카테고리 비율 + 저장 기반 추천 | 컬렉션에 관심 부스 분류 가능 | 컬렉션 공유는 부스 목록 텍스트 공유 | GDPR 스타일 데이터 삭제
 
 ---
 
@@ -94,7 +97,7 @@ npm run build
 
 ---
 
-### 시나리오 4: 운영자 — 부스 운영 정책·첨부파일·팀 관리
+### 시나리오 4: 운영자 — 부스 운영 정책·링크·첨부파일·팀 관리
 
 **역할:** 부스 운영자
 
@@ -102,12 +105,14 @@ npm run build
 2. **"운영 기간 설정"** 섹션 → 종료 날짜를 과거로 변경 (예: 2026-02-28) → "정책 저장"
 3. 별도 탭에서 `/scan/booth-003` 접속 → 상단에 **"운영 종료"** 배지 확인 + "문의 마감" 버튼 비활성화
 4. 다시 어드민에서 **"문의 허용"** 토글 ON → 정책 저장 → 관람객 페이지 새로고침 → 문의 버튼 활성화
-5. **"브로셔 & 첨부 파일"** 섹션 → 파일 업로드 (PDF 등) → 파일명·용량 표시
-6. **"팀 관리"** 버튼 클릭 → `/admin/booths/booth-003/team` 이동
-7. **"팀원 초대"** → 이름·이메일·역할 입력 → "초대 보내기 (데모)" → 초대 대기 목록 확인
-8. 초대 항목의 **"수락"** 버튼 → 활성 팀원으로 이동 | 역할 select로 owner ↔ staff 전환
+5. **"외부 링크 관리"** 섹션 → Instagram·스토어·홈페이지 URL 입력 → "추가 링크" 이름+URL 행 추가 → **"링크 저장"**
+6. `/scan/booth-003` 새로고침 → 관람객 페이지 하단 링크 버튼 업데이트 확인
+7. **"브로셔 & 첨부 파일"** 섹션 → 파일 업로드 (PDF 등) → 파일명·용량 표시
+8. **"팀 관리"** 버튼 클릭 → `/admin/booths/booth-003/team` 이동
+9. **"팀원 초대"** → 이름·이메일·역할 입력 → "초대 보내기 (데모)" → 초대 대기 목록 확인
+10. 초대 항목의 **"수락"** 버튼 → 활성 팀원으로 이동 | 역할 select로 owner ↔ staff 전환
 
-**확인 포인트:** 정책별 배지·버튼 상태 변화 | 파일 메타데이터만 저장 | 팀원 권한(owner/staff) 구분
+**확인 포인트:** 정책별 배지·버튼 상태 변화 | 외부 링크는 저장 즉시 관람객 페이지 반영 | 커스텀 링크 무제한 추가 | 파일 메타데이터만 저장 | 팀원 권한(owner/staff) 구분
 
 ---
 
@@ -125,17 +130,20 @@ npm run build
 
 ---
 
-### 시나리오 6: 운영자 — 문의 인박스 & 스팸 차단
+### 시나리오 6: 운영자 — 문의 인박스·템플릿 관리·스팸 차단
 
 **역할:** 부스 운영자
 
 1. 사이드바 **"문의 인박스"** → 스레드 목록 확인
-2. 스레드 클릭 → 상세 패널에서 대화 확인 + **답변 전송**
-3. 답변 전송 시 해당 관람객의 `/notifications` 페이지에 알림 생성 (벨 뱃지 증가)
-4. 상단 **방패 아이콘** 클릭 → 스레드 차단 토글 → 목록에 "차단됨" 뱃지 표시
-5. 차단된 스레드는 관람객이 추가 문의 발송 불가 (rate limit과 별개 조치)
+2. 스레드 클릭 → 하단 **"템플릿 답변"** 영역에서 기본 제공 3가지 템플릿 확인
+3. 우측 **"관리"** 버튼 클릭 → 템플릿 관리 모달 오픈
+4. **"+ 템플릿 추가"** → 이름·내용 입력 → "추가" → 템플릿 목록에 반영 (localStorage 영구 저장)
+5. 기존 템플릿 연필 아이콘 → 내용 수정 → "저장" | 휴지통 아이콘 → 삭제
+6. 모달 닫기 → 인박스에서 새 템플릿 버튼 클릭 → 답변 입력창에 자동 삽입 → **"답변 전송"**
+7. 답변 전송 시 알림 생성 (PENDING → SENT 상태 전환) → 관람객 `/notifications` 에 반영
+8. 상단 **방패 아이콘** 클릭 → 스레드 차단 토글 → 목록에 "차단됨" 뱃지 표시
 
-**확인 포인트:** 답변 → 알림 연동 (visitorGuestId 기준) | 차단 상태 토글 가능
+**확인 포인트:** 템플릿은 localStorage에 영구 저장 (새로고침 후에도 유지) | 알림에 PENDING→SENT 상태 라이프사이클 | 차단 상태 토글 가능
 
 ---
 
@@ -156,13 +164,22 @@ npm run build
 
 ---
 
-## 데이터 구조 (추가)
+## 데이터 구조
 
 ```typescript
+Booth       { id, name, category, tagline, description, images[],
+              links: { instagram?, store?, site? },
+              customLinks?: [{ label, url }],  // 커스텀 추가 링크 (A-5)
+              faq[], nextEvents[], createdAt }
+
 Lead        { id, boothId, source: 'bizcard'|'inquiry'|'email_info'|'survey',
-              name?, company?, phone?, email?, memo, consent,
-              consentMarketing?,   // 마케팅 동의 여부
+              name?, company?, phone?, email?, memo,
+              consent, consentAt?,        // 동의 시각 (A-1)
+              consentVersion?,            // 동의 정책 버전 (A-1)
+              consentMarketing?,          // 마케팅 수신 동의
+              consentMarketingAt?,        // 마케팅 동의 시각 (A-1)
               createdAt }
+
 BoothPolicy { boothId, startAt, endAt, allowViewAfterEnd, allowInquiryAfterEnd }
 Attachment  { id, boothId, filename, type, size?, createdAt }
 SurveyResponse { id, boothId, visitorId,
@@ -170,35 +187,45 @@ SurveyResponse { id, boothId, visitorId,
 Thread      { ..., visitorGuestId?,  // 알림 발송 대상 식별
                     blocked? }       // 스팸 차단 여부
 
-// Round 2 추가 타입
 AppNotification { id, targetGuestId, type: 'reply'|'system',
-                  title, body, read, boothId?, threadId?, createdAt }
+                  title, body, read,
+                  status: 'PENDING'|'SENT'|'FAILED',  // 전송 상태 (A-3)
+                  retryCount?,                         // 재시도 횟수 (A-3)
+                  sentAt?,                             // 전송 완료 시각 (A-3)
+                  boothId?, threadId?, createdAt }
+
 StaffMember     { id, boothId, name, email,
                   role: 'owner'|'staff', status: 'active'|'pending', invitedAt }
 RateLimit       { key, count, resetAt }
+
+// Session 3 신규 타입
+ReplyTemplate   { id, label, text, createdAt }  // 템플릿 답변 (B-4)
+Collection      { id, name, boothIds[], createdAt }  // 저장 부스 컬렉션 (C-6)
 ```
 
 ### localStorage 키 (prefix: `bep_`)
 
-| 키 | 타입 |
-|----|------|
-| `bep_booths` | Booth[] |
-| `bep_visits` | Visit[] |
-| `bep_favorites` | Favorite[] |
-| `bep_threads` | Thread[] |
-| `bep_analytics` | Analytics[] |
-| `bep_leads` | Lead[] |
-| `bep_policies` | BoothPolicy[] |
-| `bep_attachments` | Attachment[] |
-| `bep_surveys` | SurveyResponse[] |
-| `bep_notifications` | AppNotification[] |
-| `bep_staff` | StaffMember[] |
-| `bep_rate_limits` | RateLimit[] |
-| `bep_isLoggedIn` | '0' \| '1' |
-| `bep_isAdmin` | '0' \| '1' |
-| `bep_userEmail` | string |
-| `bep_guestId` | string (persistent anonymous ID) |
-| `bep_seeded` | '1' |
+| 키 | 타입 | 비고 |
+|----|------|------|
+| `bep_booths` | Booth[] | |
+| `bep_visits` | Visit[] | |
+| `bep_favorites` | Favorite[] | |
+| `bep_threads` | Thread[] | |
+| `bep_analytics` | Analytics[] | |
+| `bep_leads` | Lead[] | |
+| `bep_policies` | BoothPolicy[] | |
+| `bep_attachments` | Attachment[] | |
+| `bep_surveys` | SurveyResponse[] | |
+| `bep_notifications` | AppNotification[] | |
+| `bep_staff` | StaffMember[] | |
+| `bep_rate_limits` | RateLimit[] | |
+| `bep_reply_templates` | ReplyTemplate[] | 기본 3개 자동 생성 |
+| `bep_collections` | Collection[] | |
+| `bep_isLoggedIn` | '0' \| '1' | |
+| `bep_isAdmin` | '0' \| '1' | |
+| `bep_userEmail` | string | |
+| `bep_guestId` | string | 익명 방문자 영구 ID |
+| `bep_seeded` | '1' | |
 
 > 데이터 초기화: 브라우저 개발자 도구 → Application → Local Storage → `bep_seeded` 삭제 후 새로고침
 
@@ -220,6 +247,54 @@ RateLimit       { key, count, resetAt }
 - 시드 첨부파일: 4건 (TeaCo 2 · DataFlow 1 · GreenSpace 1)
 - 시드 설문: 5건
 - 시드 팀원: 5명 (booth-001 3명, booth-004 2명) — owner/staff, active/pending 혼합
+
+---
+
+## 구현 기능 현황
+
+### 공통 (A)
+
+| 기능 | 항목 | 상태 |
+|------|------|------|
+| A-1 | 개인정보/동의 관리 — consentAt·consentVersion·consentMarketingAt 기록 | ✅ |
+| A-2 | 스팸 방지 — 레이트리밋(guestId 기준) + 스레드 차단 | ✅ |
+| A-3 | 알림 기반 구조 — PENDING/SENT/FAILED 상태 + sentAt + 재시도 카운트 | ✅ |
+| A-4 | 문의 스레드 구조 — 채팅방 형태 다중 메시지 | ✅ |
+| A-5 | 링크/파일 첨부 — 외부 링크 관리 UI + 커스텀 링크 + 파일 업로드 | ✅ |
+| A-6 | AI 공통 확장 — 부스 생성 시 AI 자동입력 (mock) | ✅ (mock) |
+
+### 운영자 (B)
+
+| 기능 | 항목 | 상태 |
+|------|------|------|
+| B-1 | 인증/계정 — 이메일 가입 + OAuth mock | ✅ |
+| B-2 | 부스 페이지 생성 — 템플릿 폼 (소개·FAQ·링크·이벤트) | ✅ |
+| B-3 | QR 생성/다운로드 — 부스별 고유 QR + PNG 다운로드 | ✅ |
+| B-4 | 문의 인박스 — 스레드 목록·답변·템플릿 관리 (localStorage 영구 저장) | ✅ |
+| B-5 | 리드 관리 — 이메일·명함·설문·이메일CTA 수집 + 목록 조회 | ✅ |
+| B-6 | 데이터 저장 — 방문/문의/리드 localStorage 축적 | ✅ |
+| B-7 | 통계 대시보드 — 총방문·고유방문·문의·관심·리드 소스·시간대 차트 | ✅ |
+| B-8 | CSV Export — 통계·문의 CSV 다운로드 (UTF-8 BOM) | ✅ |
+| B-9 | 운영 기간 설정 — startAt/endAt + 종료 후 정책 (열람/문의) | ✅ |
+| B-10 | 팀 권한 관리 — 초대·owner/staff 역할·active/pending 상태 | ✅ |
+| B-11 | AI 확장 — PDF 업로드 → 부스 초안 자동 생성 (mock) + 명함 OCR (mock) + 추첨 | ✅ (mock) |
+| B-12 | 방문자 설문 — 관심칩·목적·연락희망 → 집계 차트 | ✅ |
+
+### 관람객 (C)
+
+| 기능 | 항목 | 상태 |
+|------|------|------|
+| C-1 | 인증/계정 — 이메일 가입 + OAuth mock | ✅ |
+| C-2 | QR 스캔 → 부스 페이지 | ✅ |
+| C-3 | 방문 자동 기록 | ✅ |
+| C-4 | 저장(관심) — 하트 토글 + 로그인 유도 | ✅ |
+| C-5 | 문의/메시지 — 스레드 생성 + 비로그인 이메일 입력 | ✅ |
+| C-6 | 내 기록 — 최근 본 부스·관심 부스·**컬렉션** (생성·분류·공유) | ✅ |
+| C-7 | 답변 확인 — 알림 연동 (벨 뱃지 + /notifications) | ✅ |
+| C-8 | 공유 — 부스 URL 공유 + 컬렉션 목록 공유 | ✅ |
+| C-9 | 비로그인 정책 — 이메일 + IP 추적 동의 체크 필수 | ✅ |
+| C-10 | 이메일로 정보 받기 — Lead(email_info) 생성 + 동의 연동 | ✅ |
+| C-11 | 관람객 AI — 방문 카테고리 분석 + 관심 기반 추천 (mock) | ✅ (mock) |
 
 ---
 
