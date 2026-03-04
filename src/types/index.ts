@@ -10,6 +10,7 @@ export interface Booth {
     store?: string;
     site?: string;
   };
+  customLinks?: Array<{ label: string; url: string }>;
   faq: Array<{ question: string; answer: string }>;
   nextEvents: Array<{ title: string; date: string; location: string }>;
   createdAt: string;
@@ -68,7 +69,10 @@ export interface Lead {
   email?: string;
   memo: string;
   consent: boolean;
+  consentAt?: string;          // timestamp when consent was given (A-1)
+  consentVersion?: string;     // privacy policy version at consent time (A-1)
   consentMarketing?: boolean;  // separate marketing consent flag
+  consentMarketingAt?: string; // timestamp for marketing consent (A-1)
   createdAt: string;
 }
 
@@ -108,8 +112,27 @@ export interface AppNotification {
   title: string;
   body: string;
   read: boolean;
+  status: 'PENDING' | 'SENT' | 'FAILED';  // delivery status (A-3)
+  retryCount?: number;                      // retry attempts on failure (A-3)
+  sentAt?: string;                          // timestamp when delivered (A-3)
   boothId?: string;
   threadId?: string;
+  createdAt: string;
+}
+
+// ─── Reply Templates (B-4) ─────────────────────────────────────────────────────
+export interface ReplyTemplate {
+  id: string;
+  label: string;
+  text: string;
+  createdAt: string;
+}
+
+// ─── Collections (C-6) ────────────────────────────────────────────────────────
+export interface Collection {
+  id: string;
+  name: string;
+  boothIds: string[];
   createdAt: string;
 }
 

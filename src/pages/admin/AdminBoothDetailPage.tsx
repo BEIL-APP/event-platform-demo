@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import {
   ArrowLeft, Download, Eye, Heart, MessageSquare, ExternalLink, FileDown,
   Upload, Trash2, Calendar, ToggleLeft, ToggleRight, Paperclip,
-  ClipboardList, Users,
+  ClipboardList, Users, Link2, Plus, X, Instagram, ShoppingBag, Globe,
 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { AdminLayout } from '../../components/AdminLayout';
@@ -20,6 +20,7 @@ import {
   saveAttachment,
   deleteAttachment,
   getSurveyAggregate,
+  saveBooth,
 } from '../../utils/localStorage';
 import type { BoothPolicy, Attachment } from '../../types';
 
@@ -46,6 +47,19 @@ export default function AdminBoothDetailPage() {
   );
   const [policySaved, setPolicySaved] = useState(false);
 
+  // Links state (A-5)
+  const [links, setLinks] = useState({
+    instagram: booth?.links.instagram ?? '',
+    store: booth?.links.store ?? '',
+    site: booth?.links.site ?? '',
+  });
+  const [customLinks, setCustomLinks] = useState<Array<{ label: string; url: string }>>(
+    () => booth?.customLinks ?? []
+  );
+  const [linksSaved, setLinksSaved] = useState(false);
+  const [newCustomLabel, setNewCustomLabel] = useState('');
+  const [newCustomUrl, setNewCustomUrl] = useState('');
+
   // Attachments state
   const [attachments, setAttachments] = useState<Attachment[]>([]);
 
@@ -63,6 +77,45 @@ export default function AdminBoothDetailPage() {
       setAttachments(getBoothAttachments(boothId));
     }
   }, [boothId]);
+
+  useEffect(() => {
+    if (booth) {
+      setLinks({
+        instagram: booth.links.instagram ?? '',
+        store: booth.links.store ?? '',
+        site: booth.links.site ?? '',
+      });
+      setCustomLinks(booth.customLinks ?? []);
+    }
+  }, [booth?.id]);
+
+  const handleSaveLinks = () => {
+    if (!booth) return;
+    const updated = {
+      ...booth,
+      links: {
+        instagram: links.instagram || undefined,
+        store: links.store || undefined,
+        site: links.site || undefined,
+      },
+      customLinks: customLinks.filter((l) => l.label && l.url),
+    };
+    saveBooth(updated);
+    setLinksSaved(true);
+    setTimeout(() => setLinksSaved(false), 2000);
+    showToast('링크가 저장됐어요!', 'success');
+  };
+
+  const handleAddCustomLink = () => {
+    if (!newCustomLabel.trim() || !newCustomUrl.trim()) return;
+    setCustomLinks((prev) => [...prev, { label: newCustomLabel.trim(), url: newCustomUrl.trim() }]);
+    setNewCustomLabel('');
+    setNewCustomUrl('');
+  };
+
+  const handleRemoveCustomLink = (i: number) => {
+    setCustomLinks((prev) => prev.filter((_, idx) => idx !== i));
+  };
 
   const handleDownloadQR = () => {
     const canvas = document.getElementById('booth-qr-canvas') as HTMLCanvasElement;
@@ -354,6 +407,107 @@ export default function AdminBoothDetailPage() {
             }`}
           >
             {policySaved ? '저장됐어요 ✓' : '정책 저장'}
+          </button>
+        </div>
+
+        {/* ─── 링크 관리 (A-5) ──────────────────────────────────────────────────── */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+          <div className="flex items-center gap-2 mb-5">
+            <Link2 className="w-4 h-4 text-brand-600" />
+            <h2 className="text-sm font-semibold text-gray-800">외부 링크 관리</h2>
+          </div>
+
+          <div className="space-y-3 mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-pink-50 rounded-xl flex items-center justify-center shrink-0">
+                <Instagram className="w-4 h-4 text-pink-500" />
+              </div>
+              <input
+                type="url"
+                value={links.instagram}
+                onChange={(e) => setLinks((l) => ({ ...l, instagram: e.target.value }))}
+                placeholder="https://instagram.com/..."
+                className="flex-1 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+              />
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0">
+                <ShoppingBag className="w-4 h-4 text-emerald-500" />
+              </div>
+              <input
+                type="url"
+                value={links.store}
+                onChange={(e) => setLinks((l) => ({ ...l, store: e.target.value }))}
+                placeholder="https://스토어 URL..."
+                className="flex-1 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+              />
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-50 rounded-xl flex items-center justify-center shrink-0">
+                <Globe className="w-4 h-4 text-blue-500" />
+              </div>
+              <input
+                type="url"
+                value={links.site}
+                onChange={(e) => setLinks((l) => ({ ...l, site: e.target.value }))}
+                placeholder="https://홈페이지 URL..."
+                className="flex-1 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+              />
+            </div>
+          </div>
+
+          {/* Custom links */}
+          <p className="text-xs font-medium text-gray-600 mb-2">추가 링크</p>
+          <div className="space-y-2 mb-3">
+            {customLinks.map((cl, i) => (
+              <div key={i} className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-gray-700 truncate">{cl.label}</p>
+                  <p className="text-xs text-gray-400 truncate">{cl.url}</p>
+                </div>
+                <button
+                  onClick={() => handleRemoveCustomLink(i)}
+                  className="p-1 text-gray-300 hover:text-red-400 rounded-lg hover:bg-red-50 transition-colors shrink-0"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ))}
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={newCustomLabel}
+                onChange={(e) => setNewCustomLabel(e.target.value)}
+                placeholder="링크 이름 (예: 카탈로그)"
+                className="flex-1 text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+              />
+              <input
+                type="url"
+                value={newCustomUrl}
+                onChange={(e) => setNewCustomUrl(e.target.value)}
+                placeholder="https://..."
+                onKeyDown={(e) => { if (e.key === 'Enter') handleAddCustomLink(); }}
+                className="flex-1 text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+              />
+              <button
+                onClick={handleAddCustomLink}
+                disabled={!newCustomLabel.trim() || !newCustomUrl.trim()}
+                className="p-2 bg-brand-50 text-brand-600 rounded-lg hover:bg-brand-100 transition-colors disabled:opacity-40"
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          <button
+            onClick={handleSaveLinks}
+            className={`w-full text-sm font-medium rounded-xl py-3 transition-all ${
+              linksSaved
+                ? 'bg-green-500 text-white'
+                : 'bg-brand-600 text-white hover:bg-brand-700'
+            }`}
+          >
+            {linksSaved ? '저장됐어요 ✓' : '링크 저장'}
           </button>
         </div>
 

@@ -2,29 +2,18 @@ import { useState, useMemo } from 'react';
 import {
   Search, Tag, ChevronDown, Send, ArrowLeft,
   Clock, CheckCircle, PauseCircle, X, MessageSquare, ShieldOff, Shield,
+  Settings, Plus, Pencil, Trash2,
 } from 'lucide-react';
 import { AdminLayout } from '../../components/AdminLayout';
 import { useThreads } from '../../hooks/useThreads';
 import { useToast } from '../../contexts/ToastContext';
-import { getBooths, blockThread, saveNotification } from '../../utils/localStorage';
-import type { Thread } from '../../types';
+import {
+  getBooths, blockThread, saveNotification,
+  getReplyTemplates, saveReplyTemplate, deleteReplyTemplate,
+} from '../../utils/localStorage';
+import type { Thread, ReplyTemplate } from '../../types';
 
 type StatusFilter = 'all' | '미처리' | '처리' | '보류';
-
-const TEMPLATE_REPLIES = [
-  {
-    label: '답변 확인 중',
-    text: '안녕하세요! 문의 주셔서 감사합니다. 담당자가 확인 후 빠른 시일 내로 상세 답변 드리겠습니다.',
-  },
-  {
-    label: '견적 안내',
-    text: '견적은 수량과 요구사항에 따라 달라집니다. 이메일(hello@booth.kr)로 자세한 사항 보내주시면 1영업일 내로 맞춤 견적서 발송해 드리겠습니다.',
-  },
-  {
-    label: '문의 완료',
-    text: '문의하신 내용에 대한 답변이 완료됐습니다. 추가 문의사항이 있으시면 언제든지 말씀해 주세요. 감사합니다!',
-  },
-];
 
 const TAG_SUGGESTIONS = ['견적문의', 'B2B', '대량주문', '기술문의', '납품일정', '샘플요청', 'OEM'];
 
@@ -53,6 +42,178 @@ function formatTime(iso: string) {
   return d.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
 }
 
+// ─── Template Management Modal ────────────────────────────────────────────────
+
+function TemplateModal({ onClose }: { onClose: () => void }) {
+  const [templates, setTemplates] = useState<ReplyTemplate[]>(() => getReplyTemplates());
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editLabel, setEditLabel] = useState('');
+  const [editText, setEditText] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
+  const { showToast } = useToast();
+
+  const startEdit = (t: ReplyTemplate) => {
+    setEditingId(t.id);
+    setEditLabel(t.label);
+    setEditText(t.text);
+    setIsAdding(false);
+  };
+
+  const startAdd = () => {
+    setEditingId(null);
+    setEditLabel('');
+    setEditText('');
+    setIsAdding(true);
+  };
+
+  const handleSave = () => {
+    if (!editLabel.trim() || !editText.trim()) return;
+    const tpl: ReplyTemplate = {
+      id: editingId ?? `tpl-${Date.now()}`,
+      label: editLabel.trim(),
+      text: editText.trim(),
+      createdAt: editingId
+        ? (templates.find((t) => t.id === editingId)?.createdAt ?? new Date().toISOString())
+        : new Date().toISOString(),
+    };
+    saveReplyTemplate(tpl);
+    const updated = getReplyTemplates();
+    setTemplates(updated);
+    setEditingId(null);
+    setIsAdding(false);
+    showToast('템플릿이 저장됐어요', 'success');
+  };
+
+  const handleDelete = (id: string) => {
+    deleteReplyTemplate(id);
+    setTemplates(getReplyTemplates());
+    if (editingId === id) { setEditingId(null); setIsAdding(false); }
+    showToast('템플릿이 삭제됐어요', 'info');
+  };
+
+  const isEditing = editingId !== null || isAdding;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] flex flex-col">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <h2 className="text-sm font-semibold text-gray-900">템플릿 답변 관리</h2>
+          <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-xl transition-colors">
+            <X className="w-4 h-4 text-gray-500" />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-2">
+          {templates.map((t) => (
+            <div key={t.id} className="border border-gray-100 rounded-xl p-3">
+              {editingId === t.id ? (
+                <div className="space-y-2">
+                  <input
+                    value={editLabel}
+                    onChange={(e) => setEditLabel(e.target.value)}
+                    placeholder="템플릿 이름"
+                    className="w-full text-xs border border-gray-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-brand-300"
+                  />
+                  <textarea
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                    placeholder="템플릿 내용"
+                    rows={3}
+                    className="w-full text-xs border border-gray-200 rounded-lg px-3 py-2 resize-none outline-none focus:ring-2 focus:ring-brand-300"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleSave}
+                      className="flex-1 text-xs font-medium bg-brand-600 text-white rounded-lg py-2 hover:bg-brand-700 transition-colors"
+                    >
+                      저장
+                    </button>
+                    <button
+                      onClick={() => setEditingId(null)}
+                      className="flex-1 text-xs font-medium border border-gray-200 text-gray-600 rounded-lg py-2 hover:bg-gray-50 transition-colors"
+                    >
+                      취소
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-start gap-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-gray-800 mb-0.5">{t.label}</p>
+                    <p className="text-xs text-gray-500 line-clamp-2">{t.text}</p>
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    <button
+                      onClick={() => startEdit(t)}
+                      className="p-1.5 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
+                    >
+                      <Pencil className="w-3 h-3" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(t.id)}
+                      className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+
+          {isAdding && (
+            <div className="border-2 border-dashed border-brand-200 rounded-xl p-3 space-y-2">
+              <input
+                value={editLabel}
+                onChange={(e) => setEditLabel(e.target.value)}
+                placeholder="템플릿 이름"
+                autoFocus
+                className="w-full text-xs border border-gray-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-brand-300"
+              />
+              <textarea
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                placeholder="템플릿 내용"
+                rows={3}
+                className="w-full text-xs border border-gray-200 rounded-lg px-3 py-2 resize-none outline-none focus:ring-2 focus:ring-brand-300"
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={handleSave}
+                  disabled={!editLabel.trim() || !editText.trim()}
+                  className="flex-1 text-xs font-medium bg-brand-600 text-white rounded-lg py-2 hover:bg-brand-700 transition-colors disabled:opacity-40"
+                >
+                  추가
+                </button>
+                <button
+                  onClick={() => setIsAdding(false)}
+                  className="flex-1 text-xs font-medium border border-gray-200 text-gray-600 rounded-lg py-2 hover:bg-gray-50 transition-colors"
+                >
+                  취소
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {!isEditing && (
+          <div className="px-6 pb-4">
+            <button
+              onClick={startAdd}
+              className="w-full flex items-center justify-center gap-2 text-xs font-medium border-2 border-dashed border-gray-200 text-gray-500 rounded-xl py-2.5 hover:border-brand-300 hover:text-brand-600 transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              템플릿 추가
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
 export default function AdminInboxPage() {
   const { threads, reply, updateStatus, updateMemo, addTag, removeTag } = useThreads();
   const { showToast } = useToast();
@@ -62,6 +223,8 @@ export default function AdminInboxPage() {
   const [replyText, setReplyText] = useState('');
   const [newTag, setNewTag] = useState('');
   const [showTagInput, setShowTagInput] = useState(false);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [templates, setTemplates] = useState<ReplyTemplate[]>(() => getReplyTemplates());
 
   const allBooths = getBooths();
   const boothMap = Object.fromEntries(allBooths.map((b) => [b.id, b]));
@@ -92,7 +255,7 @@ export default function AdminInboxPage() {
       updateStatus(selectedThread.id, '처리');
     }
 
-    // Send in-app notification to visitor if guestId is tracked
+    // Send in-app notification with PENDING→SENT lifecycle (A-3)
     if (selectedThread.visitorGuestId) {
       saveNotification({
         id: `notif-${Date.now()}`,
@@ -101,6 +264,7 @@ export default function AdminInboxPage() {
         title: `${boothMap[selectedThread.boothId]?.name ?? '부스'}에서 답변이 왔어요`,
         body: replyText.trim().slice(0, 100),
         read: false,
+        status: 'PENDING',
         boothId: selectedThread.boothId,
         threadId: selectedThread.id,
         createdAt: new Date().toISOString(),
@@ -120,10 +284,6 @@ export default function AdminInboxPage() {
     );
   };
 
-  const handleTemplateReply = (text: string) => {
-    setReplyText(text);
-  };
-
   const handleAddTag = (tag: string) => {
     if (!selectedThread || !tag.trim()) return;
     addTag(selectedThread.id, tag.trim());
@@ -140,6 +300,15 @@ export default function AdminInboxPage() {
 
   return (
     <AdminLayout>
+      {showTemplateModal && (
+        <TemplateModal
+          onClose={() => {
+            setShowTemplateModal(false);
+            setTemplates(getReplyTemplates());
+          }}
+        />
+      )}
+
       <div className="flex h-screen overflow-hidden">
         {/* Left: Thread List */}
         <div className={`flex flex-col border-r border-gray-100 ${selectedThread ? 'hidden lg:flex w-80 shrink-0' : 'flex-1'}`}>
@@ -373,14 +542,22 @@ export default function AdminInboxPage() {
 
             {/* Template replies */}
             <div className="px-6 py-3 border-t border-gray-100 bg-gray-50">
-              <p className="text-xs text-gray-400 mb-2 flex items-center gap-1">
-                <ChevronDown className="w-3 h-3" /> 템플릿 답변
-              </p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs text-gray-400 flex items-center gap-1">
+                  <ChevronDown className="w-3 h-3" /> 템플릿 답변
+                </p>
+                <button
+                  onClick={() => setShowTemplateModal(true)}
+                  className="flex items-center gap-1 text-xs text-gray-400 hover:text-brand-600 transition-colors"
+                >
+                  <Settings className="w-3 h-3" /> 관리
+                </button>
+              </div>
               <div className="flex gap-2 flex-wrap">
-                {TEMPLATE_REPLIES.map((t) => (
+                {templates.map((t) => (
                   <button
-                    key={t.label}
-                    onClick={() => handleTemplateReply(t.text)}
+                    key={t.id}
+                    onClick={() => setReplyText(t.text)}
                     className="text-xs text-gray-600 bg-white border border-gray-200 rounded-lg px-3 py-1.5 hover:border-brand-300 hover:text-brand-600 transition-colors"
                   >
                     {t.label}

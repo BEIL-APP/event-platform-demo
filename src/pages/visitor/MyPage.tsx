@@ -1,15 +1,30 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Clock, Heart, QrCode, ChevronRight, Info, Share2, Trash2, AlertTriangle } from 'lucide-react';
+import {
+  Clock, Heart, QrCode, ChevronRight, Info, Share2, Trash2, AlertTriangle,
+  FolderPlus, Folder, FolderOpen, Plus, X, Sparkles, TrendingUp,
+} from 'lucide-react';
 import { VisitorHeader } from '../../components/VisitorHeader';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { useVisits } from '../../hooks/useVisits';
 import { useFavorites } from '../../hooks/useFavorites';
-import { getBooths, deleteMyData } from '../../utils/localStorage';
-import type { Booth } from '../../types';
+import {
+  getBooths, deleteMyData,
+  getCollections, saveCollection, deleteCollection, addToCollection, removeFromCollection,
+} from '../../utils/localStorage';
+import type { Booth, Collection } from '../../types';
 
-function BoothCard({ booth, meta, onShare }: { booth: Booth; meta?: string; onShare?: () => void }) {
+// ─── Booth Card ───────────────────────────────────────────────────────────────
+
+function BoothCard({
+  booth, meta, onShare, onAddToCollection,
+}: {
+  booth: Booth;
+  meta?: string;
+  onShare?: () => void;
+  onAddToCollection?: () => void;
+}) {
   return (
     <div className="flex items-center gap-3 bg-white rounded-2xl p-4 shadow-card hover:shadow-card-hover transition-shadow">
       <Link to={`/scan/${booth.id}`} className="flex items-center gap-3 flex-1 min-w-0">
@@ -36,6 +51,15 @@ function BoothCard({ booth, meta, onShare }: { booth: Booth; meta?: string; onSh
         </div>
       </Link>
       <div className="flex items-center gap-1 shrink-0">
+        {onAddToCollection && (
+          <button
+            onClick={onAddToCollection}
+            className="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-xl transition-colors"
+            title="컬렉션에 추가"
+          >
+            <FolderPlus className="w-4 h-4" />
+          </button>
+        )}
         {onShare && (
           <button
             onClick={onShare}
@@ -51,13 +75,349 @@ function BoothCard({ booth, meta, onShare }: { booth: Booth; meta?: string; onSh
   );
 }
 
+// ─── AI Insights (C-11) ──────────────────────────────────────────────────────
+
+function AiInsights({ visitedBooths, favoriteBooths }: { visitedBooths: Booth[]; favoriteBooths: Booth[] }) {
+  const [expanded, setExpanded] = useState(false);
+
+  if (visitedBooths.length === 0) return null;
+
+  // Analyze category distribution
+  const categoryCounts: Record<string, number> = {};
+  visitedBooths.forEach((b) => {
+    categoryCounts[b.category] = (categoryCounts[b.category] ?? 0) + 1;
+  });
+  const topCategories = Object.entries(categoryCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
+  const favCategories = new Set(favoriteBooths.map((b) => b.category));
+  const allBooths = getBooths();
+  const recommended = allBooths
+    .filter((b) => favCategories.has(b.category) && !visitedBooths.some((v) => v.id === b.id))
+    .slice(0, 3);
+
+  return (
+    <div className="mb-5">
+      <button
+        onClick={() => setExpanded((e) => !e)}
+        className="w-full flex items-center gap-2 bg-gradient-to-r from-brand-50 to-purple-50 border border-brand-100 rounded-2xl px-4 py-3 text-left"
+      >
+        <div className="w-7 h-7 bg-brand-100 rounded-xl flex items-center justify-center shrink-0">
+          <Sparkles className="w-3.5 h-3.5 text-brand-600" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-semibold text-brand-800">AI 관람 요약</p>
+          <p className="text-xs text-brand-500 truncate">
+            {topCategories[0] ? `${topCategories[0][0]} 분야에 관심이 많으시네요` : '방문 기록 분석 중'}
+          </p>
+        </div>
+        <ChevronRight className={`w-4 h-4 text-brand-400 transition-transform ${expanded ? 'rotate-90' : ''}`} />
+      </button>
+
+      {expanded && (
+        <div className="mt-2 bg-white rounded-2xl border border-gray-100 p-4 space-y-4">
+          {/* Category summary */}
+          <div>
+            <p className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+              <TrendingUp className="w-3.5 h-3.5 text-brand-500" /> 관심 분야 분석
+            </p>
+            <div className="space-y-1.5">
+              {topCategories.map(([cat, count]) => {
+                const pct = Math.round((count / visitedBooths.length) * 100);
+                return (
+                  <div key={cat}>
+                    <div className="flex justify-between text-xs text-gray-600 mb-0.5">
+                      <span>{cat}</span>
+                      <span className="text-gray-400">{count}개 부스 · {pct}%</span>
+                    </div>
+                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-brand-400 rounded-full"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Recommendations */}
+          {recommended.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-gray-700 mb-2">관심 기반 추천 부스</p>
+              <div className="space-y-2">
+                {recommended.map((b) => (
+                  <Link
+                    key={b.id}
+                    to={`/scan/${b.id}`}
+                    className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="w-9 h-9 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+                      {b.images[0] ? (
+                        <img src={b.images[0]} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-sm">🏪</div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-gray-800 truncate">{b.name}</p>
+                      <p className="text-xs text-gray-400 truncate">{b.category}</p>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-gray-300 shrink-0" />
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <p className="text-xs text-gray-300 text-center">AI 분석은 방문·저장 기록 기반 추정입니다</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Collections Tab (C-6) ───────────────────────────────────────────────────
+
+function CollectionsTab({ favoriteBooths }: { favoriteBooths: Array<{ booth: Booth }> }) {
+  const [collections, setCollections] = useState<Collection[]>(() => getCollections());
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [addingToId, setAddingToId] = useState<string | null>(null);
+  const { showToast } = useToast();
+
+  const allBooths = getBooths();
+  const boothMap = Object.fromEntries(allBooths.map((b) => [b.id, b]));
+
+  const handleCreate = () => {
+    if (!newName.trim()) return;
+    const col: Collection = {
+      id: `col-${Date.now()}`,
+      name: newName.trim(),
+      boothIds: [],
+      createdAt: new Date().toISOString(),
+    };
+    saveCollection(col);
+    setCollections(getCollections());
+    setNewName('');
+    setCreating(false);
+    showToast('컬렉션이 생성됐어요', 'success');
+  };
+
+  const handleDeleteCollection = (id: string) => {
+    deleteCollection(id);
+    setCollections(getCollections());
+    if (openId === id) setOpenId(null);
+    showToast('컬렉션이 삭제됐어요', 'info');
+  };
+
+  const handleAddBooth = (collectionId: string, boothId: string) => {
+    addToCollection(collectionId, boothId);
+    setCollections(getCollections());
+    setAddingToId(null);
+    showToast('부스가 추가됐어요', 'success');
+  };
+
+  const handleRemoveBooth = (collectionId: string, boothId: string) => {
+    removeFromCollection(collectionId, boothId);
+    setCollections(getCollections());
+  };
+
+  const handleShareCollection = async (col: Collection) => {
+    const names = col.boothIds.map((id) => boothMap[id]?.name ?? id).join(', ');
+    const shareText = `[${col.name}] ${names}`;
+    if (navigator.share) {
+      try { await navigator.share({ title: col.name, text: shareText }); } catch { /* cancelled */ }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareText);
+        showToast('컬렉션 목록이 복사됐어요', 'success');
+      } catch {
+        showToast('복사에 실패했어요', 'error');
+      }
+    }
+  };
+
+  return (
+    <div>
+      {/* Create button */}
+      {!creating ? (
+        <button
+          onClick={() => setCreating(true)}
+          className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-2xl py-4 text-sm text-gray-400 hover:border-brand-300 hover:text-brand-600 transition-colors mb-4"
+        >
+          <Plus className="w-4 h-4" />
+          새 컬렉션 만들기
+        </button>
+      ) : (
+        <div className="bg-white rounded-2xl border-2 border-brand-200 p-4 mb-4">
+          <p className="text-xs font-semibold text-gray-700 mb-2">컬렉션 이름</p>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); }}
+              placeholder="예: 관심 업체, 파트너십 후보"
+              autoFocus
+              className="flex-1 text-sm border border-gray-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-brand-300"
+            />
+            <button
+              onClick={handleCreate}
+              disabled={!newName.trim()}
+              className="px-4 text-sm font-medium bg-brand-600 text-white rounded-xl hover:bg-brand-700 transition-colors disabled:opacity-40"
+            >
+              생성
+            </button>
+            <button
+              onClick={() => { setCreating(false); setNewName(''); }}
+              className="p-2 text-gray-400 hover:bg-gray-100 rounded-xl transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {collections.length === 0 ? (
+        <div className="text-center py-16">
+          <Folder className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+          <p className="text-sm text-gray-400">아직 컬렉션이 없어요</p>
+          <p className="text-xs text-gray-300 mt-1">관심 부스를 컬렉션으로 묶어보세요</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {collections.map((col) => {
+            const isOpen = openId === col.id;
+            const colBooths = col.boothIds.map((id) => boothMap[id]).filter(Boolean) as Booth[];
+            // Booths in favorites but not yet in this collection
+            const addable = favoriteBooths
+              .map((f) => f.booth)
+              .filter((b) => !col.boothIds.includes(b.id));
+
+            return (
+              <div key={col.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                {/* Header */}
+                <div className="flex items-center gap-3 px-4 py-3.5">
+                  <button
+                    onClick={() => setOpenId(isOpen ? null : col.id)}
+                    className="flex items-center gap-2.5 flex-1 min-w-0 text-left"
+                  >
+                    {isOpen
+                      ? <FolderOpen className="w-4.5 h-4.5 text-brand-500 shrink-0" />
+                      : <Folder className="w-4.5 h-4.5 text-gray-400 shrink-0" />
+                    }
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{col.name}</p>
+                      <p className="text-xs text-gray-400">{col.boothIds.length}개 부스</p>
+                    </div>
+                  </button>
+                  <div className="flex gap-1 shrink-0">
+                    <button
+                      onClick={() => handleShareCollection(col)}
+                      className="p-1.5 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-xl transition-colors"
+                      title="컬렉션 공유"
+                    >
+                      <Share2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteCollection(col.id)}
+                      className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                      title="컬렉션 삭제"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Expanded: booth list + add */}
+                {isOpen && (
+                  <div className="border-t border-gray-50 px-4 pb-3 pt-2 space-y-2">
+                    {colBooths.length === 0 && (
+                      <p className="text-xs text-gray-400 text-center py-2">부스를 추가해보세요</p>
+                    )}
+                    {colBooths.map((b) => (
+                      <div key={b.id} className="flex items-center gap-2.5">
+                        <Link to={`/scan/${b.id}`} className="flex items-center gap-2 flex-1 min-w-0">
+                          <div className="w-8 h-8 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+                            {b.images[0] ? (
+                              <img src={b.images[0]} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-xs">🏪</div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium text-gray-800 truncate">{b.name}</p>
+                            <p className="text-xs text-gray-400 truncate">{b.category}</p>
+                          </div>
+                        </Link>
+                        <button
+                          onClick={() => handleRemoveBooth(col.id, b.id)}
+                          className="p-1 text-gray-300 hover:text-red-400 rounded-lg transition-colors shrink-0"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+
+                    {/* Add from favorites */}
+                    {addable.length > 0 && (
+                      addingToId === col.id ? (
+                        <div className="pt-1">
+                          <p className="text-xs text-gray-500 mb-1.5">관심 부스에서 추가:</p>
+                          <div className="space-y-1">
+                            {addable.map((b) => (
+                              <button
+                                key={b.id}
+                                onClick={() => handleAddBooth(col.id, b.id)}
+                                className="w-full flex items-center gap-2 text-left px-2.5 py-1.5 rounded-lg hover:bg-brand-50 transition-colors"
+                              >
+                                <Plus className="w-3 h-3 text-brand-500 shrink-0" />
+                                <span className="text-xs text-gray-700 truncate">{b.name}</span>
+                                <span className="text-xs text-gray-400">{b.category}</span>
+                              </button>
+                            ))}
+                          </div>
+                          <button
+                            onClick={() => setAddingToId(null)}
+                            className="w-full text-xs text-gray-400 mt-1 py-1 hover:text-gray-600"
+                          >
+                            닫기
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setAddingToId(col.id)}
+                          className="flex items-center gap-1.5 text-xs text-brand-600 hover:text-brand-700 transition-colors"
+                        >
+                          <Plus className="w-3 h-3" />
+                          관심 부스에서 추가
+                        </button>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+
 export default function MyPage() {
   const { isLoggedIn } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const { visits } = useVisits();
   const { favorites } = useFavorites();
-  const [activeTab, setActiveTab] = useState<'recent' | 'favorites'>('recent');
+  const [activeTab, setActiveTab] = useState<'recent' | 'favorites' | 'collections'>('recent');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const allBooths = getBooths();
@@ -80,7 +440,7 @@ export default function MyPage() {
 
   const favoriteBooths = favorites
     .map((f) => ({ booth: boothMap[f.boothId], createdAt: f.createdAt }))
-    .filter((item) => item.booth);
+    .filter((item) => item.booth) as Array<{ booth: Booth; createdAt: string }>;
 
   const handleShare = async (booth: Booth) => {
     const url = `${window.location.origin}/scan/${booth.id}`;
@@ -150,14 +510,14 @@ export default function MyPage() {
         <div className="flex bg-gray-100 rounded-xl p-1 mb-5">
           <button
             onClick={() => setActiveTab('recent')}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all ${
               activeTab === 'recent'
                 ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-500'
             }`}
           >
             <Clock className="w-3.5 h-3.5" />
-            최근 본 부스
+            최근 본
             {recentBooths.length > 0 && (
               <span className="bg-gray-200 text-gray-600 text-xs rounded-full px-1.5 py-0.5 leading-none">
                 {recentBooths.length}
@@ -166,25 +526,40 @@ export default function MyPage() {
           </button>
           <button
             onClick={() => setActiveTab('favorites')}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all ${
               activeTab === 'favorites'
                 ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-500'
             }`}
           >
             <Heart className="w-3.5 h-3.5" />
-            관심 부스
+            관심
             {favoriteBooths.length > 0 && (
               <span className="bg-gray-200 text-gray-600 text-xs rounded-full px-1.5 py-0.5 leading-none">
                 {favoriteBooths.length}
               </span>
             )}
           </button>
+          <button
+            onClick={() => setActiveTab('collections')}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all ${
+              activeTab === 'collections'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-500'
+            }`}
+          >
+            <Folder className="w-3.5 h-3.5" />
+            컬렉션
+          </button>
         </div>
 
-        {/* Content */}
+        {/* ─── Recent Tab ──────────────────────────────────────────────────── */}
         {activeTab === 'recent' && (
           <div>
+            <AiInsights
+              visitedBooths={recentBooths.map((r) => r.booth)}
+              favoriteBooths={favoriteBooths.map((f) => f.booth)}
+            />
             {recentBooths.length === 0 ? (
               <div className="text-center py-16">
                 <QrCode className="w-10 h-10 text-gray-200 mx-auto mb-3" />
@@ -206,6 +581,7 @@ export default function MyPage() {
           </div>
         )}
 
+        {/* ─── Favorites Tab ───────────────────────────────────────────────── */}
         {activeTab === 'favorites' && (
           <div>
             {favoriteBooths.length === 0 ? (
@@ -217,11 +593,25 @@ export default function MyPage() {
             ) : (
               <div className="space-y-3">
                 {favoriteBooths.map(({ booth }) => (
-                  <BoothCard key={booth.id} booth={booth} onShare={() => handleShare(booth)} />
+                  <BoothCard
+                    key={booth.id}
+                    booth={booth}
+                    onShare={() => handleShare(booth)}
+                    onAddToCollection={() => {
+                      // nudge to collections tab
+                      setActiveTab('collections');
+                      showToast('컬렉션 탭에서 추가할 수 있어요', 'info');
+                    }}
+                  />
                 ))}
               </div>
             )}
           </div>
+        )}
+
+        {/* ─── Collections Tab ─────────────────────────────────────────────── */}
+        {activeTab === 'collections' && (
+          <CollectionsTab favoriteBooths={favoriteBooths} />
         )}
 
         {/* Data Deletion */}

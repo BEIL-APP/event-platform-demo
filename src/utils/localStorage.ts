@@ -1,7 +1,7 @@
 import type {
   Booth, Visit, Favorite, Thread, Analytics,
   Lead, BoothPolicy, Attachment, SurveyResponse,
-  AppNotification, StaffMember, RateLimit,
+  AppNotification, StaffMember, RateLimit, ReplyTemplate, Collection,
 } from '../types';
 import {
   SEED_BOOTHS, SEED_ANALYTICS, SEED_THREADS, SEED_LEADS,
@@ -22,12 +22,35 @@ const KEYS = {
   notifications: `${PREFIX}notifications`,
   staff: `${PREFIX}staff`,
   rateLimits: `${PREFIX}rate_limits`,
+  templates: `${PREFIX}reply_templates`,
+  collections: `${PREFIX}collections`,
   isLoggedIn: `${PREFIX}isLoggedIn`,
   isAdmin: `${PREFIX}isAdmin`,
   userEmail: `${PREFIX}userEmail`,
   seeded: `${PREFIX}seeded`,
   guestId: `${PREFIX}guestId`,
 };
+
+const DEFAULT_TEMPLATES: ReplyTemplate[] = [
+  {
+    id: 'tpl-1',
+    label: '답변 확인 중',
+    text: '안녕하세요! 문의 주셔서 감사합니다. 담당자가 확인 후 빠른 시일 내로 상세 답변 드리겠습니다.',
+    createdAt: '2026-01-01T00:00:00Z',
+  },
+  {
+    id: 'tpl-2',
+    label: '견적 안내',
+    text: '견적은 수량과 요구사항에 따라 달라집니다. 이메일(hello@booth.kr)로 자세한 사항 보내주시면 1영업일 내로 맞춤 견적서 발송해 드리겠습니다.',
+    createdAt: '2026-01-01T00:00:00Z',
+  },
+  {
+    id: 'tpl-3',
+    label: '문의 완료',
+    text: '문의하신 내용에 대한 답변이 완료됐습니다. 추가 문의사항이 있으시면 언제든지 말씀해 주세요. 감사합니다!',
+    createdAt: '2026-01-01T00:00:00Z',
+  },
+];
 
 // ─── Generic ─────────────────────────────────────────────────────────────────
 
@@ -201,6 +224,7 @@ export function createThread(
 
   // If consent given, save as lead
   if (options?.consent && (options?.email || isLoggedIn)) {
+    const now = new Date().toISOString();
     const lead: Lead = {
       id: `lead-${Date.now()}`,
       boothId,
@@ -208,8 +232,11 @@ export function createThread(
       email: options?.email,
       memo: `문의 스레드: ${thread.id}`,
       consent: true,
+      consentAt: now,
+      consentVersion: '1.0',
       consentMarketing: options?.consentMarketing ?? false,
-      createdAt: new Date().toISOString(),
+      consentMarketingAt: options?.consentMarketing ? now : undefined,
+      createdAt: now,
     };
     saveLead(lead);
   }
@@ -395,9 +422,33 @@ export function getNotifications(guestId: string): AppNotification[] {
 }
 
 export function saveNotification(notif: AppNotification): void {
+  // Default status to PENDING if caller didn't set it
+  const withStatus: AppNotification = notif.status ? notif : { ...notif, status: 'PENDING' };
   const all = getAllNotifications();
-  all.unshift(notif);
+  all.unshift(withStatus);
   set(KEYS.notifications, all.slice(0, 200));
+  // Simulate in-app delivery: mark SENT immediately (real push/email would be async)
+  markNotificationSent(withStatus.id);
+}
+
+export function markNotificationSent(id: string): void {
+  const all = getAllNotifications();
+  const idx = all.findIndex((n) => n.id === id);
+  if (idx >= 0) {
+    all[idx].status = 'SENT';
+    all[idx].sentAt = new Date().toISOString();
+    set(KEYS.notifications, all);
+  }
+}
+
+export function markNotificationFailed(id: string): void {
+  const all = getAllNotifications();
+  const idx = all.findIndex((n) => n.id === id);
+  if (idx >= 0) {
+    all[idx].status = 'FAILED';
+    all[idx].retryCount = (all[idx].retryCount ?? 0) + 1;
+    set(KEYS.notifications, all);
+  }
 }
 
 export function markAllNotificationsRead(guestId: string): void {
@@ -486,6 +537,71 @@ export function deleteMyData(): void {
   localStorage.removeItem(KEYS.guestId);
   // Clear rate limits
   set(KEYS.rateLimits, getRateLimits().filter((r) => !r.key.startsWith(guestId)));
+}
+
+// ─── Reply Templates (B-4) ────────────────────────────────────────────────────
+
+export function getReplyTemplates(): ReplyTemplate[] {
+  const stored = get<ReplyTemplate[]>(KEYS.templates);
+  if (!stored || stored.length === 0) {
+    set(KEYS.templates, DEFAULT_TEMPLATES);
+    return DEFAULT_TEMPLATES;
+  }
+  return stored;
+}
+
+export function saveReplyTemplate(template: ReplyTemplate): void {
+  const all = getReplyTemplates();
+  const idx = all.findIndex((t) => t.id === template.id);
+  if (idx >= 0) {
+    all[idx] = template;
+  } else {
+    all.push(template);
+  }
+  set(KEYS.templates, all);
+}
+
+export function deleteReplyTemplate(id: string): void {
+  set(KEYS.templates, getReplyTemplates().filter((t) => t.id !== id));
+}
+
+// ─── Collections (C-6) ────────────────────────────────────────────────────────
+
+export function getCollections(): Collection[] {
+  return get<Collection[]>(KEYS.collections) ?? [];
+}
+
+export function saveCollection(collection: Collection): void {
+  const all = getCollections();
+  const idx = all.findIndex((c) => c.id === collection.id);
+  if (idx >= 0) {
+    all[idx] = collection;
+  } else {
+    all.unshift(collection);
+  }
+  set(KEYS.collections, all);
+}
+
+export function deleteCollection(id: string): void {
+  set(KEYS.collections, getCollections().filter((c) => c.id !== id));
+}
+
+export function addToCollection(collectionId: string, boothId: string): void {
+  const all = getCollections();
+  const idx = all.findIndex((c) => c.id === collectionId);
+  if (idx >= 0 && !all[idx].boothIds.includes(boothId)) {
+    all[idx].boothIds.push(boothId);
+    set(KEYS.collections, all);
+  }
+}
+
+export function removeFromCollection(collectionId: string, boothId: string): void {
+  const all = getCollections();
+  const idx = all.findIndex((c) => c.id === collectionId);
+  if (idx >= 0) {
+    all[idx].boothIds = all[idx].boothIds.filter((id) => id !== boothId);
+    set(KEYS.collections, all);
+  }
 }
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
