@@ -15,6 +15,7 @@ import MyPage from './pages/visitor/MyPage';
 import MessagesPage from './pages/visitor/MessagesPage';
 import NotificationsPage from './pages/visitor/NotificationsPage';
 import SettingsPage from './pages/visitor/SettingsPage';
+import ExplorePage from './pages/visitor/ExplorePage';
 
 // Admin pages
 import AdminLoginPage from './pages/admin/AdminLoginPage';
@@ -39,8 +40,8 @@ function AdminGuard({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
   return (
     <Routes>
-      {/* Default redirect */}
-      <Route path="/" element={<Navigate to="/scan/booth-001" replace />} />
+      {/* Home — booth explore */}
+      <Route path="/" element={<ExplorePage />} />
 
       {/* Auth */}
       <Route path="/auth" element={<AuthPage />} />
