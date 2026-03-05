@@ -10,10 +10,14 @@ import {
   ClipboardList,
   CreditCard,
   Clock,
+  Lightbulb,
+  MessageSquare,
+  PhoneCall,
 } from 'lucide-react';
 import { AdminLayout } from '../../components/AdminLayout';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import { useBooths } from '../../hooks/useBooths';
+import { useThreads } from '../../hooks/useThreads';
 import { exportAnalyticsCSV } from '../../utils/csv';
 import { useToast } from '../../contexts/ToastContext';
 import { getVisits, getLeads, getSurveys } from '../../utils/localStorage';
@@ -68,6 +72,30 @@ export default function AdminDashboardPage() {
     showToast('전체 통계 CSV가 다운로드됐어요!', 'success');
   };
 
+  const { threads } = useThreads();
+  const pendingInquiries = threads.filter((t) => t.status === '미처리').length;
+  const newLeads = allLeads.filter((l) => !l.status || l.status === 'NEW').length;
+
+  const topInterestName = topGlobalInterests[0]?.[0];
+
+  const peakHourIdx = MOCK_HOURLY.indexOf(Math.max(...MOCK_HOURLY));
+  const peakHour = HOUR_LABELS[peakHourIdx];
+
+  const insights = [
+    pendingInquiries > 0
+      ? { icon: MessageSquare, color: 'text-brand-600 bg-brand-50', text: `미처리 문의 ${pendingInquiries}건이 있어요`, action: '인박스 확인', to: '/admin/inbox' }
+      : null,
+    newLeads > 0
+      ? { icon: PhoneCall, color: 'text-amber-600 bg-amber-50', text: `신규 리드 ${newLeads}건 — 팔로업이 필요해요`, action: '리드 목록', to: '/admin/leads' }
+      : null,
+    topInterestName
+      ? { icon: Lightbulb, color: 'text-emerald-600 bg-emerald-50', text: `관심 분야 1위 "${topInterestName}" — 관련 자료를 부스에 추가해 보세요`, action: '내 부스', to: '/admin/booths' }
+      : null,
+    peakHour
+      ? { icon: Clock, color: 'text-sky-600 bg-sky-50', text: `방문 피크 시간대 ${peakHour}시 — 이 시간에 인력을 집중 배치하세요`, action: null, to: null }
+      : null,
+  ].filter(Boolean) as Array<{ icon: typeof MessageSquare; color: string; text: string; action: string | null; to: string | null }>;
+
   const maxHourly = Math.max(...MOCK_HOURLY);
 
   return (
@@ -87,6 +115,30 @@ export default function AdminDashboardPage() {
             전체 CSV Export
           </button>
         </div>
+
+        {/* Insight + Action Cards */}
+        {insights.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+            {insights.map((item, i) => {
+              const Icon = item.icon;
+              return (
+                <div key={i} className="bg-white border border-gray-200/60 rounded-xl p-4 flex items-start gap-3">
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${item.color}`}>
+                    <Icon className="w-4.5 h-4.5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-700 leading-relaxed">{item.text}</p>
+                    {item.action && item.to && (
+                      <Link to={item.to} className="mt-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 inline-flex items-center gap-1 transition-colors">
+                        {item.action} <ArrowRight className="w-3 h-3" />
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* KPI Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">

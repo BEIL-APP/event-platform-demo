@@ -8,6 +8,7 @@ import { setUserEmail } from '../../utils/localStorage';
 export default function SignupPage() {
   const [params] = useSearchParams();
   const role = params.get('role') ?? 'visitor';
+  const returnUrl = params.get('returnUrl') ?? '';
   const isOrganizer = role === 'organizer';
 
   const { toggleLogin, loginAsAdmin } = useAuth();
@@ -45,11 +46,11 @@ export default function SignupPage() {
     if (isOrganizer) {
       loginAsAdmin();
       setDone(true);
-      setTimeout(() => navigate('/admin/booths'), 1800);
+      setTimeout(() => navigate(returnUrl || '/admin/booths'), 1800);
     } else {
-      toggleLogin(); // toggle to logged-in
+      toggleLogin();
       setDone(true);
-      setTimeout(() => navigate('/scan/booth-001'), 1800);
+      setTimeout(() => navigate(returnUrl || '/explore'), 1800);
     }
 
     showToast(`${isOrganizer ? '운영자' : '관람객'}로 가입 완료!`, 'success');

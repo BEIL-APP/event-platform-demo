@@ -1,8 +1,10 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { QrCode, Building2, User, ArrowRight, ChevronRight } from 'lucide-react';
 
 export default function AuthPage() {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const returnUrl = params.get('returnUrl') ?? '';
 
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:p-8">
@@ -22,7 +24,7 @@ export default function AuthPage() {
         <div className="space-y-3">
           {/* 개인(관람객) */}
           <button
-            onClick={() => navigate('/auth/signup?role=visitor')}
+            onClick={() => navigate(`/auth/signup?role=visitor${returnUrl ? `&returnUrl=${encodeURIComponent(returnUrl)}` : ''}`)}
             className="w-full flex items-center gap-4 border border-gray-200 rounded-xl p-4 hover:border-gray-300 hover:bg-gray-50 transition-all duration-150 group text-left"
           >
             <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
@@ -37,7 +39,7 @@ export default function AuthPage() {
 
           {/* 기업(운영자) */}
           <button
-            onClick={() => navigate('/auth/signup?role=organizer')}
+            onClick={() => navigate(`/auth/signup?role=organizer${returnUrl ? `&returnUrl=${encodeURIComponent(returnUrl)}` : ''}`)}
             className="w-full flex items-center gap-4 border border-gray-200 rounded-xl p-4 hover:border-gray-300 hover:bg-gray-50 transition-all duration-150 group text-left"
           >
             <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">

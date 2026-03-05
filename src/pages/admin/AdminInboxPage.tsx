@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import {
   Search, Tag, ChevronDown, Send, ArrowLeft,
   Clock, CheckCircle, PauseCircle, X, MessageSquare, ShieldOff, Shield,
-  Settings, Plus, Pencil, Trash2,
+  Settings, Plus, Pencil, Trash2, UserPlus,
 } from 'lucide-react';
 import { AdminLayout } from '../../components/AdminLayout';
 import { useThreads } from '../../hooks/useThreads';
@@ -10,6 +10,7 @@ import { useToast } from '../../contexts/ToastContext';
 import {
   getBooths, blockThread, saveNotification,
   getReplyTemplates, saveReplyTemplate, deleteReplyTemplate,
+  saveLead,
 } from '../../utils/localStorage';
 import type { Thread, ReplyTemplate } from '../../types';
 
@@ -446,6 +447,27 @@ export default function AdminInboxPage() {
 
               {/* Status actions */}
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                <button
+                  onClick={() => {
+                    if (!selectedThread) return;
+                    saveLead({
+                      id: `lead-inbox-${Date.now()}`,
+                      boothId: selectedThread.boothId,
+                      source: 'inquiry',
+                      name: selectedThread.visitorName,
+                      email: selectedThread.visitorEmail,
+                      memo: selectedThread.messages[0]?.text.slice(0, 100) ?? '',
+                      consent: selectedThread.consentGiven ?? false,
+                      status: 'NEW',
+                      createdAt: new Date().toISOString(),
+                    });
+                    showToast('리드로 전환했어요! 리드 목록에서 확인하세요.', 'success');
+                  }}
+                  title="리드로 전환"
+                  className="p-1.5 rounded-lg text-gray-400 hover:bg-emerald-50 hover:text-emerald-600 transition-all duration-150"
+                >
+                  <UserPlus className="w-4 h-4" />
+                </button>
                 <button
                   onClick={handleToggleBlock}
                   title={selectedThread.blocked ? '차단 해제' : '스팸 차단'}

@@ -16,10 +16,10 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 
 const navItems = [
-  { to: '/admin/booths', icon: LayoutGrid, label: '내 부스' },
   { to: '/admin/inbox', icon: Inbox, label: '문의 인박스' },
   { to: '/admin/leads', icon: Users, label: '리드 목록' },
   { to: '/admin/dashboard', icon: BarChart3, label: '대시보드' },
+  { to: '/admin/booths', icon: LayoutGrid, label: '내 부스' },
 ];
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -101,11 +101,11 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           설정
         </Link>
         <Link
-          to="/auth"
+          to="/explore"
           className="flex items-center gap-2.5 w-full px-2.5 h-8 rounded-lg text-[13px] text-gray-500 hover:text-gray-300 hover:bg-white/[0.05] transition-colors"
         >
           <ExternalLink className="w-3.5 h-3.5" />
-          관람객 모드
+          관람객 탐색
         </Link>
         <button
           onClick={handleLogout}

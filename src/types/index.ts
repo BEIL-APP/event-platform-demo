@@ -59,20 +59,24 @@ export interface Analytics {
 
 // ─── New types for extended MVP ───────────────────────────────────────────────
 
+export type LeadStatus = 'NEW' | 'CONTACTED' | 'MEETING' | 'WON' | 'LOST';
+
 export interface Lead {
   id: string;
   boothId: string;
   source: 'bizcard' | 'inquiry' | 'email_info' | 'survey';
+  status?: LeadStatus;
   name?: string;
   company?: string;
   phone?: string;
   email?: string;
   memo: string;
   consent: boolean;
-  consentAt?: string;          // timestamp when consent was given (A-1)
-  consentVersion?: string;     // privacy policy version at consent time (A-1)
-  consentMarketing?: boolean;  // separate marketing consent flag
-  consentMarketingAt?: string; // timestamp for marketing consent (A-1)
+  consentAt?: string;
+  consentVersion?: string;
+  consentMarketing?: boolean;
+  consentMarketingAt?: string;
+  nextFollowUp?: string;
   createdAt: string;
 }
 

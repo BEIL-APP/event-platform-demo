@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { initSeedData } from './utils/localStorage';
+import NotFoundPage from './components/NotFoundPage';
 
 // Auth pages
 import AuthPage from './pages/auth/AuthPage';
@@ -71,8 +72,8 @@ function AppRoutes() {
       <Route path="/admin/settings" element={<AdminGuard><AdminSettingsPage /></AdminGuard>} />
       <Route path="/admin/dashboard" element={<AdminGuard><AdminDashboardPage /></AdminGuard>} />
 
-      {/* 404 fallback */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* 404 */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

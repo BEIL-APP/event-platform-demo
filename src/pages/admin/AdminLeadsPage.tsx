@@ -10,12 +10,14 @@ import {
   Trash2,
   Dice5,
   Filter,
+  PhoneCall,
+  ArrowRight,
 } from 'lucide-react';
 import { AdminLayout } from '../../components/AdminLayout';
 import { useBooths } from '../../hooks/useBooths';
 import { useToast } from '../../contexts/ToastContext';
-import { getLeads, deleteLead } from '../../utils/localStorage';
-import type { Lead } from '../../types';
+import { getLeads, deleteLead, saveLead } from '../../utils/localStorage';
+import type { Lead, LeadStatus } from '../../types';
 
 const SOURCE_LABELS: Record<Lead['source'], string> = {
   bizcard: '명함 스캔',
@@ -38,6 +40,22 @@ const SOURCE_COLORS: Record<Lead['source'], string> = {
   survey: 'bg-amber-50 text-amber-700',
 };
 
+const STATUS_LABELS: Record<LeadStatus, string> = {
+  NEW: '신규',
+  CONTACTED: '연락완료',
+  MEETING: '미팅예정',
+  WON: '성사',
+  LOST: '실패',
+};
+
+const STATUS_COLORS: Record<LeadStatus, string> = {
+  NEW: 'bg-brand-50 text-brand-700',
+  CONTACTED: 'bg-sky-50 text-sky-700',
+  MEETING: 'bg-amber-50 text-amber-700',
+  WON: 'bg-emerald-50 text-emerald-700',
+  LOST: 'bg-gray-100 text-gray-500',
+};
+
 export default function AdminLeadsPage() {
   const { booths } = useBooths();
   const { showToast } = useToast();
@@ -45,6 +63,7 @@ export default function AdminLeadsPage() {
   const [search, setSearch] = useState('');
   const [filterSource, setFilterSource] = useState<Lead['source'] | 'all'>('all');
   const [filterBooth, setFilterBooth] = useState('all');
+  const [filterStatus, setFilterStatus] = useState<LeadStatus | 'all'>('all');
   const [showLottery, setShowLottery] = useState(false);
   const [lotteryWinner, setLotteryWinner] = useState<Lead | null>(null);
 
@@ -53,6 +72,7 @@ export default function AdminLeadsPage() {
   const filtered = leads.filter((l) => {
     if (filterSource !== 'all' && l.source !== filterSource) return false;
     if (filterBooth !== 'all' && l.boothId !== filterBooth) return false;
+    if (filterStatus !== 'all' && (l.status ?? 'NEW') !== filterStatus) return false;
     if (search) {
       const q = search.toLowerCase();
       return (
@@ -64,6 +84,20 @@ export default function AdminLeadsPage() {
     }
     return true;
   });
+
+  const followUpLeads = leads.filter((l) => {
+    const status = l.status ?? 'NEW';
+    return status === 'NEW' || status === 'CONTACTED';
+  }).slice(0, 5);
+
+  const handleStatusChange = (id: string, status: LeadStatus) => {
+    const lead = leads.find((l) => l.id === id);
+    if (!lead) return;
+    const updated = { ...lead, status };
+    saveLead(updated);
+    setLeads(getLeads());
+    showToast(`상태를 "${STATUS_LABELS[status]}"로 변경했어요`, 'info');
+  };
 
   const handleDelete = (id: string) => {
     deleteLead(id);
@@ -128,6 +162,47 @@ export default function AdminLeadsPage() {
           ))}
         </div>
 
+        {/* Follow-up section */}
+        {followUpLeads.length > 0 && (
+          <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-5 mb-4 sm:mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <PhoneCall className="w-4 h-4 text-brand-500" />
+              <h2 className="text-sm font-semibold text-gray-900">팔로업 필요</h2>
+              <span className="text-xs text-gray-500 bg-gray-100 rounded-md px-2 h-5 flex items-center">
+                {followUpLeads.length}건
+              </span>
+            </div>
+            <div className="space-y-2">
+              {followUpLeads.map((lead) => (
+                <div key={lead.id} className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 py-2 border-b border-gray-100 last:border-0">
+                  <span className={`h-5 px-1.5 rounded text-[10px] font-medium inline-flex items-center ${STATUS_COLORS[lead.status ?? 'NEW']}`}>
+                    {STATUS_LABELS[lead.status ?? 'NEW']}
+                  </span>
+                  <span className="text-sm font-medium text-gray-900 truncate">{lead.name ?? lead.email ?? '이름 없음'}</span>
+                  {lead.company && <span className="text-xs text-gray-400 hidden sm:inline">{lead.company}</span>}
+                  <span className="text-xs text-gray-400 ml-auto shrink-0">{boothMap[lead.boothId] ?? lead.boothId}</span>
+                  <select
+                    value={lead.status ?? 'NEW'}
+                    onChange={(e) => handleStatusChange(lead.id, e.target.value as LeadStatus)}
+                    className="h-7 text-xs bg-white border border-gray-200 rounded-md px-1.5 outline-none focus:ring-2 focus:ring-brand-200 text-gray-600 shrink-0"
+                  >
+                    {(Object.keys(STATUS_LABELS) as LeadStatus[]).map((s) => (
+                      <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </div>
+            <Link
+              to="/admin/leads"
+              onClick={() => setFilterStatus('NEW')}
+              className="mt-3 text-xs text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1 transition-colors"
+            >
+              신규 리드 전체 보기 <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+        )}
+
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3 mb-4 sm:mb-6">
           <div className="relative flex-1 min-w-0">
@@ -163,6 +238,16 @@ export default function AdminLeadsPage() {
                 <option key={b.id} value={b.id}>{b.name}</option>
               ))}
             </select>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value as LeadStatus | 'all')}
+              className="h-9 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all flex-1 sm:flex-none"
+            >
+              <option value="all">전체 상태</option>
+              {(Object.keys(STATUS_LABELS) as LeadStatus[]).map((s) => (
+                <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -182,6 +267,7 @@ export default function AdminLeadsPage() {
                     <th className="text-left px-3 py-2.5 sm:px-4 sm:py-3">회사</th>
                     <th className="text-left px-3 py-2.5 sm:px-4 sm:py-3">전화</th>
                     <th className="text-left px-3 py-2.5 sm:px-4 sm:py-3">유형</th>
+                    <th className="text-left px-3 py-2.5 sm:px-4 sm:py-3">상태</th>
                     <th className="text-left px-3 py-2.5 sm:px-4 sm:py-3">부스</th>
                     <th className="text-left px-3 py-2.5 sm:px-4 sm:py-3">메모</th>
                     <th className="text-left px-3 py-2.5 sm:px-4 sm:py-3">수집일</th>
@@ -202,6 +288,17 @@ export default function AdminLeadsPage() {
                           {SOURCE_ICONS[lead.source]}
                           {SOURCE_LABELS[lead.source]}
                         </span>
+                      </td>
+                      <td className="px-3 py-2.5 sm:px-4 sm:py-3.5">
+                        <select
+                          value={lead.status ?? 'NEW'}
+                          onChange={(e) => handleStatusChange(lead.id, e.target.value as LeadStatus)}
+                          className={`h-6 text-xs font-medium rounded-md px-1.5 border-0 outline-none cursor-pointer ${STATUS_COLORS[lead.status ?? 'NEW']}`}
+                        >
+                          {(Object.keys(STATUS_LABELS) as LeadStatus[]).map((s) => (
+                            <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+                          ))}
+                        </select>
                       </td>
                       <td className="px-3 py-2.5 sm:px-4 sm:py-3.5 text-sm text-gray-600">
                         {boothMap[lead.boothId] ?? lead.boothId}

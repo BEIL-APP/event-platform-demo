@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import {
   Heart,
   MessageSquare,
@@ -67,8 +67,10 @@ function getFileIcon(filename: string): string {
 
 export default function BoothPage() {
   const { boothId } = useParams<{ boothId: string }>();
+  const location = useLocation();
   const { booth } = useBooth(boothId ?? '');
   const { isLoggedIn } = useAuth();
+  const loginHref = `/auth?returnUrl=${encodeURIComponent(location.pathname)}`;
   const { showToast } = useToast();
   const { checkFav, toggleFav } = useFavorites();
   const { createInquiry } = useThreads();
@@ -126,8 +128,8 @@ export default function BoothPage() {
         <div className="text-center">
           <div className="text-4xl mb-3">🔍</div>
           <p className="text-gray-500 text-sm">부스를 찾을 수 없어요</p>
-          <Link to="/" className="mt-4 inline-block text-brand-600 text-sm font-medium">
-            ← 홈으로
+          <Link to="/explore" className="mt-4 inline-block text-brand-600 text-sm font-medium">
+            ← 부스 둘러보기
           </Link>
         </div>
       </div>
@@ -357,7 +359,7 @@ export default function BoothPage() {
           <div className="mb-4 bg-brand-50 border border-brand-100 rounded-lg px-3 py-2.5 flex items-center gap-2 animate-slide-up">
             <LogIn className="w-4 h-4 text-brand-500 shrink-0" />
             <p className="text-xs text-brand-700">
-              <Link to="/auth" className="font-semibold underline">로그인</Link>하면 기기가 바뀌어도 저장 목록이 유지돼요
+              <Link to={loginHref} className="font-semibold underline">로그인</Link>하면 기기가 바뀌어도 저장 목록이 유지돼요
             </p>
           </div>
         )}
@@ -580,7 +582,7 @@ export default function BoothPage() {
           <div className="mt-6 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
             <p className="text-xs text-gray-600 leading-relaxed">
               <span className="font-medium">로그인하면</span> 문의 답변 알림과 저장 목록을 어디서든 확인할 수 있어요.{' '}
-              <Link to="/auth" className="underline font-medium text-brand-600">지금 가입하기 →</Link>
+              <Link to={loginHref} className="underline font-medium text-brand-600">지금 가입하기 →</Link>
             </p>
           </div>
         )}
