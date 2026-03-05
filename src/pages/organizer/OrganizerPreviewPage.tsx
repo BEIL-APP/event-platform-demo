@@ -78,12 +78,12 @@ export default function OrganizerPreviewPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">주최자 프리뷰</h1>
+            <h1 className="text-xl font-bold text-gray-900">주최자 프리뷰</h1>
             <p className="text-sm text-gray-400 mt-1">이벤트 전체 통계와 부스 현황을 한눈에 파악하세요</p>
           </div>
           <button
             onClick={handleExportAll}
-            className="flex items-center gap-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-xl px-4 py-2.5 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-xl px-4 h-10 hover:bg-gray-50 transition-colors"
           >
             <Download className="w-4 h-4 text-brand-500" />
             전체 CSV Export
@@ -97,27 +97,27 @@ export default function OrganizerPreviewPage() {
               label: '총 스캔 수',
               value: totalScans.toLocaleString(),
               icon: <QrCode className="w-5 h-5" />,
-              color: 'text-blue-600',
-              bg: 'bg-blue-50',
-              iconBg: 'bg-blue-100',
+              color: 'text-brand-600',
+              bg: 'bg-brand-50',
+              iconBg: 'bg-brand-100',
               trend: '+12% 전주 대비',
             },
             {
               label: '고유 방문자',
               value: uniqueVisitors.toLocaleString(),
               icon: <UserCheck className="w-5 h-5" />,
-              color: 'text-violet-600',
-              bg: 'bg-violet-50',
-              iconBg: 'bg-violet-100',
+              color: 'text-brand-600',
+              bg: 'bg-brand-50',
+              iconBg: 'bg-brand-100',
               trend: '이 기기 기준',
             },
             {
               label: '관심 저장',
               value: totalFavorites.toLocaleString(),
               icon: <Users className="w-5 h-5" />,
-              color: 'text-pink-600',
-              bg: 'bg-pink-50',
-              iconBg: 'bg-pink-100',
+              color: 'text-brand-600',
+              bg: 'bg-brand-50',
+              iconBg: 'bg-brand-100',
               trend: '+8% 전주 대비',
             },
             {
@@ -130,11 +130,11 @@ export default function OrganizerPreviewPage() {
               trend: '+22% 전주 대비',
             },
           ].map((kpi) => (
-            <div key={kpi.label} className={`${kpi.bg} rounded-2xl p-5`}>
+            <div key={kpi.label} className={`${kpi.bg} rounded-xl p-6`}>
               <div className={`${kpi.iconBg} rounded-xl p-2.5 w-fit mb-3 ${kpi.color}`}>
                 {kpi.icon}
               </div>
-              <p className={`text-2xl font-bold ${kpi.color}`}>{kpi.value}</p>
+              <p className={`text-xl font-bold ${kpi.color}`}>{kpi.value}</p>
               <p className="text-sm font-medium text-gray-600 mt-1">{kpi.label}</p>
               <p className="text-xs text-gray-400 mt-1">{kpi.trend}</p>
             </div>
@@ -144,9 +144,9 @@ export default function OrganizerPreviewPage() {
         {/* Lead source + Survey count */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {[
-            { label: '명함 스캔 리드', value: leadsBySource.bizcard, icon: <CreditCard className="w-4 h-4" />, color: 'text-purple-600', bg: 'bg-purple-50' },
-            { label: '문의 동의 리드', value: leadsBySource.inquiry, icon: <UserCheck className="w-4 h-4" />, color: 'text-blue-600', bg: 'bg-blue-50' },
-            { label: '이메일 수신 신청', value: leadsBySource.email_info, icon: <TrendingUp className="w-4 h-4" />, color: 'text-green-600', bg: 'bg-green-50' },
+            { label: '명함 스캔 리드', value: leadsBySource.bizcard, icon: <CreditCard className="w-4 h-4" />, color: 'text-brand-600', bg: 'bg-brand-50' },
+            { label: '문의 동의 리드', value: leadsBySource.inquiry, icon: <UserCheck className="w-4 h-4" />, color: 'text-brand-600', bg: 'bg-brand-50' },
+            { label: '이메일 수신 신청', value: leadsBySource.email_info, icon: <TrendingUp className="w-4 h-4" />, color: 'text-emerald-600', bg: 'bg-emerald-50' },
             { label: '설문 응답 수', value: allSurveys.length, icon: <ClipboardList className="w-4 h-4" />, color: 'text-amber-600', bg: 'bg-amber-50' },
           ].map((item) => (
             <div key={item.label} className={`${item.bg} rounded-xl p-4`}>
@@ -159,7 +159,7 @@ export default function OrganizerPreviewPage() {
 
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
           {/* Top Booths Table */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          <div className="bg-white rounded-xl border border-gray-100 p-6">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4 text-brand-600" />
@@ -206,11 +206,11 @@ export default function OrganizerPreviewPage() {
           </div>
 
           {/* Hourly visit bar chart (mock) */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          <div className="bg-white rounded-xl border border-gray-100 p-6">
             <div className="flex items-center gap-2 mb-5">
               <Clock className="w-4 h-4 text-brand-600" />
               <h2 className="text-sm font-semibold text-gray-800">시간대별 방문 (오늘)</h2>
-              <span className="text-xs text-amber-600 bg-amber-50 rounded-full px-2 py-0.5 ml-auto">mock 데이터</span>
+              <span className="text-xs text-amber-600 bg-amber-50 rounded-lg px-2 py-0.5 ml-auto">mock 데이터</span>
             </div>
 
             <div className="flex items-end gap-1.5 h-32">
@@ -221,7 +221,7 @@ export default function OrganizerPreviewPage() {
                     style={{ height: `${(val / maxHourly) * 100}%` }}
                     title={`${val}명`}
                   />
-                  <span className="text-[10px] text-gray-400">{HOUR_LABELS[i]}</span>
+                  <span className="text-xs text-gray-400">{HOUR_LABELS[i]}</span>
                 </div>
               ))}
             </div>
@@ -231,11 +231,11 @@ export default function OrganizerPreviewPage() {
 
         {/* Survey Aggregate */}
         {allSurveys.length > 0 && (
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+          <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
             <div className="flex items-center gap-2 mb-5">
               <ClipboardList className="w-4 h-4 text-brand-600" />
               <h2 className="text-sm font-semibold text-gray-800">전체 설문 집계</h2>
-              <span className="text-xs text-gray-400 bg-gray-100 rounded-full px-2 py-0.5 ml-auto">
+              <span className="text-xs text-gray-400 bg-gray-100 rounded-lg px-2 py-0.5 ml-auto">
                 총 {allSurveys.length}건
               </span>
             </div>
@@ -281,11 +281,11 @@ export default function OrganizerPreviewPage() {
                     </div>
                   </div>
                 )}
-                <div className="bg-green-50 border border-green-100 rounded-xl px-4 py-3">
+                <div className="bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3">
                   <p className="text-xs text-gray-500 mb-0.5">연락 희망 응답자</p>
-                  <p className="text-xl font-bold text-green-600">
+                  <p className="text-xl font-bold text-emerald-600">
                     {globalWantsContact}명
-                    <span className="text-sm font-normal text-green-500 ml-1.5">
+                    <span className="text-sm font-normal text-emerald-500 ml-1.5">
                       ({allSurveys.length > 0 ? Math.round((globalWantsContact / allSurveys.length) * 100) : 0}%)
                     </span>
                   </p>
@@ -297,7 +297,7 @@ export default function OrganizerPreviewPage() {
         )}
 
         {/* Lead list quick view */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+        <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
               <UserCheck className="w-4 h-4 text-brand-600" />
@@ -317,9 +317,9 @@ export default function OrganizerPreviewPage() {
             <div className="space-y-2">
               {allLeads.slice(0, 5).map((lead) => {
                 const sourceColors = {
-                  bizcard: 'bg-purple-50 text-purple-700',
-                  inquiry: 'bg-blue-50 text-blue-700',
-                  email_info: 'bg-green-50 text-green-700',
+                  bizcard: 'bg-brand-50 text-brand-700',
+                  inquiry: 'bg-brand-50 text-brand-700',
+                  email_info: 'bg-emerald-50 text-emerald-700',
                   survey: 'bg-amber-50 text-amber-700',
                 } as const;
                 const sourceLabels = {
@@ -329,8 +329,8 @@ export default function OrganizerPreviewPage() {
                   survey: '설문',
                 } as const;
                 return (
-                  <div key={lead.id} className="flex items-center gap-3 py-2.5 border-b border-gray-50 last:border-0">
-                    <span className={`text-xs font-medium rounded-full px-2 py-0.5 ${sourceColors[lead.source]}`}>
+                  <div key={lead.id} className="flex items-center gap-3 py-3 border-b border-gray-50 last:border-0">
+                    <span className={`text-xs font-medium rounded-lg px-2 py-0.5 ${sourceColors[lead.source]}`}>
                       {sourceLabels[lead.source]}
                     </span>
                     <span className="text-sm font-medium text-gray-800">{lead.name ?? lead.email ?? '이름 없음'}</span>
@@ -348,7 +348,7 @@ export default function OrganizerPreviewPage() {
         </div>
 
         {/* All booths stats table */}
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-gray-800">전체 부스 통계</h2>
             <button
@@ -394,14 +394,14 @@ export default function OrganizerPreviewPage() {
                         </div>
                       </td>
                       <td className="px-4 py-3.5">
-                        <span className="text-xs text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">
+                        <span className="text-xs text-gray-500 bg-gray-100 rounded-lg px-2 py-0.5">
                           {booth?.category ?? '-'}
                         </span>
                       </td>
                       <td className="px-4 py-3.5 text-right text-sm font-medium text-gray-700">{a.scans}</td>
-                      <td className="px-4 py-3.5 text-right text-sm font-medium text-pink-600">{a.favorites}</td>
+                      <td className="px-4 py-3.5 text-right text-sm font-medium text-brand-600">{a.favorites}</td>
                       <td className="px-4 py-3.5 text-right text-sm font-medium text-brand-600">{a.inquiries}</td>
-                      <td className="px-4 py-3.5 text-right text-sm font-medium text-purple-600">{boothLeads}</td>
+                      <td className="px-4 py-3.5 text-right text-sm font-medium text-brand-600">{boothLeads}</td>
                       <td className="px-6 py-3.5 text-right text-sm font-medium text-gray-500">{convRate}%</td>
                     </tr>
                   );

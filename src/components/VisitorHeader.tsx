@@ -43,7 +43,7 @@ export function VisitorHeader() {
               }`}
             >
               {item.icon}
-              <span className="text-[10px] leading-none">{item.label}</span>
+              <span className="text-xs leading-none">{item.label}</span>
             </Link>
           ))}
 
@@ -58,11 +58,11 @@ export function VisitorHeader() {
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-0 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+              <span className="absolute top-0 right-1 w-4 h-4 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
-            <span className="text-[10px] leading-none">알림</span>
+            <span className="text-xs leading-none">알림</span>
           </Link>
 
           <button
@@ -75,12 +75,12 @@ export function VisitorHeader() {
             {isLoggedIn ? (
               <>
                 <User className="w-5 h-5" />
-                <span className="text-[10px] leading-none">나</span>
+                <span className="text-xs leading-none">나</span>
               </>
             ) : (
               <>
                 <LogIn className="w-5 h-5" />
-                <span className="text-[10px] leading-none">로그인</span>
+                <span className="text-xs leading-none">로그인</span>
               </>
             )}
           </button>

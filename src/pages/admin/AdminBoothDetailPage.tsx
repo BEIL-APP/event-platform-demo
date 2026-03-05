@@ -244,18 +244,18 @@ export default function AdminBoothDetailPage() {
       label: '총 스캔',
       value: stats.scans,
       icon: <Eye className="w-5 h-5" />,
-      color: 'text-blue-600',
-      bg: 'bg-blue-50',
-      iconBg: 'bg-blue-100',
+      color: 'text-brand-600',
+      bg: 'bg-brand-50',
+      iconBg: 'bg-brand-100',
       desc: 'QR 스캔 횟수',
     },
     {
       label: '관심 저장',
       value: stats.favorites,
       icon: <Heart className="w-5 h-5" />,
-      color: 'text-pink-600',
-      bg: 'bg-pink-50',
-      iconBg: 'bg-pink-100',
+      color: 'text-brand-600',
+      bg: 'bg-brand-50',
+      iconBg: 'bg-brand-100',
       desc: '하트 누른 관람객',
     },
     {
@@ -282,17 +282,17 @@ export default function AdminBoothDetailPage() {
           </Link>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-gray-900">{booth.name}</h1>
-              <span className="text-xs font-medium text-brand-600 bg-brand-50 rounded-full px-2.5 py-1">
+              <h1 className="text-xl font-bold text-gray-900">{booth.name}</h1>
+              <span className="text-xs font-medium text-brand-600 bg-brand-50 rounded-lg px-2.5 py-1">
                 {booth.category}
               </span>
               {isPolicyExpired && (
-                <span className="text-xs font-medium text-gray-500 bg-gray-100 rounded-full px-2.5 py-1">
+                <span className="text-xs font-medium text-gray-500 bg-gray-100 rounded-lg px-2.5 py-1">
                   운영 종료
                 </span>
               )}
               {isPolicyActive && (
-                <span className="text-xs font-medium text-green-600 bg-green-50 rounded-full px-2.5 py-1">
+                <span className="text-xs font-medium text-emerald-600 bg-emerald-50 rounded-lg px-2.5 py-1">
                   운영중
                 </span>
               )}
@@ -312,8 +312,8 @@ export default function AdminBoothDetailPage() {
         {/* Two column: QR + Stats */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* QR Code Card */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-5">
+          <div className="bg-white rounded-xl border border-gray-100 p-6">
+            <div className="flex items-center justify-between mb-6">
               <h2 className="text-sm font-semibold text-gray-800">QR 코드</h2>
               <button
                 onClick={handleDownloadQR}
@@ -325,7 +325,7 @@ export default function AdminBoothDetailPage() {
             </div>
 
             <div ref={qrRef} className="flex justify-center mb-4">
-              <div className="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm inline-block">
+              <div className="p-4 bg-white border border-gray-100 rounded-xl inline-block">
                 <QRCodeCanvas
                   id="booth-qr-canvas"
                   value={boothUrl}
@@ -345,8 +345,8 @@ export default function AdminBoothDetailPage() {
           </div>
 
           {/* Stats */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-5">
+          <div className="bg-white rounded-xl border border-gray-100 p-6">
+            <div className="flex items-center justify-between mb-6">
               <h2 className="text-sm font-semibold text-gray-800">통계</h2>
               <button
                 onClick={() => { refreshStats(); showToast('통계를 새로고침했어요', 'info'); }}
@@ -373,20 +373,20 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* ─── 운영 기간 설정 ────────────────────────────────────────────────────── */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
-          <div className="flex items-center gap-2 mb-5">
+        <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
+          <div className="flex items-center gap-2 mb-6">
             <Calendar className="w-4 h-4 text-brand-600" />
             <h2 className="text-sm font-semibold text-gray-800">운영 기간 설정</h2>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-5">
+          <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1.5">운영 시작</label>
               <input
                 type="datetime-local"
                 value={policy.startAt}
                 onChange={(e) => setPolicy((p) => ({ ...p, startAt: e.target.value }))}
-                className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+                className="w-full h-10 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
               />
             </div>
             <div>
@@ -395,13 +395,13 @@ export default function AdminBoothDetailPage() {
                 type="datetime-local"
                 value={policy.endAt}
                 onChange={(e) => setPolicy((p) => ({ ...p, endAt: e.target.value }))}
-                className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+                className="w-full h-10 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
               />
             </div>
           </div>
 
           <p className="text-xs font-medium text-gray-600 mb-3">종료 후 정책</p>
-          <div className="space-y-3 mb-5">
+          <div className="space-y-3 mb-6">
             <div className="flex items-center justify-between p-3.5 bg-gray-50 rounded-xl">
               <div>
                 <p className="text-sm font-medium text-gray-800">부스 열람 유지</p>
@@ -436,9 +436,9 @@ export default function AdminBoothDetailPage() {
 
           <button
             onClick={handleSavePolicy}
-            className={`w-full text-sm font-medium rounded-xl py-3 transition-all ${
+            className={`w-full h-10 text-sm font-medium rounded-xl flex items-center justify-center transition-all ${
               policySaved
-                ? 'bg-green-500 text-white'
+                ? 'bg-emerald-500 text-white'
                 : 'bg-brand-600 text-white hover:bg-brand-700'
             }`}
           >
@@ -447,23 +447,23 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* ─── 링크 관리 (A-5) ──────────────────────────────────────────────────── */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
-          <div className="flex items-center gap-2 mb-5">
+        <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
+          <div className="flex items-center gap-2 mb-6">
             <Link2 className="w-4 h-4 text-brand-600" />
             <h2 className="text-sm font-semibold text-gray-800">외부 링크 관리</h2>
           </div>
 
           <div className="space-y-3 mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-pink-50 rounded-xl flex items-center justify-center shrink-0">
-                <Instagram className="w-4 h-4 text-pink-500" />
+              <div className="w-8 h-8 bg-brand-50 rounded-xl flex items-center justify-center shrink-0">
+                <Instagram className="w-4 h-4 text-brand-500" />
               </div>
               <input
                 type="url"
                 value={links.instagram}
                 onChange={(e) => setLinks((l) => ({ ...l, instagram: e.target.value }))}
                 placeholder="https://instagram.com/..."
-                className="flex-1 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+                className="flex-1 h-10 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
               />
             </div>
             <div className="flex items-center gap-3">
@@ -475,19 +475,19 @@ export default function AdminBoothDetailPage() {
                 value={links.store}
                 onChange={(e) => setLinks((l) => ({ ...l, store: e.target.value }))}
                 placeholder="https://스토어 URL..."
-                className="flex-1 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+                className="flex-1 h-10 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
               />
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-50 rounded-xl flex items-center justify-center shrink-0">
-                <Globe className="w-4 h-4 text-blue-500" />
+              <div className="w-8 h-8 bg-brand-50 rounded-xl flex items-center justify-center shrink-0">
+                <Globe className="w-4 h-4 text-brand-500" />
               </div>
               <input
                 type="url"
                 value={links.site}
                 onChange={(e) => setLinks((l) => ({ ...l, site: e.target.value }))}
                 placeholder="https://홈페이지 URL..."
-                className="flex-1 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+                className="flex-1 h-10 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
               />
             </div>
           </div>
@@ -515,7 +515,7 @@ export default function AdminBoothDetailPage() {
                 value={newCustomLabel}
                 onChange={(e) => setNewCustomLabel(e.target.value)}
                 placeholder="링크 이름 (예: 카탈로그)"
-                className="flex-1 text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+                className="flex-1 h-10 text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
               />
               <input
                 type="url"
@@ -523,7 +523,7 @@ export default function AdminBoothDetailPage() {
                 onChange={(e) => setNewCustomUrl(e.target.value)}
                 placeholder="https://..."
                 onKeyDown={(e) => { if (e.key === 'Enter') handleAddCustomLink(); }}
-                className="flex-1 text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+                className="flex-1 h-10 text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
               />
               <button
                 onClick={handleAddCustomLink}
@@ -537,9 +537,9 @@ export default function AdminBoothDetailPage() {
 
           <button
             onClick={handleSaveLinks}
-            className={`w-full text-sm font-medium rounded-xl py-3 transition-all ${
+            className={`w-full h-10 text-sm font-medium rounded-xl flex items-center justify-center transition-all ${
               linksSaved
-                ? 'bg-green-500 text-white'
+                ? 'bg-emerald-500 text-white'
                 : 'bg-brand-600 text-white hover:bg-brand-700'
             }`}
           >
@@ -548,8 +548,8 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* ─── 파일 첨부 (브로셔) ─────────────────────────────────────────────── */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
-          <div className="flex items-center justify-between mb-5">
+        <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
+          <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
               <Paperclip className="w-4 h-4 text-brand-600" />
               <h2 className="text-sm font-semibold text-gray-800">브로셔 & 첨부 파일</h2>
@@ -589,7 +589,7 @@ export default function AdminBoothDetailPage() {
                   key={att.id}
                   className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-xl px-4 py-3"
                 >
-                  <span className="text-lg">{getFileIcon(att.filename)}</span>
+                  <span className="text-base">{getFileIcon(att.filename)}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-800 truncate">{att.filename}</p>
                     <p className="text-xs text-gray-400">
@@ -619,12 +619,12 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* ─── 설문 집계 결과 ────────────────────────────────────────────────────── */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
-          <div className="flex items-center justify-between mb-5">
+        <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
+          <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
               <ClipboardList className="w-4 h-4 text-brand-600" />
               <h2 className="text-sm font-semibold text-gray-800">설문 집계 결과</h2>
-              <span className="text-xs text-gray-400 bg-gray-100 rounded-full px-2 py-0.5">
+              <span className="text-xs text-gray-400 bg-gray-100 rounded-lg px-2 py-0.5">
                 총 {surveyAgg.total}건
               </span>
             </div>
@@ -652,9 +652,9 @@ export default function AdminBoothDetailPage() {
                           <span className="text-xs text-gray-700">{tag}</span>
                           <span className="text-xs font-medium text-gray-500">{count}명</span>
                         </div>
-                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-2 bg-gray-100 rounded-lg overflow-hidden">
                           <div
-                            className="h-full bg-brand-400 rounded-full transition-all"
+                            className="h-full bg-brand-400 rounded-lg transition-all"
                             style={{ width: `${(count / maxInterest) * 100}%` }}
                           />
                         </div>
@@ -673,7 +673,7 @@ export default function AdminBoothDetailPage() {
                       {topPurposes.map(([purpose, count]) => (
                         <div key={purpose} className="flex items-center justify-between text-xs">
                           <span className="text-gray-700">{purpose}</span>
-                          <span className="font-medium text-brand-600 bg-brand-50 rounded-full px-2 py-0.5">
+                          <span className="font-medium text-brand-600 bg-brand-50 rounded-lg px-2 py-0.5">
                             {count}건
                           </span>
                         </div>
@@ -681,11 +681,11 @@ export default function AdminBoothDetailPage() {
                     </div>
                   </div>
                 )}
-                <div className="bg-green-50 rounded-xl px-4 py-3">
+                <div className="bg-emerald-50 rounded-xl px-4 py-3">
                   <p className="text-xs text-gray-500 mb-0.5">연락 희망 응답</p>
-                  <p className="text-xl font-bold text-green-600">
+                  <p className="text-xl font-bold text-emerald-600">
                     {surveyAgg.wantsContact}명
-                    <span className="text-sm font-normal text-green-500 ml-1">
+                    <span className="text-sm font-normal text-emerald-500 ml-1">
                       ({surveyAgg.total > 0 ? Math.round((surveyAgg.wantsContact / surveyAgg.total) * 100) : 0}%)
                     </span>
                   </p>
@@ -696,19 +696,19 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* Export */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+        <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
           <h2 className="text-sm font-semibold text-gray-800 mb-4">데이터 내보내기</h2>
           <div className="flex flex-wrap gap-3">
             <button
               onClick={handleExportCSV}
-              className="flex items-center gap-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-xl px-4 py-2.5 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 h-10 text-sm font-medium text-gray-700 border border-gray-200 rounded-xl px-4 hover:bg-gray-50 transition-colors"
             >
               <FileDown className="w-4 h-4 text-brand-500" />
               통계 CSV Export
             </button>
             <button
               onClick={handleExportThreadsCSV}
-              className="flex items-center gap-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-xl px-4 py-2.5 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 h-10 text-sm font-medium text-gray-700 border border-gray-200 rounded-xl px-4 hover:bg-gray-50 transition-colors"
             >
               <FileDown className="w-4 h-4 text-emerald-500" />
               문의 CSV Export
@@ -720,8 +720,8 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* ─── 부스 정보 편집 (B-2) ──────────────────────────────────────────── */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          <div className="flex items-center gap-2 mb-5">
+        <div className="bg-white rounded-xl border border-gray-100 p-6">
+          <div className="flex items-center gap-2 mb-6">
             <Edit3 className="w-4 h-4 text-brand-600" />
             <h2 className="text-sm font-semibold text-gray-800">부스 정보 편집</h2>
           </div>
@@ -735,7 +735,7 @@ export default function AdminBoothDetailPage() {
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+                  className="w-full h-10 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
                 />
               </div>
               <div>
@@ -744,7 +744,7 @@ export default function AdminBoothDetailPage() {
                   type="text"
                   value={editCategory}
                   onChange={(e) => setEditCategory(e.target.value)}
-                  className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+                  className="w-full h-10 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
                 />
               </div>
             </div>
@@ -755,7 +755,7 @@ export default function AdminBoothDetailPage() {
                 value={editTagline}
                 onChange={(e) => setEditTagline(e.target.value)}
                 placeholder="한 줄 소개"
-                className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+                className="w-full h-10 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
               />
             </div>
             <div>
@@ -765,7 +765,7 @@ export default function AdminBoothDetailPage() {
                 onChange={(e) => setEditDescription(e.target.value)}
                 rows={3}
                 placeholder="부스 상세 설명"
-                className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all resize-none"
+                className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-4 outline-none focus:ring-2 focus:ring-brand-300 transition-all resize-none"
               />
             </div>
           </div>
@@ -784,7 +784,7 @@ export default function AdminBoothDetailPage() {
                     value={img}
                     onChange={(e) => setEditImages((prev) => prev.map((v, idx) => idx === i ? e.target.value : v))}
                     placeholder="https://..."
-                    className="flex-1 text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+                    className="flex-1 h-10 text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
                   />
                   {img && (
                     <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 shrink-0">
@@ -905,9 +905,9 @@ export default function AdminBoothDetailPage() {
 
           <button
             onClick={handleSaveContent}
-            className={`w-full text-sm font-medium rounded-xl py-3 transition-all ${
+            className={`w-full h-10 text-sm font-medium rounded-xl flex items-center justify-center transition-all ${
               contentSaved
-                ? 'bg-green-500 text-white'
+                ? 'bg-emerald-500 text-white'
                 : 'bg-brand-600 text-white hover:bg-brand-700'
             }`}
           >

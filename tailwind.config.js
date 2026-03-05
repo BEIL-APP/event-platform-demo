@@ -8,9 +8,12 @@ export default {
     extend: {
       fontFamily: {
         sans: [
-          '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto',
-          '"Helvetica Neue"', 'Arial', '"Noto Sans KR"', 'sans-serif',
+          'Pretendard', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"',
+          'Roboto', '"Helvetica Neue"', 'Arial', '"Noto Sans KR"', 'sans-serif',
         ],
+      },
+      fontSize: {
+        label: ['13px', { lineHeight: '1.4' }],
       },
       colors: {
         brand: {
@@ -26,9 +29,16 @@ export default {
           900: '#312e81',
         },
       },
+      borderRadius: {
+        sm: '6px',
+        DEFAULT: '8px',
+        md: '8px',
+        lg: '8px',
+        xl: '12px',
+      },
       boxShadow: {
-        card: '0 2px 12px 0 rgba(0,0,0,0.06)',
-        'card-hover': '0 4px 20px 0 rgba(0,0,0,0.10)',
+        card: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+        'card-hover': '0 4px 12px rgba(0,0,0,0.08)',
       },
     },
   },

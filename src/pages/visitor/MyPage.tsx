@@ -26,7 +26,7 @@ function BoothCard({
   onAddToCollection?: () => void;
 }) {
   return (
-    <div className="flex items-center gap-3 bg-white rounded-2xl p-4 shadow-card hover:shadow-card-hover transition-shadow">
+    <div className="flex items-center gap-3 bg-white rounded-xl p-4 shadow-card hover:shadow-card-hover transition-shadow">
       <Link to={`/scan/${booth.id}`} className="flex items-center gap-3 flex-1 min-w-0">
         <div className="w-14 h-14 rounded-xl overflow-hidden bg-gray-100 shrink-0">
           {booth.images[0] ? (
@@ -101,7 +101,7 @@ function AiInsights({ visitedBooths, favoriteBooths }: { visitedBooths: Booth[];
     <div className="mb-5">
       <button
         onClick={() => setExpanded((e) => !e)}
-        className="w-full flex items-center gap-2 bg-gradient-to-r from-brand-50 to-purple-50 border border-brand-100 rounded-2xl px-4 py-3 text-left"
+        className="w-full flex items-center gap-2 bg-brand-50 border border-brand-100 rounded-xl px-4 py-3 text-left"
       >
         <div className="w-7 h-7 bg-brand-100 rounded-xl flex items-center justify-center shrink-0">
           <Sparkles className="w-3.5 h-3.5 text-brand-600" />
@@ -116,7 +116,7 @@ function AiInsights({ visitedBooths, favoriteBooths }: { visitedBooths: Booth[];
       </button>
 
       {expanded && (
-        <div className="mt-2 bg-white rounded-2xl border border-gray-100 p-4 space-y-4">
+        <div className="mt-2 bg-white rounded-xl border border-gray-100 p-4 space-y-4">
           {/* Category summary */}
           <div>
             <p className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
@@ -247,13 +247,13 @@ function CollectionsTab({ favoriteBooths }: { favoriteBooths: Array<{ booth: Boo
       {!creating ? (
         <button
           onClick={() => setCreating(true)}
-          className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-2xl py-4 text-sm text-gray-400 hover:border-brand-300 hover:text-brand-600 transition-colors mb-4"
+          className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-4 text-sm text-gray-400 hover:border-brand-300 hover:text-brand-600 transition-colors mb-4"
         >
           <Plus className="w-4 h-4" />
           새 컬렉션 만들기
         </button>
       ) : (
-        <div className="bg-white rounded-2xl border-2 border-brand-200 p-4 mb-4">
+        <div className="bg-white rounded-xl border-2 border-brand-200 p-4 mb-4">
           <p className="text-xs font-semibold text-gray-700 mb-2">컬렉션 이름</p>
           <div className="flex gap-2">
             <input
@@ -299,7 +299,7 @@ function CollectionsTab({ favoriteBooths }: { favoriteBooths: Array<{ booth: Boo
               .filter((b) => !col.boothIds.includes(b.id));
 
             return (
-              <div key={col.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+              <div key={col.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
                 {/* Header */}
                 <div className="flex items-center gap-3 px-4 py-3.5">
                   <button
@@ -479,9 +479,9 @@ export default function MyPage() {
     <div className="min-h-screen bg-gray-50">
       <VisitorHeader />
 
-      <div className="max-w-sm mx-auto px-4 pt-5 pb-20">
+      <div className="max-w-sm mx-auto px-4 pt-6 pb-20">
         {/* Page title */}
-        <h1 className="text-lg font-bold text-gray-900 mb-1">내 부스</h1>
+        <h1 className="text-base font-bold text-gray-900 mb-1">내 부스</h1>
         <p className="text-xs text-gray-400 mb-5">방문 기록과 관심 부스를 모아볼 수 있어요</p>
 
         {/* Login banner */}
@@ -512,14 +512,14 @@ export default function MyPage() {
             onClick={() => setActiveTab('recent')}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all ${
               activeTab === 'recent'
-                ? 'bg-white text-gray-900 shadow-sm'
+                ? 'bg-white text-gray-900'
                 : 'text-gray-500'
             }`}
           >
             <Clock className="w-3.5 h-3.5" />
             최근 본
             {recentBooths.length > 0 && (
-              <span className="bg-gray-200 text-gray-600 text-xs rounded-full px-1.5 py-0.5 leading-none">
+              <span className="bg-gray-200 text-gray-600 text-xs rounded-lg px-1.5 py-0.5 leading-none">
                 {recentBooths.length}
               </span>
             )}
@@ -528,14 +528,14 @@ export default function MyPage() {
             onClick={() => setActiveTab('favorites')}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all ${
               activeTab === 'favorites'
-                ? 'bg-white text-gray-900 shadow-sm'
+                ? 'bg-white text-gray-900'
                 : 'text-gray-500'
             }`}
           >
             <Heart className="w-3.5 h-3.5" />
             관심
             {favoriteBooths.length > 0 && (
-              <span className="bg-gray-200 text-gray-600 text-xs rounded-full px-1.5 py-0.5 leading-none">
+              <span className="bg-gray-200 text-gray-600 text-xs rounded-lg px-1.5 py-0.5 leading-none">
                 {favoriteBooths.length}
               </span>
             )}
@@ -544,7 +544,7 @@ export default function MyPage() {
             onClick={() => setActiveTab('collections')}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all ${
               activeTab === 'collections'
-                ? 'bg-white text-gray-900 shadow-sm'
+                ? 'bg-white text-gray-900'
                 : 'text-gray-500'
             }`}
           >
@@ -636,13 +636,13 @@ export default function MyPage() {
               <div className="flex gap-2">
                 <button
                   onClick={handleDeleteMyData}
-                  className="flex-1 text-xs font-medium text-white bg-red-500 rounded-xl py-2.5 hover:bg-red-600 transition-colors"
+                  className="flex-1 text-xs font-medium text-white bg-red-500 rounded-xl h-10 hover:bg-red-600 transition-colors"
                 >
                   삭제 확인
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="flex-1 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-xl py-2.5 hover:bg-gray-50 transition-colors"
+                  className="flex-1 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-xl h-10 hover:bg-gray-50 transition-colors"
                 >
                   취소
                 </button>

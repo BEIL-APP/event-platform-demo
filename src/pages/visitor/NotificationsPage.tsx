@@ -28,8 +28,8 @@ export default function NotificationsPage() {
     <div className="min-h-screen bg-gray-50">
       <VisitorHeader />
 
-      <div className="max-w-sm mx-auto px-4 pt-5 pb-20">
-        <h1 className="text-lg font-bold text-gray-900 mb-1">알림</h1>
+      <div className="max-w-sm mx-auto px-4 pt-6 pb-20">
+        <h1 className="text-base font-bold text-gray-900 mb-1">알림</h1>
         <p className="text-xs text-gray-400 mb-5">이 기기에서 받은 알림 내역이에요</p>
 
         {notifications.length === 0 ? (
@@ -46,7 +46,7 @@ export default function NotificationsPage() {
               <Link
                 key={n.id}
                 to={n.threadId ? '/messages' : (n.boothId ? `/scan/${n.boothId}` : '#')}
-                className="flex items-start gap-3 bg-white rounded-2xl p-4 shadow-card hover:shadow-card-hover transition-shadow"
+                className="flex items-start gap-3 bg-white rounded-xl p-4 shadow-card hover:shadow-card-hover transition-shadow"
               >
                 <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
                   n.type === 'reply' ? 'bg-brand-100' : 'bg-gray-100'

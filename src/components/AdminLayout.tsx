@@ -40,7 +40,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             </div>
             <div>
               <div className="text-sm font-semibold text-gray-900 leading-tight">BoothLiner</div>
-              <div className="text-[10px] text-gray-400 leading-tight">운영자 대시보드</div>
+              <div className="text-xs text-gray-400 leading-tight">운영자 대시보드</div>
             </div>
           </Link>
         </div>

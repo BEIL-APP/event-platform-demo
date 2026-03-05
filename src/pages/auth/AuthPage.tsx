@@ -5,20 +5,20 @@ export default function AuthPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 flex flex-col items-center justify-center p-5">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
       {/* Logo */}
       <div className="flex items-center gap-2.5 mb-10">
-        <div className="w-10 h-10 bg-brand-600 rounded-2xl flex items-center justify-center shadow-md">
+        <div className="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center">
           <QrCode className="w-5 h-5 text-white" />
         </div>
         <div>
-          <div className="text-lg font-bold text-gray-900 leading-tight">BoothLiner</div>
+          <div className="text-base font-bold text-gray-900 leading-tight">BoothLiner</div>
           <div className="text-xs text-gray-400 leading-tight">B2B 팝업 이벤트 플랫폼</div>
         </div>
       </div>
 
       {/* Card */}
-      <div className="w-full max-w-sm bg-white rounded-3xl shadow-card p-8">
+      <div className="w-full max-w-sm bg-white rounded-xl shadow-card p-8">
         <h1 className="text-xl font-bold text-gray-900 mb-1.5">로그인 / 가입</h1>
         <p className="text-sm text-gray-500 mb-7">어떻게 참여하시나요?</p>
 
@@ -26,9 +26,9 @@ export default function AuthPage() {
           {/* 개인(관람객) */}
           <button
             onClick={() => navigate('/auth/signup?role=visitor')}
-            className="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-gray-100 hover:border-brand-300 hover:bg-brand-50 transition-all group text-left"
+            className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-gray-100 hover:border-brand-300 hover:bg-brand-50 transition-all group text-left"
           >
-            <div className="w-11 h-11 rounded-xl bg-indigo-100 flex items-center justify-center shrink-0 group-hover:bg-brand-100 transition-colors">
+            <div className="w-11 h-11 rounded-xl bg-brand-100 flex items-center justify-center shrink-0 group-hover:bg-brand-100 transition-colors">
               <User className="w-5 h-5 text-brand-600" />
             </div>
             <div className="flex-1 min-w-0">
@@ -41,10 +41,10 @@ export default function AuthPage() {
           {/* 기업(운영자) */}
           <button
             onClick={() => navigate('/auth/signup?role=organizer')}
-            className="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-gray-100 hover:border-brand-300 hover:bg-brand-50 transition-all group text-left"
+            className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-gray-100 hover:border-brand-300 hover:bg-brand-50 transition-all group text-left"
           >
-            <div className="w-11 h-11 rounded-xl bg-purple-100 flex items-center justify-center shrink-0 group-hover:bg-brand-100 transition-colors">
-              <Building2 className="w-5 h-5 text-purple-600 group-hover:text-brand-600 transition-colors" />
+            <div className="w-11 h-11 rounded-xl bg-brand-100 flex items-center justify-center shrink-0 group-hover:bg-brand-100 transition-colors">
+              <Building2 className="w-5 h-5 text-brand-600 group-hover:text-brand-600 transition-colors" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-gray-900">기업 (부스 운영자)</p>
@@ -64,7 +64,7 @@ export default function AuthPage() {
         {/* OAuth quick buttons */}
         <button
           onClick={() => navigate('/auth/oauth')}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
+          className="w-full flex items-center justify-center gap-2 h-10 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>

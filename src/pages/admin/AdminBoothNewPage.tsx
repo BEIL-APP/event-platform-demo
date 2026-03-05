@@ -64,7 +64,7 @@ function TextInput({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className={`w-full text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400 ${className}`}
+      className={`w-full h-10 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400 ${className}`}
     />
   );
 }
@@ -163,18 +163,18 @@ export default function AdminBoothNewPage() {
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">새 부스 만들기</h1>
+            <h1 className="text-xl font-bold text-gray-900">새 부스 만들기</h1>
             <p className="text-sm text-gray-400 mt-0.5">부스 정보를 입력하고 QR을 발급받으세요</p>
           </div>
         </div>
 
         <div className="space-y-6">
           {/* AI Auto-fill */}
-          <div className="bg-gradient-to-br from-violet-50 to-indigo-50 border border-indigo-100 rounded-2xl p-6">
+          <div className="bg-brand-50 border border-brand-100 rounded-xl p-6">
             <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="w-4 h-4 text-violet-600" />
+              <Sparkles className="w-4 h-4 text-brand-600" />
               <h2 className="text-sm font-semibold text-gray-800">AI 부스 자동 생성</h2>
-              <span className="text-xs text-violet-600 bg-violet-100 rounded-full px-2 py-0.5 ml-auto">베타</span>
+              <span className="text-xs text-brand-600 bg-brand-100 rounded-lg px-2 py-0.5 ml-auto">베타</span>
             </div>
             <p className="text-xs text-gray-500 mb-4">
               회사 소개서(PDF)나 브로셔 파일을 업로드하면 AI가 부스 정보를 자동으로 채워드려요.
@@ -187,10 +187,10 @@ export default function AdminBoothNewPage() {
                 className="hidden"
                 disabled={aiExtracting}
               />
-              <span className={`flex items-center gap-2 text-sm font-medium rounded-xl px-4 py-2.5 transition-colors ${
+              <span className={`inline-flex items-center gap-2 text-sm font-medium rounded-xl px-4 h-10 transition-colors ${
                 aiExtracting
-                  ? 'bg-violet-200 text-violet-500 cursor-not-allowed'
-                  : 'bg-violet-600 text-white hover:bg-violet-700 cursor-pointer'
+                  ? 'bg-brand-200 text-brand-500 cursor-not-allowed'
+                  : 'bg-brand-600 text-white hover:bg-brand-700 cursor-pointer'
               }`}>
                 {aiExtracting ? (
                   <>
@@ -211,8 +211,8 @@ export default function AdminBoothNewPage() {
           </div>
 
           {/* Basic Info */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <h2 className="text-sm font-semibold text-gray-800 mb-5">기본 정보</h2>
+          <div className="bg-white rounded-xl border border-gray-100 p-6">
+            <h2 className="text-sm font-semibold text-gray-800 mb-4">기본 정보</h2>
             <div className="space-y-4">
               <div>
                 <FieldLabel required>부스 이름</FieldLabel>
@@ -223,7 +223,7 @@ export default function AdminBoothNewPage() {
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
+                  className="w-full h-10 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c} value={c}>{c}</option>
@@ -245,15 +245,15 @@ export default function AdminBoothNewPage() {
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="부스를 찾아온 관람객에게 소개할 내용을 작성해주세요."
                   rows={4}
-                  className="w-full text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 resize-none outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
+                  className="w-full min-h-[80px] text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 py-3 resize-none outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
                 />
               </div>
             </div>
           </div>
 
           {/* Images */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <h2 className="text-sm font-semibold text-gray-800 mb-5">이미지 URL</h2>
+          <div className="bg-white rounded-xl border border-gray-100 p-6">
+            <h2 className="text-sm font-semibold text-gray-800 mb-4">이미지 URL</h2>
             <div className="space-y-3">
               {images.map((img, i) => (
                 <div key={i} className="flex items-center gap-2">
@@ -288,8 +288,8 @@ export default function AdminBoothNewPage() {
           </div>
 
           {/* Links */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <h2 className="text-sm font-semibold text-gray-800 mb-5">링크</h2>
+          <div className="bg-white rounded-xl border border-gray-100 p-6">
+            <h2 className="text-sm font-semibold text-gray-800 mb-4">링크</h2>
             <div className="space-y-3">
               <div>
                 <FieldLabel>인스타그램</FieldLabel>
@@ -307,11 +307,11 @@ export default function AdminBoothNewPage() {
           </div>
 
           {/* FAQ */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <h2 className="text-sm font-semibold text-gray-800 mb-5">자주 묻는 질문 (최대 3개)</h2>
+          <div className="bg-white rounded-xl border border-gray-100 p-6">
+            <h2 className="text-sm font-semibold text-gray-800 mb-4">자주 묻는 질문 (최대 3개)</h2>
             <div className="space-y-4">
               {faq.map((item, i) => (
-                <div key={i} className="bg-gray-50 rounded-xl p-4">
+                <div key={i} className="bg-gray-50 rounded-lg p-4">
                   <p className="text-xs font-medium text-gray-500 mb-2">Q{i + 1}</p>
                   <TextInput
                     value={item.question}
@@ -332,7 +332,7 @@ export default function AdminBoothNewPage() {
                     }}
                     placeholder="답변을 입력하세요"
                     rows={2}
-                    className="w-full text-sm text-gray-700 bg-white border border-gray-200 rounded-xl px-4 py-2.5 resize-none outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
+                    className="w-full min-h-[60px] text-sm text-gray-700 bg-white border border-gray-200 rounded-lg px-3 py-2 resize-none outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
                   />
                 </div>
               ))}
@@ -340,8 +340,8 @@ export default function AdminBoothNewPage() {
           </div>
 
           {/* Current Event */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <div className="mb-5">
+          <div className="bg-white rounded-xl border border-gray-100 p-6">
+            <div className="mb-6">
               <h2 className="text-sm font-semibold text-gray-800">이번 행사 정보</h2>
               <p className="text-xs text-gray-400 mt-0.5">현재 참가 중인 행사의 일정과 부스 위치를 입력하세요</p>
             </div>
@@ -357,7 +357,7 @@ export default function AdminBoothNewPage() {
                     type="date"
                     value={eventDate}
                     onChange={(e) => setEventDate(e.target.value)}
-                    className="w-full text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
+                    className="w-full h-10 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
                   />
                 </div>
                 <div>
@@ -372,13 +372,13 @@ export default function AdminBoothNewPage() {
           <div className="flex justify-end gap-3 pb-4">
             <button
               onClick={() => navigate(-1)}
-              className="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+              className="h-10 px-5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
             <button
               onClick={handleSave}
-              className="flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-brand-600 rounded-xl hover:bg-brand-700 transition-colors shadow-sm"
+              className="flex items-center gap-2 h-10 px-6 text-sm font-medium text-white bg-brand-600 rounded-xl hover:bg-brand-700 transition-colors"
             >
               <Save className="w-4 h-4" />
               부스 생성 & QR 발급

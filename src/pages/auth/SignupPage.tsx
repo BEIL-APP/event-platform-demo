@@ -57,12 +57,12 @@ export default function SignupPage() {
 
   if (done) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 flex items-center justify-center p-5">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
         <div className="text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-8 h-8 text-green-600" />
+          <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-8 h-8 text-emerald-600" />
           </div>
-          <h2 className="text-lg font-bold text-gray-900 mb-1">가입 완료!</h2>
+          <h2 className="text-base font-bold text-gray-900 mb-1">가입 완료!</h2>
           <p className="text-sm text-gray-500">잠시 후 이동합니다…</p>
         </div>
       </div>
@@ -70,16 +70,16 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 flex flex-col items-center justify-center p-5">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
       {/* Logo */}
       <div className="flex items-center gap-2.5 mb-8">
-        <div className="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center shadow-md">
+        <div className="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center">
           <QrCode className="w-4 h-4 text-white" />
         </div>
         <div className="text-base font-bold text-gray-900">BoothLiner</div>
       </div>
 
-      <div className="w-full max-w-sm bg-white rounded-3xl shadow-card p-8">
+      <div className="w-full max-w-sm bg-white rounded-xl shadow-card p-8">
         {/* Back */}
         <Link
           to="/auth"
@@ -90,7 +90,7 @@ export default function SignupPage() {
         </Link>
 
         <div className="mb-6">
-          <div className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-600 bg-brand-50 rounded-full px-2.5 py-1 mb-3">
+          <div className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-600 bg-brand-50 rounded-lg px-2.5 py-1 mb-3">
             {isOrganizer ? '기업 (운영자)' : '개인 (관람객)'}
           </div>
           <h1 className="text-xl font-bold text-gray-900">이메일로 가입</h1>
@@ -108,7 +108,7 @@ export default function SignupPage() {
               value={form.name}
               onChange={(e) => handleChange('name', e.target.value)}
               placeholder="홍길동"
-              className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
+              className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-4 h-10 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
             />
           </div>
 
@@ -121,7 +121,7 @@ export default function SignupPage() {
                 value={form.company}
                 onChange={(e) => handleChange('company', e.target.value)}
                 placeholder="(주)예시컴퍼니"
-                className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
+                className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-4 h-10 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
               />
             </div>
           )}
@@ -134,7 +134,7 @@ export default function SignupPage() {
               value={form.email}
               onChange={(e) => handleChange('email', e.target.value)}
               placeholder="name@company.com"
-              className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
+              className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-4 h-10 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
             />
           </div>
 
@@ -147,7 +147,7 @@ export default function SignupPage() {
                 value={form.password}
                 onChange={(e) => handleChange('password', e.target.value)}
                 placeholder="6자 이상"
-                className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 pr-10 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
+                className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-4 h-10 pr-10 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
               />
               <button
                 type="button"
@@ -182,7 +182,7 @@ export default function SignupPage() {
           <button
             type="submit"
             disabled={!isValid}
-            className="w-full bg-brand-600 text-white text-sm font-medium rounded-xl py-3.5 hover:bg-brand-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed mt-2"
+            className="w-full bg-brand-600 text-white text-sm font-medium rounded-xl h-10 hover:bg-brand-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed mt-2"
           >
             {isOrganizer ? '운영자 계정 만들기' : '관람객으로 가입하기'}
           </button>

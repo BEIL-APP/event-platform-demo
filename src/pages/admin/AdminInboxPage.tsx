@@ -25,7 +25,7 @@ function StatusBadge({ status }: { status: Thread['status'] }) {
   };
   const s = map[status];
   return (
-    <span className={`flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full ${s.cls}`}>
+    <span className={`flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg ${s.cls}`}>
       {s.icon}
       {status}
     </span>
@@ -95,7 +95,7 @@ function TemplateModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] flex flex-col">
+      <div className="bg-white rounded-xl shadow-card w-full max-w-md max-h-[85vh] flex flex-col">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-gray-900">템플릿 답변 관리</h2>
           <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-xl transition-colors">
@@ -112,25 +112,25 @@ function TemplateModal({ onClose }: { onClose: () => void }) {
                     value={editLabel}
                     onChange={(e) => setEditLabel(e.target.value)}
                     placeholder="템플릿 이름"
-                    className="w-full text-xs border border-gray-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-brand-300"
+                    className="w-full h-10 text-xs border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200"
                   />
                   <textarea
                     value={editText}
                     onChange={(e) => setEditText(e.target.value)}
                     placeholder="템플릿 내용"
                     rows={3}
-                    className="w-full text-xs border border-gray-200 rounded-lg px-3 py-2 resize-none outline-none focus:ring-2 focus:ring-brand-300"
+                    className="w-full text-xs border border-gray-200 rounded-lg px-3 py-2 resize-none outline-none focus:ring-2 focus:ring-brand-200"
                   />
                   <div className="flex gap-2">
                     <button
                       onClick={handleSave}
-                      className="flex-1 text-xs font-medium bg-brand-600 text-white rounded-lg py-2 hover:bg-brand-700 transition-colors"
+                      className="flex-1 h-10 text-xs font-medium bg-brand-600 text-white rounded-lg flex items-center justify-center hover:bg-brand-700 transition-colors"
                     >
                       저장
                     </button>
                     <button
                       onClick={() => setEditingId(null)}
-                      className="flex-1 text-xs font-medium border border-gray-200 text-gray-600 rounded-lg py-2 hover:bg-gray-50 transition-colors"
+                      className="flex-1 h-10 text-xs font-medium border border-gray-200 text-gray-600 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
                     >
                       취소
                     </button>
@@ -168,26 +168,26 @@ function TemplateModal({ onClose }: { onClose: () => void }) {
                 onChange={(e) => setEditLabel(e.target.value)}
                 placeholder="템플릿 이름"
                 autoFocus
-                className="w-full text-xs border border-gray-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-brand-300"
+                className="w-full h-10 text-xs border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200"
               />
               <textarea
                 value={editText}
                 onChange={(e) => setEditText(e.target.value)}
                 placeholder="템플릿 내용"
                 rows={3}
-                className="w-full text-xs border border-gray-200 rounded-lg px-3 py-2 resize-none outline-none focus:ring-2 focus:ring-brand-300"
+                className="w-full text-xs border border-gray-200 rounded-lg px-3 py-2 resize-none outline-none focus:ring-2 focus:ring-brand-200"
               />
               <div className="flex gap-2">
                 <button
                   onClick={handleSave}
                   disabled={!editLabel.trim() || !editText.trim()}
-                  className="flex-1 text-xs font-medium bg-brand-600 text-white rounded-lg py-2 hover:bg-brand-700 transition-colors disabled:opacity-40"
+                  className="flex-1 h-10 text-xs font-medium bg-brand-600 text-white rounded-lg flex items-center justify-center hover:bg-brand-700 transition-colors disabled:opacity-40"
                 >
                   추가
                 </button>
                 <button
                   onClick={() => setIsAdding(false)}
-                  className="flex-1 text-xs font-medium border border-gray-200 text-gray-600 rounded-lg py-2 hover:bg-gray-50 transition-colors"
+                  className="flex-1 h-10 text-xs font-medium border border-gray-200 text-gray-600 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
                 >
                   취소
                 </button>
@@ -200,7 +200,7 @@ function TemplateModal({ onClose }: { onClose: () => void }) {
           <div className="px-6 pb-4">
             <button
               onClick={startAdd}
-              className="w-full flex items-center justify-center gap-2 text-xs font-medium border-2 border-dashed border-gray-200 text-gray-500 rounded-xl py-2.5 hover:border-brand-300 hover:text-brand-600 transition-colors"
+              className="w-full h-10 flex items-center justify-center gap-2 text-xs font-medium border-2 border-dashed border-gray-200 text-gray-500 rounded-xl hover:border-brand-300 hover:text-brand-600 transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
               템플릿 추가
@@ -313,8 +313,8 @@ export default function AdminInboxPage() {
         {/* Left: Thread List */}
         <div className={`flex flex-col border-r border-gray-100 ${selectedThread ? 'hidden lg:flex w-80 shrink-0' : 'flex-1'}`}>
           {/* Inbox header */}
-          <div className="p-5 border-b border-gray-100">
-            <h1 className="text-lg font-bold text-gray-900 mb-4">문의 인박스</h1>
+          <div className="p-6 border-b border-gray-100">
+            <h1 className="text-base font-bold text-gray-900 mb-4">문의 인박스</h1>
 
             {/* Search */}
             <div className="relative mb-3">
@@ -324,7 +324,7 @@ export default function AdminInboxPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="부스명 또는 키워드 검색"
-                className="w-full pl-9 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
+                className="w-full h-10 pl-9 pr-4 text-sm bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400"
               />
             </div>
 
@@ -341,7 +341,7 @@ export default function AdminInboxPage() {
                   }`}
                 >
                   {s === 'all' ? '전체' : s}
-                  <span className={`rounded-full px-1 ${filter === s ? 'bg-brand-500 text-brand-100' : 'bg-white text-gray-400'}`}>
+                  <span className={`rounded-lg px-1 ${filter === s ? 'bg-brand-500 text-brand-100' : 'bg-white text-gray-400'}`}>
                     {counts[s]}
                   </span>
                 </button>
@@ -365,7 +365,7 @@ export default function AdminInboxPage() {
                   <button
                     key={t.id}
                     onClick={() => setSelected(t)}
-                    className={`w-full text-left px-5 py-4 border-b border-gray-50 transition-colors ${
+                    className={`w-full text-left px-6 py-4 border-b border-gray-50 transition-colors ${
                       isActive ? 'bg-brand-50' : 'hover:bg-gray-50'
                     }`}
                   >
@@ -386,12 +386,12 @@ export default function AdminInboxPage() {
                         <div className="flex items-center gap-1.5">
                           <StatusBadge status={t.status} />
                           {t.blocked && (
-                            <span className="text-xs bg-red-50 text-red-600 rounded-full px-2 py-0.5 flex items-center gap-0.5">
+                            <span className="text-xs bg-red-50 text-red-600 rounded-lg px-2 py-0.5 flex items-center gap-0.5">
                               <ShieldOff className="w-2.5 h-2.5" /> 차단
                             </span>
                           )}
                           {t.tags.slice(0, 2).map((tag) => (
-                            <span key={tag} className="text-xs bg-gray-100 text-gray-500 rounded-full px-2 py-0.5">
+                            <span key={tag} className="text-xs bg-gray-100 text-gray-500 rounded-lg px-2 py-0.5">
                               #{tag}
                             </span>
                           ))}
@@ -428,7 +428,7 @@ export default function AdminInboxPage() {
                 <div className="flex items-center gap-2 mt-1">
                   <StatusBadge status={selectedThread.status} />
                   {selectedThread.tags.map((tag) => (
-                    <span key={tag} className="flex items-center gap-0.5 text-xs bg-gray-100 text-gray-500 rounded-full px-2 py-0.5">
+                    <span key={tag} className="flex items-center gap-0.5 text-xs bg-gray-100 text-gray-500 rounded-lg px-2 py-0.5">
                       #{tag}
                       <button onClick={() => removeTag(selectedThread.id, tag)} className="ml-0.5 hover:text-red-400 transition-colors">
                         <X className="w-2.5 h-2.5" />
@@ -467,7 +467,7 @@ export default function AdminInboxPage() {
                     updateStatus(selectedThread.id, e.target.value as Thread['status']);
                     showToast(`상태가 "${e.target.value}"으로 변경됐어요`, 'info');
                   }}
-                  className="text-xs border border-gray-200 rounded-xl px-3 py-1.5 outline-none focus:ring-2 focus:ring-brand-300 bg-white text-gray-700"
+                  className="h-10 text-xs border border-gray-200 rounded-xl px-3 outline-none focus:ring-2 focus:ring-brand-200 bg-white text-gray-700"
                 >
                   <option value="미처리">미처리</option>
                   <option value="처리">처리</option>
@@ -478,13 +478,13 @@ export default function AdminInboxPage() {
 
             {/* Tag input row */}
             {showTagInput && (
-              <div className="bg-gray-50 px-6 py-2.5 border-b border-gray-100 flex items-center gap-2 flex-wrap">
+              <div className="bg-gray-50 px-6 py-3 border-b border-gray-100 flex items-center gap-2 flex-wrap">
                 <span className="text-xs text-gray-500">빠른 태그:</span>
                 {TAG_SUGGESTIONS.map((s) => (
                   <button
                     key={s}
                     onClick={() => handleAddTag(s)}
-                    className="text-xs bg-white border border-gray-200 text-gray-600 rounded-full px-2.5 py-1 hover:border-brand-300 hover:text-brand-600 transition-colors"
+                    className="text-xs bg-white border border-gray-200 text-gray-600 rounded-lg px-2.5 py-1 hover:border-brand-300 hover:text-brand-600 transition-colors"
                   >
                     #{s}
                   </button>
@@ -495,7 +495,7 @@ export default function AdminInboxPage() {
                   onChange={(e) => setNewTag(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleAddTag(newTag); }}
                   placeholder="직접 입력 후 Enter"
-                  className="text-xs border border-gray-200 rounded-lg px-2.5 py-1 outline-none focus:ring-2 focus:ring-brand-300 bg-white"
+                  className="h-10 text-xs border border-gray-200 rounded-lg px-2.5 outline-none focus:ring-2 focus:ring-brand-200 bg-white"
                 />
               </div>
             )}
@@ -513,7 +513,7 @@ export default function AdminInboxPage() {
                     </div>
                   )}
                   <div
-                    className={`max-w-[70%] rounded-2xl px-4 py-3 ${
+                    className={`max-w-[70%] rounded-xl px-4 py-3 ${
                       msg.from === 'booth'
                         ? 'bg-brand-600 text-white rounded-br-md'
                         : 'bg-white text-gray-800 rounded-bl-md shadow-card border border-gray-50'
@@ -573,7 +573,7 @@ export default function AdminInboxPage() {
                 onChange={(e) => setReplyText(e.target.value)}
                 placeholder="관람객에게 답변을 작성하세요…"
                 rows={2}
-                className="flex-1 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 resize-none outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
+                className="flex-1 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 resize-none outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();

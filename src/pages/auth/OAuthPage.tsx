@@ -31,7 +31,7 @@ const providers = [
   {
     id: 'naver',
     name: '네이버',
-    color: 'border-green-200 hover:border-green-300 bg-green-50 hover:bg-green-100',
+    color: 'border-emerald-200 hover:border-emerald-300 bg-emerald-50 hover:bg-emerald-100',
     icon: (
       <span className="text-[#03C75A] font-bold text-base leading-none">N</span>
     ),
@@ -66,16 +66,16 @@ export default function OAuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 flex flex-col items-center justify-center p-5">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
       {/* Logo */}
       <div className="flex items-center gap-2.5 mb-8">
-        <div className="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center shadow-md">
+        <div className="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center">
           <QrCode className="w-4 h-4 text-white" />
         </div>
         <div className="text-base font-bold text-gray-900">BoothLiner</div>
       </div>
 
-      <div className="w-full max-w-sm bg-white rounded-3xl shadow-card p-8">
+      <div className="w-full max-w-sm bg-white rounded-xl shadow-card p-8">
         <Link
           to="/auth"
           className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 mb-6 transition-colors"
@@ -95,7 +95,7 @@ export default function OAuthPage() {
               key={p.id}
               onClick={() => handleOAuth(p.id)}
               disabled={loading !== null}
-              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border-2 transition-all ${p.color} disabled:opacity-60 disabled:cursor-not-allowed`}
+              className={`w-full flex items-center gap-3 px-4 h-10 rounded-xl border-2 transition-all ${p.color} disabled:opacity-60 disabled:cursor-not-allowed`}
             >
               <span className="w-5 h-5 flex items-center justify-center shrink-0">
                 {loading === p.id ? (

@@ -30,11 +30,11 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
 
       {/* Panel */}
       <div
-        className="relative bg-white rounded-2xl shadow-xl w-full max-w-sm sm:mx-auto overflow-hidden"
+        className="relative bg-white rounded-xl shadow-card w-full max-w-sm sm:mx-auto overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100">
+          <div className="flex items-center justify-between p-6 border-b border-gray-100">
             <h3 className="font-semibold text-gray-900">{title}</h3>
             <button
               onClick={onClose}
@@ -44,7 +44,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
             </button>
           </div>
         )}
-        <div className="px-5 py-5">{children}</div>
+        <div className="p-6">{children}</div>
       </div>
     </div>
   );

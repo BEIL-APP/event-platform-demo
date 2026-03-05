@@ -16,12 +16,12 @@ export default function AdminBoothsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">내 부스</h1>
+            <h1 className="text-xl font-bold text-gray-900">내 부스</h1>
             <p className="text-sm text-gray-400 mt-1">총 {booths.length}개 부스 운영 중</p>
           </div>
           <Link
             to="/admin/booths/new"
-            className="flex items-center gap-2 bg-brand-600 text-white text-sm font-medium rounded-xl px-4 py-2.5 hover:bg-brand-700 transition-colors shadow-sm"
+            className="flex items-center gap-2 h-10 bg-brand-600 text-white text-sm font-medium rounded-xl px-4 hover:bg-brand-700 transition-colors"
           >
             <PlusCircle className="w-4 h-4" />
             새 부스 만들기
@@ -30,13 +30,13 @@ export default function AdminBoothsPage() {
 
         {/* Booths Grid */}
         {booths.length === 0 ? (
-          <div className="text-center py-24 bg-white rounded-2xl border border-gray-100">
+          <div className="text-center py-24 bg-white rounded-xl border border-gray-100">
             <QrCode className="w-12 h-12 text-gray-200 mx-auto mb-4" />
             <p className="text-gray-500 font-medium mb-1">아직 부스가 없어요</p>
             <p className="text-sm text-gray-400 mb-6">첫 번째 부스를 만들어보세요</p>
             <Link
               to="/admin/booths/new"
-              className="inline-flex items-center gap-2 bg-brand-600 text-white text-sm font-medium rounded-xl px-5 py-2.5 hover:bg-brand-700 transition-colors"
+              className="inline-flex items-center gap-2 h-10 bg-brand-600 text-white text-sm font-medium rounded-xl px-5 hover:bg-brand-700 transition-colors"
             >
               <PlusCircle className="w-4 h-4" />
               부스 만들기
@@ -50,7 +50,7 @@ export default function AdminBoothsPage() {
                 <Link
                   key={booth.id}
                   to={`/admin/booths/${booth.id}`}
-                  className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-card-hover transition-shadow group"
+                  className="bg-white rounded-xl border border-gray-100 p-6 hover:shadow-card-hover transition-shadow group"
                 >
                   <div className="flex items-start gap-4">
                     {/* Thumbnail */}
@@ -66,13 +66,13 @@ export default function AdminBoothsPage() {
                           }}
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-2xl">🏪</div>
+                        <div className="w-full h-full flex items-center justify-center text-xl">🏪</div>
                       )}
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-medium text-brand-600 bg-brand-50 rounded-full px-2.5 py-0.5">
+                        <span className="text-xs font-medium text-brand-600 bg-brand-50 rounded-lg px-2.5 py-0.5">
                           {booth.category}
                         </span>
                         <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors" />
@@ -110,7 +110,7 @@ export default function AdminBoothsPage() {
 
         {/* Summary cards */}
         {booths.length > 0 && (
-          <div className="mt-8 bg-white rounded-2xl border border-gray-100 p-5">
+          <div className="mt-8 bg-white rounded-xl border border-gray-100 p-6">
             <div className="flex items-center gap-2 mb-4">
               <BarChart3 className="w-4 h-4 text-brand-600" />
               <h2 className="text-sm font-semibold text-gray-800">전체 통계 요약</h2>
@@ -120,14 +120,14 @@ export default function AdminBoothsPage() {
                 {
                   label: '총 스캔',
                   value: analytics.reduce((s, a) => s + a.scans, 0),
-                  color: 'text-blue-600',
-                  bg: 'bg-blue-50',
+                  color: 'text-brand-600',
+                  bg: 'bg-brand-50',
                 },
                 {
                   label: '총 관심',
                   value: analytics.reduce((s, a) => s + a.favorites, 0),
-                  color: 'text-pink-600',
-                  bg: 'bg-pink-50',
+                  color: 'text-brand-600',
+                  bg: 'bg-brand-50',
                 },
                 {
                   label: '총 문의',
@@ -137,7 +137,7 @@ export default function AdminBoothsPage() {
                 },
               ].map((stat) => (
                 <div key={stat.label} className={`${stat.bg} rounded-xl p-4 text-center`}>
-                  <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                  <p className={`text-xl font-bold ${stat.color}`}>{stat.value}</p>
                   <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
                 </div>
               ))}

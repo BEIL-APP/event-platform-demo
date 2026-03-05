@@ -32,9 +32,9 @@ const SOURCE_ICONS: Record<Lead['source'], React.ReactNode> = {
 };
 
 const SOURCE_COLORS: Record<Lead['source'], string> = {
-  bizcard: 'bg-purple-50 text-purple-700',
-  inquiry: 'bg-blue-50 text-blue-700',
-  email_info: 'bg-green-50 text-green-700',
+  bizcard: 'bg-brand-50 text-brand-700',
+  inquiry: 'bg-brand-50 text-brand-700',
+  email_info: 'bg-emerald-50 text-emerald-700',
   survey: 'bg-amber-50 text-amber-700',
 };
 
@@ -89,7 +89,7 @@ export default function AdminLeadsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">리드 목록</h1>
+            <h1 className="text-xl font-bold text-gray-900">리드 목록</h1>
             <p className="text-sm text-gray-400 mt-1">
               문의 동의 · 명함 스캔 · 이메일 수신 신청 · 설문 응답 기반
             </p>
@@ -98,15 +98,15 @@ export default function AdminLeadsPage() {
             {/* Lottery placeholder */}
             <button
               onClick={handleLottery}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-amber-200 bg-amber-50 text-amber-700 text-sm font-medium hover:bg-amber-100 transition-colors"
+              className="flex items-center gap-2 h-10 px-4 rounded-xl border border-amber-200 bg-amber-50 text-amber-700 text-sm font-medium hover:bg-amber-100 transition-colors"
             >
               <Dice5 className="w-4 h-4" />
               명함 추첨
-              <span className="text-xs bg-amber-200 rounded-full px-1.5 py-0.5 text-amber-800">티저</span>
+              <span className="text-xs bg-amber-200 rounded-lg px-1.5 py-0.5 text-amber-800">티저</span>
             </button>
             <Link
               to="/admin/leads/scan"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors shadow-sm"
+              className="flex items-center gap-2 h-10 px-4 rounded-xl bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors"
             >
               <ScanLine className="w-4 h-4" />
               명함 스캔
@@ -116,7 +116,7 @@ export default function AdminLeadsPage() {
 
         {/* Source stat chips */}
         <div className="flex flex-wrap gap-2 mb-6">
-          <div className="flex items-center gap-1.5 text-xs bg-white border border-gray-100 rounded-xl px-3 py-2 shadow-sm">
+          <div className="flex items-center gap-1.5 text-xs bg-white border border-gray-100 rounded-xl px-3 py-2">
             <Users className="w-3.5 h-3.5 text-gray-400" />
             <span className="text-gray-600 font-medium">전체</span>
             <span className="font-bold text-gray-900">{leads.length}</span>
@@ -131,14 +131,14 @@ export default function AdminLeadsPage() {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-3 mb-5">
+        <div className="flex flex-wrap gap-3 mb-6">
           <div className="relative flex-1 min-w-48">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="이름, 회사, 이메일 검색"
-              className="w-full text-sm bg-white border border-gray-200 rounded-xl pl-9 pr-4 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
+              className="w-full h-10 text-sm bg-white border border-gray-200 rounded-xl pl-9 pr-4 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
             />
           </div>
 
@@ -147,7 +147,7 @@ export default function AdminLeadsPage() {
             <select
               value={filterSource}
               onChange={(e) => setFilterSource(e.target.value as Lead['source'] | 'all')}
-              className="text-sm bg-white border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+              className="h-10 text-sm bg-white border border-gray-200 rounded-xl px-3 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
             >
               <option value="all">전체 유형</option>
               <option value="bizcard">명함 스캔</option>
@@ -158,7 +158,7 @@ export default function AdminLeadsPage() {
             <select
               value={filterBooth}
               onChange={(e) => setFilterBooth(e.target.value)}
-              className="text-sm bg-white border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+              className="h-10 text-sm bg-white border border-gray-200 rounded-xl px-3 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
             >
               <option value="all">전체 부스</option>
               {booths.map((b) => (
@@ -169,7 +169,7 @@ export default function AdminLeadsPage() {
         </div>
 
         {/* Lead Table */}
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
           {filtered.length === 0 ? (
             <div className="py-16 text-center">
               <Users className="w-10 h-10 text-gray-200 mx-auto mb-3" />
@@ -198,9 +198,9 @@ export default function AdminLeadsPage() {
                         <p className="text-xs text-gray-400">{lead.email ?? '-'}</p>
                       </td>
                       <td className="px-4 py-3.5 text-sm text-gray-600">{lead.company ?? '-'}</td>
-                      <td className="px-4 py-3.5 text-sm text-gray-500 font-mono text-xs">{lead.phone ?? '-'}</td>
+                      <td className="px-4 py-3.5 text-xs text-gray-500 font-mono">{lead.phone ?? '-'}</td>
                       <td className="px-4 py-3.5">
-                        <span className={`inline-flex items-center gap-1 text-xs font-medium rounded-full px-2.5 py-1 ${SOURCE_COLORS[lead.source]}`}>
+                        <span className={`inline-flex items-center gap-1 text-xs font-medium rounded-lg px-2.5 py-1 ${SOURCE_COLORS[lead.source]}`}>
                           {SOURCE_ICONS[lead.source]}
                           {SOURCE_LABELS[lead.source]}
                         </span>
@@ -234,15 +234,15 @@ export default function AdminLeadsPage() {
       {/* Lottery modal */}
       {showLottery && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-5">
-          <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-xl">
-            <div className="text-5xl mb-4">🎉</div>
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full text-center shadow-card">
+            <div className="text-xl mb-4">🎉</div>
             <h2 className="text-xl font-bold text-gray-900 mb-1">추첨 결과</h2>
             <p className="text-sm text-gray-500 mb-6">
               {filtered.length}명 중 1명이 선택됐어요
             </p>
             {lotteryWinner && (
-              <div className="bg-brand-50 rounded-2xl p-5 mb-6 text-left">
-                <p className="text-lg font-bold text-brand-700 mb-1">
+              <div className="bg-brand-50 rounded-xl p-6 mb-6 text-left">
+                <p className="text-base font-bold text-brand-700 mb-1">
                   {lotteryWinner.name ?? '이름 미상'}
                 </p>
                 {lotteryWinner.company && (
@@ -256,13 +256,13 @@ export default function AdminLeadsPage() {
             <div className="flex gap-3">
               <button
                 onClick={handleLottery}
-                className="flex-1 bg-gray-100 text-gray-700 text-sm font-medium rounded-xl py-3 hover:bg-gray-200 transition-colors"
+                className="flex-1 h-10 bg-gray-100 text-gray-700 text-sm font-medium rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors"
               >
                 다시 추첨
               </button>
               <button
                 onClick={() => { setShowLottery(false); setLotteryWinner(null); }}
-                className="flex-1 bg-brand-600 text-white text-sm font-medium rounded-xl py-3 hover:bg-brand-700 transition-colors"
+                className="flex-1 h-10 bg-brand-600 text-white text-sm font-medium rounded-xl flex items-center justify-center hover:bg-brand-700 transition-colors"
               >
                 확인
               </button>

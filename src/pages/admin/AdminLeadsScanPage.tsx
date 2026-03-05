@@ -106,10 +106,10 @@ export default function AdminLeadsScanPage() {
       <AdminLayout>
         <div className="p-8 flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-8 h-8 text-green-600" />
+            <div className="w-16 h-16 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-8 h-8 text-emerald-600" />
             </div>
-            <h2 className="text-lg font-bold text-gray-900 mb-1">리드 저장 완료!</h2>
+            <h2 className="text-base font-bold text-gray-900 mb-1">리드 저장 완료!</h2>
             <p className="text-sm text-gray-400">리드 목록으로 이동합니다…</p>
           </div>
         </div>
@@ -129,14 +129,14 @@ export default function AdminLeadsScanPage() {
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">명함 스캔</h1>
+            <h1 className="text-xl font-bold text-gray-900">명함 스캔</h1>
             <p className="text-sm text-gray-400 mt-0.5">이미지 업로드 → 정보 추출 → 리드 저장</p>
           </div>
         </div>
 
         {/* Step 1: Upload */}
         {step === 'upload' && (
-          <div className="bg-white rounded-2xl border border-gray-100 p-8">
+          <div className="bg-white rounded-xl border border-gray-100 p-8">
             <div className="flex items-center gap-2 mb-6">
               <div className="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
                 <span className="text-xs font-bold text-white">1</span>
@@ -153,9 +153,9 @@ export default function AdminLeadsScanPage() {
             />
             <button
               onClick={() => fileRef.current?.click()}
-              className="w-full border-2 border-dashed border-gray-200 rounded-2xl p-12 flex flex-col items-center gap-4 hover:border-brand-300 hover:bg-brand-50 transition-all group"
+              className="w-full border-2 border-dashed border-gray-200 rounded-xl p-12 flex flex-col items-center gap-4 hover:border-brand-300 hover:bg-brand-50 transition-all group"
             >
-              <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center group-hover:bg-brand-100 transition-colors">
+              <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center group-hover:bg-brand-100 transition-colors">
                 <Upload className="w-7 h-7 text-gray-400 group-hover:text-brand-500 transition-colors" />
               </div>
               <div className="text-center">
@@ -180,7 +180,7 @@ export default function AdminLeadsScanPage() {
           <div className="space-y-5">
             {/* Image preview */}
             {imagePreview && (
-              <div className="bg-white rounded-2xl border border-gray-100 p-5">
+              <div className="bg-white rounded-xl border border-gray-100 p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <ScanLine className="w-4 h-4 text-brand-600" />
                   <h2 className="text-sm font-semibold text-gray-800">업로드된 명함</h2>
@@ -194,7 +194,7 @@ export default function AdminLeadsScanPage() {
             )}
 
             {/* Extraction status */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+            <div className="bg-white rounded-xl border border-gray-100 p-6">
               <div className="flex items-center gap-2 mb-5">
                 <div className="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
                   <span className="text-xs font-bold text-white">2</span>
@@ -203,7 +203,7 @@ export default function AdminLeadsScanPage() {
                   {extracting ? '정보 추출 중…' : '추출 결과 확인 및 수정'}
                 </h2>
                 {!extracting && (
-                  <span className="flex items-center gap-1 text-xs text-green-600 bg-green-50 rounded-full px-2 py-0.5 ml-auto">
+                  <span className="flex items-center gap-1 text-xs text-emerald-600 bg-emerald-50 rounded-lg px-2 py-0.5 ml-auto">
                     <Sparkles className="w-3 h-3" />
                     AI 추출 완료
                   </span>
@@ -234,7 +234,7 @@ export default function AdminLeadsScanPage() {
                         value={form[key]}
                         onChange={(e) => handleFormChange(key, e.target.value)}
                         placeholder={placeholder}
-                        className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
+                        className="w-full h-10 text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
                       />
                     </div>
                   ))}
@@ -244,7 +244,7 @@ export default function AdminLeadsScanPage() {
 
             {/* Memo + Booth + Save */}
             {!extracting && (
-              <div className="bg-white rounded-2xl border border-gray-100 p-6">
+              <div className="bg-white rounded-xl border border-gray-100 p-6">
                 <div className="flex items-center gap-2 mb-5">
                   <div className="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
                     <span className="text-xs font-bold text-white">3</span>
@@ -258,7 +258,7 @@ export default function AdminLeadsScanPage() {
                   <select
                     value={selectedBooth}
                     onChange={(e) => setSelectedBooth(e.target.value)}
-                    className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+                    className="w-full h-10 text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
                   >
                     {booths.map((b) => (
                       <option key={b.id} value={b.id}>{b.name}</option>
@@ -277,7 +277,7 @@ export default function AdminLeadsScanPage() {
                     onChange={(e) => setMemo(e.target.value)}
                     placeholder="상담 내용, 다음 액션, 관심 제품 등을 적어두세요"
                     rows={3}
-                    className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 resize-none outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
+                    className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 resize-none outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
                   />
                 </div>
 
@@ -293,14 +293,14 @@ export default function AdminLeadsScanPage() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => { setStep('upload'); setImagePreview(null); setForm({ name: '', company: '', phone: '', email: '' }); }}
-                    className="flex-1 bg-gray-100 text-gray-700 text-sm font-medium rounded-xl py-3 hover:bg-gray-200 transition-colors"
+                    className="flex-1 h-10 bg-gray-100 text-gray-700 text-sm font-medium rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors"
                   >
                     다시 스캔
                   </button>
                   <button
                     onClick={handleSave}
                     disabled={!memo.trim()}
-                    className="flex-1 bg-brand-600 text-white text-sm font-medium rounded-xl py-3 hover:bg-brand-700 transition-colors disabled:opacity-50"
+                    className="flex-1 h-10 bg-brand-600 text-white text-sm font-medium rounded-xl flex items-center justify-center hover:bg-brand-700 transition-colors disabled:opacity-50"
                   >
                     리드로 저장
                   </button>

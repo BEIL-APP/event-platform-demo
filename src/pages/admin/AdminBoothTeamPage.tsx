@@ -14,13 +14,13 @@ import type { StaffMember } from '../../types';
 function RoleBadge({ role }: { role: StaffMember['role'] }) {
   if (role === 'owner') {
     return (
-      <span className="flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-50 rounded-full px-2.5 py-1">
+      <span className="flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-50 rounded-lg px-2.5 py-1">
         <Crown className="w-3 h-3" /> 오너
       </span>
     );
   }
   return (
-    <span className="flex items-center gap-1 text-xs font-medium text-blue-700 bg-blue-50 rounded-full px-2.5 py-1">
+    <span className="flex items-center gap-1 text-xs font-medium text-brand-700 bg-brand-50 rounded-lg px-2.5 py-1">
       <UserCheck className="w-3 h-3" /> 스태프
     </span>
   );
@@ -29,13 +29,13 @@ function RoleBadge({ role }: { role: StaffMember['role'] }) {
 function StatusBadge({ status }: { status: StaffMember['status'] }) {
   if (status === 'active') {
     return (
-      <span className="flex items-center gap-1 text-xs text-green-700 bg-green-50 rounded-full px-2 py-0.5">
-        <span className="w-1.5 h-1.5 bg-green-500 rounded-full" /> 활성
+      <span className="flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 rounded-lg px-2 py-0.5">
+        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> 활성
       </span>
     );
   }
   return (
-    <span className="flex items-center gap-1 text-xs text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">
+    <span className="flex items-center gap-1 text-xs text-gray-500 bg-gray-100 rounded-lg px-2 py-0.5">
       <Clock className="w-2.5 h-2.5" /> 초대 중
     </span>
   );
@@ -128,12 +128,12 @@ export default function AdminBoothTeamPage() {
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </Link>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-gray-900">팀 관리</h1>
+            <h1 className="text-xl font-bold text-gray-900">팀 관리</h1>
             <p className="text-sm text-gray-400 mt-0.5">{booth.name} 부스의 운영 팀</p>
           </div>
           <button
             onClick={() => setShowInvite(!showInvite)}
-            className="flex items-center gap-2 text-sm font-medium text-white bg-brand-600 rounded-xl px-4 py-2.5 hover:bg-brand-700 transition-colors"
+            className="flex items-center gap-2 h-10 text-sm font-medium text-white bg-brand-600 rounded-xl px-4 hover:bg-brand-700 transition-colors"
           >
             <UserPlus className="w-4 h-4" />
             팀원 초대
@@ -142,7 +142,7 @@ export default function AdminBoothTeamPage() {
 
         {/* Invite Form */}
         {showInvite && (
-          <div className="bg-brand-50 border border-brand-100 rounded-2xl p-6 mb-6">
+          <div className="bg-brand-50 border border-brand-100 rounded-xl p-6 mb-6">
             <h2 className="text-sm font-semibold text-gray-800 mb-4">새 팀원 초대</h2>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
@@ -153,7 +153,7 @@ export default function AdminBoothTeamPage() {
                     value={inviteName}
                     onChange={(e) => setInviteName(e.target.value)}
                     placeholder="홍길동"
-                    className="w-full text-sm bg-white border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
+                    className="w-full h-10 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
                   />
                 </div>
                 <div>
@@ -161,7 +161,7 @@ export default function AdminBoothTeamPage() {
                   <select
                     value={inviteRole}
                     onChange={(e) => setInviteRole(e.target.value as 'owner' | 'staff')}
-                    className="w-full text-sm bg-white border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
+                    className="w-full h-10 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
                   >
                     <option value="staff">스태프</option>
                     <option value="owner">오너</option>
@@ -175,19 +175,19 @@ export default function AdminBoothTeamPage() {
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   placeholder="name@company.com"
-                  className="w-full text-sm bg-white border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
+                  className="w-full h-10 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
                 />
               </div>
               <div className="flex gap-2 pt-1">
                 <button
                   onClick={handleInvite}
-                  className="flex-1 text-sm font-medium text-white bg-brand-600 rounded-xl py-2.5 hover:bg-brand-700 transition-colors"
+                  className="flex-1 h-10 text-sm font-medium text-white bg-brand-600 rounded-xl hover:bg-brand-700 transition-colors"
                 >
                   초대 보내기 (데모)
                 </button>
                 <button
                   onClick={() => setShowInvite(false)}
-                  className="px-4 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                  className="h-10 px-4 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
                 >
                   취소
                 </button>
@@ -197,11 +197,11 @@ export default function AdminBoothTeamPage() {
         )}
 
         {/* Active Members */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-4">
-          <div className="flex items-center gap-2 mb-5">
+        <div className="bg-white rounded-xl border border-gray-100 p-6 mb-4">
+          <div className="flex items-center gap-2 mb-6">
             <Users className="w-4 h-4 text-brand-600" />
             <h2 className="text-sm font-semibold text-gray-800">활성 팀원</h2>
-            <span className="text-xs text-gray-400 bg-gray-100 rounded-full px-2 py-0.5 ml-auto">
+            <span className="text-xs text-gray-400 bg-gray-100 rounded-lg px-2 py-0.5 ml-auto">
               {activeMembers.length}명
             </span>
           </div>
@@ -247,11 +247,11 @@ export default function AdminBoothTeamPage() {
 
         {/* Pending Invites */}
         {pendingMembers.length > 0 && (
-          <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <div className="flex items-center gap-2 mb-5">
+          <div className="bg-white rounded-xl border border-gray-100 p-6">
+            <div className="flex items-center gap-2 mb-6">
               <Clock className="w-4 h-4 text-amber-500" />
               <h2 className="text-sm font-semibold text-gray-800">초대 대기 중</h2>
-              <span className="text-xs text-amber-600 bg-amber-50 rounded-full px-2 py-0.5 ml-auto">
+              <span className="text-xs text-amber-600 bg-amber-50 rounded-lg px-2 py-0.5 ml-auto">
                 {pendingMembers.length}건
               </span>
             </div>
@@ -289,7 +289,7 @@ export default function AdminBoothTeamPage() {
         )}
 
         {/* Role Description */}
-        <div className="mt-6 bg-gray-50 rounded-2xl p-5">
+        <div className="mt-6 bg-gray-50 rounded-xl p-6">
           <p className="text-xs font-semibold text-gray-700 mb-3">권한 안내</p>
           <div className="space-y-2">
             <div className="flex items-start gap-2">
@@ -300,7 +300,7 @@ export default function AdminBoothTeamPage() {
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <UserCheck className="w-3.5 h-3.5 text-blue-500 mt-0.5 shrink-0" />
+              <UserCheck className="w-3.5 h-3.5 text-brand-500 mt-0.5 shrink-0" />
               <div>
                 <p className="text-xs font-medium text-gray-700">스태프 (Staff)</p>
                 <p className="text-xs text-gray-400">문의 응답, 리드 조회 (설정 변경 불가)</p>
