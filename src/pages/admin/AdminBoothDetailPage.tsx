@@ -351,14 +351,23 @@ export default function AdminBoothDetailPage() {
               <p className="text-sm text-gray-500 mt-0.5 truncate">{booth.tagline}</p>
             </div>
           </div>
-          <Link
-            to={`/scan/${boothId}`}
-            target="_blank"
-            className="flex items-center justify-center gap-1.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 h-9 px-4 text-[13px] font-medium rounded-lg transition-all duration-150 w-full sm:w-auto shrink-0"
-          >
-            <ExternalLink className="w-4 h-4" />
-            관람객 보기
-          </Link>
+          <div className="flex gap-2 w-full sm:w-auto shrink-0">
+            <Link
+              to={`/admin/booths/${boothId}/team`}
+              className="flex items-center justify-center gap-1.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 h-9 px-4 text-[13px] font-medium rounded-lg transition-all duration-150 flex-1 sm:flex-initial"
+            >
+              <Users className="w-4 h-4" />
+              팀 관리
+            </Link>
+            <Link
+              to={`/scan/${boothId}`}
+              target="_blank"
+              className="flex items-center justify-center gap-1.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 h-9 px-4 text-[13px] font-medium rounded-lg transition-all duration-150 flex-1 sm:flex-initial"
+            >
+              <ExternalLink className="w-4 h-4" />
+              관람객 보기
+            </Link>
+          </div>
         </div>
 
         {/* Two column: QR + Stats */}
@@ -811,13 +820,6 @@ export default function AdminBoothDetailPage() {
                 총 {surveyAgg.total}건
               </span>
             </div>
-            <Link
-              to={`/admin/booths/${boothId}/team`}
-              className="flex items-center gap-1.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 h-8 px-3 text-xs font-medium rounded-lg transition-all duration-150"
-            >
-              <Users className="w-3.5 h-3.5" />
-              팀 관리
-            </Link>
           </div>
 
           {surveyAgg.total === 0 ? (
