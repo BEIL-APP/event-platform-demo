@@ -466,32 +466,54 @@ export default function BoothPage() {
               </div>
             )}
 
-            {/* Next Events */}
-            {booth.nextEvents.length > 0 && (
-              <div className="bg-white border border-gray-200/60 rounded-xl p-5 md:p-6">
-                <h2 className="text-sm font-semibold text-gray-900 mb-3">다음 이벤트</h2>
-                <div className="space-y-2.5">
-                  {booth.nextEvents.map((ev, i) => (
-                    <div key={i} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                      <div className="w-9 h-9 bg-gray-200 rounded-lg flex items-center justify-center shrink-0">
-                        <Calendar className="w-4 h-4 text-gray-500" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{ev.title}</p>
-                        <div className="flex items-center gap-3 mt-1">
-                          <span className="flex items-center gap-1 text-xs text-gray-500">
-                            <Clock className="w-3 h-3" /> {ev.date}
-                          </span>
-                          <span className="flex items-center gap-1 text-xs text-gray-500">
-                            <MapPin className="w-3 h-3" /> {ev.location}
-                          </span>
+            {/* 행사 일정 */}
+            {booth.nextEvents.length > 0 && (() => {
+              const getEventStatus = (dateStr: string): { label: string; color: string; order: number } => {
+                const now = new Date();
+                now.setHours(0, 0, 0, 0);
+                const parts = dateStr.split('~').map((s) => s.trim());
+                const start = new Date(parts[0]);
+                const end = parts.length > 1 ? new Date(parts[1]) : new Date(parts[0]);
+                start.setHours(0, 0, 0, 0);
+                end.setHours(23, 59, 59, 999);
+                if (now >= start && now <= end) return { label: '운영 중', color: 'bg-emerald-100 text-emerald-700', order: 0 };
+                if (now < start) return { label: '운영 예정', color: 'bg-blue-100 text-blue-700', order: 1 };
+                return { label: '운영 종료', color: 'bg-gray-100 text-gray-500', order: 2 };
+              };
+              const sorted = [...booth.nextEvents]
+                .map((ev) => ({ ...ev, status: getEventStatus(ev.date) }))
+                .sort((a, b) => a.status.order - b.status.order);
+              return (
+                <div className="bg-white border border-gray-200/60 rounded-xl p-5 md:p-6">
+                  <h2 className="text-sm font-semibold text-gray-900 mb-3">행사 일정</h2>
+                  <div className="space-y-2.5">
+                    {sorted.map((ev, i) => (
+                      <div key={i} className={`flex items-start gap-3 p-3 rounded-lg ${ev.status.order === 2 ? 'bg-gray-50/60' : 'bg-gray-50'}`}>
+                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${ev.status.order === 0 ? 'bg-emerald-100' : 'bg-gray-200'}`}>
+                          <Calendar className={`w-4 h-4 ${ev.status.order === 0 ? 'text-emerald-600' : 'text-gray-500'}`} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className={`text-sm font-medium ${ev.status.order === 2 ? 'text-gray-400' : 'text-gray-900'}`}>{ev.title}</p>
+                            <span className={`inline-flex items-center h-5 px-1.5 rounded text-[11px] font-medium ${ev.status.color}`}>
+                              {ev.status.label}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-3 mt-1">
+                            <span className={`flex items-center gap-1 text-xs ${ev.status.order === 2 ? 'text-gray-400' : 'text-gray-500'}`}>
+                              <Clock className="w-3 h-3" /> {ev.date}
+                            </span>
+                            <span className={`flex items-center gap-1 text-xs ${ev.status.order === 2 ? 'text-gray-400' : 'text-gray-500'}`}>
+                              <MapPin className="w-3 h-3" /> {ev.location}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
 
           {/* ─── Sidebar column ─── */}

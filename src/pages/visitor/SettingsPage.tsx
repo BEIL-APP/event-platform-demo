@@ -301,7 +301,7 @@ export default function SettingsPage() {
                   checked={notifications.eventReminder}
                   onChange={(v) => handleNotification('eventReminder', v)}
                   label="이벤트 리마인더"
-                  description="관심 부스의 다음 이벤트를 알려줍니다"
+                  description="관심 부스의 행사 일정을 알려줍니다"
                 />
                 <Toggle
                   checked={notifications.boothUpdate}
