@@ -89,24 +89,22 @@ export default function AdminLeadsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">리드 목록</h1>
-            <p className="text-sm text-gray-400 mt-1">
+            <h1 className="text-xl font-semibold text-gray-900">리드 목록</h1>
+            <p className="text-sm text-gray-500 mt-1">
               문의 동의 · 명함 스캔 · 이메일 수신 신청 · 설문 응답 기반
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {/* Lottery placeholder */}
             <button
               onClick={handleLottery}
-              className="flex items-center gap-2 h-10 px-4 rounded-xl border border-amber-200 bg-amber-50 text-amber-700 text-sm font-medium hover:bg-amber-100 transition-colors"
+              className="flex items-center gap-1.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 h-9 px-4 text-[13px] font-medium rounded-lg transition-all duration-150"
             >
               <Dice5 className="w-4 h-4" />
               명함 추첨
-              <span className="text-xs bg-amber-200 rounded-lg px-1.5 py-0.5 text-amber-800">티저</span>
             </button>
             <Link
               to="/admin/leads/scan"
-              className="flex items-center gap-2 h-10 px-4 rounded-xl bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors"
+              className="flex items-center gap-1.5 bg-brand-600 text-white hover:bg-brand-500 h-9 px-4 text-[13px] font-medium rounded-lg transition-all duration-150"
             >
               <ScanLine className="w-4 h-4" />
               명함 스캔
@@ -116,16 +114,16 @@ export default function AdminLeadsPage() {
 
         {/* Source stat chips */}
         <div className="flex flex-wrap gap-2 mb-6">
-          <div className="flex items-center gap-1.5 text-xs bg-white border border-gray-100 rounded-xl px-3 py-2">
+          <div className="flex items-center gap-1.5 text-xs bg-white border border-gray-200/60 rounded-xl px-4 py-3">
             <Users className="w-3.5 h-3.5 text-gray-400" />
             <span className="text-gray-600 font-medium">전체</span>
-            <span className="font-bold text-gray-900">{leads.length}</span>
+            <span className="font-semibold text-gray-900">{leads.length}</span>
           </div>
           {(['bizcard', 'inquiry', 'email_info', 'survey'] as Lead['source'][]).map((src) => (
-            <div key={src} className={`flex items-center gap-1.5 text-xs rounded-xl px-3 py-2 ${SOURCE_COLORS[src]}`}>
-              {SOURCE_ICONS[src]}
-              <span>{SOURCE_LABELS[src]}</span>
-              <span className="font-bold">{countBySource(src)}</span>
+            <div key={src} className="flex items-center gap-1.5 text-xs bg-white border border-gray-200/60 rounded-xl px-4 py-3">
+              <span className="text-gray-400">{SOURCE_ICONS[src]}</span>
+              <span className="text-gray-600">{SOURCE_LABELS[src]}</span>
+              <span className="font-semibold text-gray-900">{countBySource(src)}</span>
             </div>
           ))}
         </div>
@@ -138,7 +136,7 @@ export default function AdminLeadsPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="이름, 회사, 이메일 검색"
-              className="w-full h-10 text-sm bg-white border border-gray-200 rounded-xl pl-9 pr-4 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
+              className="w-full h-9 text-sm bg-white border border-gray-200 rounded-lg pl-9 pr-4 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400"
             />
           </div>
 
@@ -147,7 +145,7 @@ export default function AdminLeadsPage() {
             <select
               value={filterSource}
               onChange={(e) => setFilterSource(e.target.value as Lead['source'] | 'all')}
-              className="h-10 text-sm bg-white border border-gray-200 rounded-xl px-3 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+              className="h-9 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all"
             >
               <option value="all">전체 유형</option>
               <option value="bizcard">명함 스캔</option>
@@ -158,7 +156,7 @@ export default function AdminLeadsPage() {
             <select
               value={filterBooth}
               onChange={(e) => setFilterBooth(e.target.value)}
-              className="h-10 text-sm bg-white border border-gray-200 rounded-xl px-3 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+              className="h-9 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all"
             >
               <option value="all">전체 부스</option>
               {booths.map((b) => (
@@ -169,7 +167,7 @@ export default function AdminLeadsPage() {
         </div>
 
         {/* Lead Table */}
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-200/60 overflow-hidden">
           {filtered.length === 0 ? (
             <div className="py-16 text-center">
               <Users className="w-10 h-10 text-gray-200 mx-auto mb-3" />
@@ -179,7 +177,7 @@ export default function AdminLeadsPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-gray-50 text-xs font-medium text-gray-500">
+                  <tr className="bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <th className="text-left px-5 py-3">이름 / 이메일</th>
                     <th className="text-left px-4 py-3">회사</th>
                     <th className="text-left px-4 py-3">전화</th>
@@ -190,9 +188,9 @@ export default function AdminLeadsPage() {
                     <th className="px-4 py-3" />
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody>
                   {filtered.map((lead) => (
-                    <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
                       <td className="px-5 py-3.5">
                         <p className="text-sm font-medium text-gray-800">{lead.name ?? '-'}</p>
                         <p className="text-xs text-gray-400">{lead.email ?? '-'}</p>
@@ -200,7 +198,7 @@ export default function AdminLeadsPage() {
                       <td className="px-4 py-3.5 text-sm text-gray-600">{lead.company ?? '-'}</td>
                       <td className="px-4 py-3.5 text-xs text-gray-500 font-mono">{lead.phone ?? '-'}</td>
                       <td className="px-4 py-3.5">
-                        <span className={`inline-flex items-center gap-1 text-xs font-medium rounded-lg px-2.5 py-1 ${SOURCE_COLORS[lead.source]}`}>
+                        <span className={`h-6 px-2 rounded-md text-xs font-medium inline-flex items-center gap-1 ${SOURCE_COLORS[lead.source]}`}>
                           {SOURCE_ICONS[lead.source]}
                           {SOURCE_LABELS[lead.source]}
                         </span>
@@ -217,7 +215,7 @@ export default function AdminLeadsPage() {
                       <td className="px-4 py-3.5">
                         <button
                           onClick={() => handleDelete(lead.id)}
-                          className="p-1.5 text-gray-300 hover:text-red-400 rounded-lg hover:bg-red-50 transition-colors"
+                          className="p-1.5 text-gray-300 hover:text-red-400 rounded-md hover:bg-red-50 transition-all duration-150"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -233,20 +231,19 @@ export default function AdminLeadsPage() {
 
       {/* Lottery modal */}
       {showLottery && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-5">
-          <div className="bg-white rounded-xl p-6 max-w-sm w-full text-center shadow-card">
-            <div className="text-xl mb-4">🎉</div>
-            <h2 className="text-xl font-bold text-gray-900 mb-1">추첨 결과</h2>
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-5">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full text-center shadow-xl animate-in fade-in zoom-in-95 duration-150">
+            <h2 className="text-xl font-semibold text-gray-900 mb-1">추첨 결과</h2>
             <p className="text-sm text-gray-500 mb-6">
               {filtered.length}명 중 1명이 선택됐어요
             </p>
             {lotteryWinner && (
-              <div className="bg-brand-50 rounded-xl p-6 mb-6 text-left">
-                <p className="text-base font-bold text-brand-700 mb-1">
+              <div className="bg-gray-50 border border-gray-200/60 rounded-xl p-5 mb-6 text-left">
+                <p className="text-base font-semibold text-gray-900 mb-1">
                   {lotteryWinner.name ?? '이름 미상'}
                 </p>
                 {lotteryWinner.company && (
-                  <p className="text-sm text-brand-600">{lotteryWinner.company}</p>
+                  <p className="text-sm text-gray-600">{lotteryWinner.company}</p>
                 )}
                 {lotteryWinner.email && (
                   <p className="text-xs text-gray-500 mt-1">{lotteryWinner.email}</p>
@@ -256,13 +253,13 @@ export default function AdminLeadsPage() {
             <div className="flex gap-3">
               <button
                 onClick={handleLottery}
-                className="flex-1 h-10 bg-gray-100 text-gray-700 text-sm font-medium rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors"
+                className="flex-1 h-9 bg-white border border-gray-200 text-gray-700 text-[13px] font-medium rounded-lg flex items-center justify-center hover:bg-gray-50 transition-all duration-150"
               >
                 다시 추첨
               </button>
               <button
                 onClick={() => { setShowLottery(false); setLotteryWinner(null); }}
-                className="flex-1 h-10 bg-brand-600 text-white text-sm font-medium rounded-xl flex items-center justify-center hover:bg-brand-700 transition-colors"
+                className="flex-1 h-9 bg-brand-600 text-white text-[13px] font-medium rounded-lg flex items-center justify-center hover:bg-brand-500 transition-all duration-150"
               >
                 확인
               </button>

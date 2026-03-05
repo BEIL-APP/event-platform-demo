@@ -106,11 +106,11 @@ export default function AdminLeadsScanPage() {
       <AdminLayout>
         <div className="p-8 flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
-            <div className="w-16 h-16 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-8 h-8 text-emerald-600" />
+            <div className="w-14 h-14 bg-emerald-50 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-7 h-7 text-emerald-600" />
             </div>
-            <h2 className="text-base font-bold text-gray-900 mb-1">리드 저장 완료!</h2>
-            <p className="text-sm text-gray-400">리드 목록으로 이동합니다…</p>
+            <h2 className="text-base font-semibold text-gray-900 mb-1">리드 저장 완료!</h2>
+            <p className="text-sm text-gray-500">리드 목록으로 이동합니다…</p>
           </div>
         </div>
       </AdminLayout>
@@ -124,24 +124,24 @@ export default function AdminLeadsScanPage() {
         <div className="flex items-center gap-3 mb-8">
           <Link
             to="/admin/leads"
-            className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-all duration-150"
           >
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </Link>
           <div>
-            <h1 className="text-xl font-bold text-gray-900">명함 스캔</h1>
-            <p className="text-sm text-gray-400 mt-0.5">이미지 업로드 → 정보 추출 → 리드 저장</p>
+            <h1 className="text-xl font-semibold text-gray-900">명함 스캔</h1>
+            <p className="text-sm text-gray-500 mt-0.5">이미지 업로드 → 정보 추출 → 리드 저장</p>
           </div>
         </div>
 
         {/* Step 1: Upload */}
         {step === 'upload' && (
-          <div className="bg-white rounded-xl border border-gray-100 p-8">
+          <div className="bg-white border border-gray-200/60 rounded-xl p-6">
             <div className="flex items-center gap-2 mb-6">
-              <div className="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
-                <span className="text-xs font-bold text-white">1</span>
+              <div className="w-6 h-6 bg-gray-900 rounded-md flex items-center justify-center">
+                <span className="text-xs font-medium text-white">1</span>
               </div>
-              <h2 className="text-base font-semibold text-gray-800">명함 사진 업로드</h2>
+              <h2 className="text-base font-semibold text-gray-900">명함 사진 업로드</h2>
             </div>
 
             <input
@@ -153,13 +153,13 @@ export default function AdminLeadsScanPage() {
             />
             <button
               onClick={() => fileRef.current?.click()}
-              className="w-full border-2 border-dashed border-gray-200 rounded-xl p-12 flex flex-col items-center gap-4 hover:border-brand-300 hover:bg-brand-50 transition-all group"
+              className="w-full border border-dashed border-gray-300 rounded-xl p-10 flex flex-col items-center gap-4 hover:border-gray-400 hover:bg-gray-50 transition-all duration-150 group"
             >
-              <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center group-hover:bg-brand-100 transition-colors">
-                <Upload className="w-7 h-7 text-gray-400 group-hover:text-brand-500 transition-colors" />
+              <div className="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+                <Upload className="w-6 h-6 text-gray-400 group-hover:text-gray-600 transition-colors" />
               </div>
               <div className="text-center">
-                <p className="text-sm font-semibold text-gray-700 group-hover:text-brand-700 transition-colors">
+                <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
                   클릭하여 명함 이미지 선택
                 </p>
                 <p className="text-xs text-gray-400 mt-1">JPG, PNG, HEIC 지원</p>
@@ -177,33 +177,33 @@ export default function AdminLeadsScanPage() {
 
         {/* Step 2: Extracting / Edit */}
         {step === 'extract' && (
-          <div className="space-y-5">
+          <div className="space-y-6">
             {/* Image preview */}
             {imagePreview && (
-              <div className="bg-white rounded-xl border border-gray-100 p-6">
+              <div className="bg-white border border-gray-200/60 rounded-xl p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <ScanLine className="w-4 h-4 text-brand-600" />
-                  <h2 className="text-sm font-semibold text-gray-800">업로드된 명함</h2>
+                  <ScanLine className="w-4 h-4 text-gray-500" />
+                  <h2 className="text-sm font-semibold text-gray-900">업로드된 명함</h2>
                 </div>
                 <img
                   src={imagePreview}
                   alt="명함"
-                  className="max-h-48 rounded-xl object-contain bg-gray-50 w-full border border-gray-100"
+                  className="max-h-48 rounded-xl object-contain bg-gray-50 w-full border border-gray-200/60"
                 />
               </div>
             )}
 
             {/* Extraction status */}
-            <div className="bg-white rounded-xl border border-gray-100 p-6">
+            <div className="bg-white border border-gray-200/60 rounded-xl p-6">
               <div className="flex items-center gap-2 mb-5">
-                <div className="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
-                  <span className="text-xs font-bold text-white">2</span>
+                <div className="w-6 h-6 bg-gray-900 rounded-md flex items-center justify-center">
+                  <span className="text-xs font-medium text-white">2</span>
                 </div>
-                <h2 className="text-base font-semibold text-gray-800">
+                <h2 className="text-base font-semibold text-gray-900">
                   {extracting ? '정보 추출 중…' : '추출 결과 확인 및 수정'}
                 </h2>
                 {!extracting && (
-                  <span className="flex items-center gap-1 text-xs text-emerald-600 bg-emerald-50 rounded-lg px-2 py-0.5 ml-auto">
+                  <span className="h-6 px-2 rounded-md text-xs font-medium inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 ml-auto">
                     <Sparkles className="w-3 h-3" />
                     AI 추출 완료
                   </span>
@@ -213,7 +213,7 @@ export default function AdminLeadsScanPage() {
               {extracting ? (
                 <div className="space-y-3">
                   {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="h-12 bg-gray-100 rounded-xl animate-pulse" />
+                    <div key={i} className="h-10 bg-gray-100 rounded-lg animate-pulse" />
                   ))}
                 </div>
               ) : (
@@ -234,7 +234,7 @@ export default function AdminLeadsScanPage() {
                         value={form[key]}
                         onChange={(e) => handleFormChange(key, e.target.value)}
                         placeholder={placeholder}
-                        className="w-full h-10 text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
+                        className="w-full h-9 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400"
                       />
                     </div>
                   ))}
@@ -244,12 +244,12 @@ export default function AdminLeadsScanPage() {
 
             {/* Memo + Booth + Save */}
             {!extracting && (
-              <div className="bg-white rounded-xl border border-gray-100 p-6">
+              <div className="bg-white border border-gray-200/60 rounded-xl p-6">
                 <div className="flex items-center gap-2 mb-5">
-                  <div className="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">3</span>
+                  <div className="w-6 h-6 bg-gray-900 rounded-md flex items-center justify-center">
+                    <span className="text-xs font-medium text-white">3</span>
                   </div>
-                  <h2 className="text-base font-semibold text-gray-800">메모 & 저장</h2>
+                  <h2 className="text-base font-semibold text-gray-900">메모 & 저장</h2>
                 </div>
 
                 {/* Booth selector */}
@@ -258,7 +258,7 @@ export default function AdminLeadsScanPage() {
                   <select
                     value={selectedBooth}
                     onChange={(e) => setSelectedBooth(e.target.value)}
-                    className="w-full h-10 text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 outline-none focus:ring-2 focus:ring-brand-300 transition-all"
+                    className="w-full h-9 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all"
                   >
                     {booths.map((b) => (
                       <option key={b.id} value={b.id}>{b.name}</option>
@@ -277,14 +277,14 @@ export default function AdminLeadsScanPage() {
                     onChange={(e) => setMemo(e.target.value)}
                     placeholder="상담 내용, 다음 액션, 관심 제품 등을 적어두세요"
                     rows={3}
-                    className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 resize-none outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
+                    className="w-full text-sm bg-white border border-gray-200 rounded-lg px-3 py-3 resize-none outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400"
                   />
                 </div>
 
                 {/* Consent notice */}
-                <div className="mb-5 flex items-start gap-2 p-3 bg-brand-50 rounded-xl">
-                  <CheckCircle className="w-4 h-4 text-brand-600 mt-0.5 shrink-0" />
-                  <p className="text-xs text-brand-700">
+                <div className="mb-5 flex items-start gap-2 p-3 bg-gray-50 border border-gray-200/60 rounded-lg">
+                  <CheckCircle className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
+                  <p className="text-xs text-gray-600">
                     명함 스캔으로 수집된 정보는 운영자가 직접 입력·동의 확인한 것으로
                     간주하며, 개인정보 처리 내규에 따라 관리됩니다.
                   </p>
@@ -293,14 +293,14 @@ export default function AdminLeadsScanPage() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => { setStep('upload'); setImagePreview(null); setForm({ name: '', company: '', phone: '', email: '' }); }}
-                    className="flex-1 h-10 bg-gray-100 text-gray-700 text-sm font-medium rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors"
+                    className="flex-1 h-10 bg-white border border-gray-200 text-gray-700 text-[13px] font-medium rounded-lg flex items-center justify-center hover:bg-gray-50 transition-all duration-150"
                   >
                     다시 스캔
                   </button>
                   <button
                     onClick={handleSave}
                     disabled={!memo.trim()}
-                    className="flex-1 h-10 bg-brand-600 text-white text-sm font-medium rounded-xl flex items-center justify-center hover:bg-brand-700 transition-colors disabled:opacity-50"
+                    className="flex-1 h-10 bg-brand-600 text-white text-[13px] font-medium rounded-lg flex items-center justify-center hover:bg-brand-500 transition-all duration-150 disabled:opacity-50"
                   >
                     리드로 저장
                   </button>

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { PlusCircle, QrCode, Eye, ChevronRight, BarChart3 } from 'lucide-react';
+import { PlusCircle, QrCode, Eye, ChevronRight } from 'lucide-react';
 import { AdminLayout } from '../../components/AdminLayout';
 import { useBooths } from '../../hooks/useBooths';
 import { useAnalytics } from '../../hooks/useAnalytics';
@@ -16,12 +16,12 @@ export default function AdminBoothsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">내 부스</h1>
-            <p className="text-sm text-gray-400 mt-1">총 {booths.length}개 부스 운영 중</p>
+            <h1 className="text-xl font-semibold text-gray-900">내 부스</h1>
+            <p className="text-sm text-gray-500 mt-1">총 {booths.length}개 부스 운영 중</p>
           </div>
           <Link
             to="/admin/booths/new"
-            className="flex items-center gap-2 h-10 bg-brand-600 text-white text-sm font-medium rounded-xl px-4 hover:bg-brand-700 transition-colors"
+            className="flex items-center gap-2 h-9 bg-brand-600 text-white text-[13px] font-medium rounded-lg px-4 hover:bg-brand-500 transition-all duration-150"
           >
             <PlusCircle className="w-4 h-4" />
             새 부스 만들기
@@ -30,13 +30,13 @@ export default function AdminBoothsPage() {
 
         {/* Booths Grid */}
         {booths.length === 0 ? (
-          <div className="text-center py-24 bg-white rounded-xl border border-gray-100">
-            <QrCode className="w-12 h-12 text-gray-200 mx-auto mb-4" />
-            <p className="text-gray-500 font-medium mb-1">아직 부스가 없어요</p>
-            <p className="text-sm text-gray-400 mb-6">첫 번째 부스를 만들어보세요</p>
+          <div className="text-center py-24 bg-white rounded-xl border border-gray-200/60">
+            <QrCode className="w-10 h-10 text-gray-300 mx-auto mb-4" />
+            <p className="text-sm text-gray-500 font-medium mb-1">아직 부스가 없어요</p>
+            <p className="text-xs text-gray-400 mt-1 mb-6">첫 번째 부스를 만들어보세요</p>
             <Link
               to="/admin/booths/new"
-              className="inline-flex items-center gap-2 h-10 bg-brand-600 text-white text-sm font-medium rounded-xl px-5 hover:bg-brand-700 transition-colors"
+              className="inline-flex items-center gap-2 h-9 bg-brand-600 text-white text-[13px] font-medium rounded-lg px-4 hover:bg-brand-500 transition-all duration-150"
             >
               <PlusCircle className="w-4 h-4" />
               부스 만들기
@@ -50,11 +50,11 @@ export default function AdminBoothsPage() {
                 <Link
                   key={booth.id}
                   to={`/admin/booths/${booth.id}`}
-                  className="bg-white rounded-xl border border-gray-100 p-6 hover:shadow-card-hover transition-shadow group"
+                  className="bg-white rounded-xl border border-gray-200/60 p-6 hover:border-gray-300 hover:shadow-card-hover transition-all duration-150 group"
                 >
                   <div className="flex items-start gap-4">
                     {/* Thumbnail */}
-                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+                    <div className="w-14 h-14 rounded-xl overflow-hidden bg-gray-100 shrink-0">
                       {booth.images[0] ? (
                         <img
                           src={booth.images[0]}
@@ -66,37 +66,37 @@ export default function AdminBoothsPage() {
                           }}
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-xl">🏪</div>
+                        <div className="w-full h-full flex items-center justify-center text-lg">🏪</div>
                       )}
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-medium text-brand-600 bg-brand-50 rounded-lg px-2.5 py-0.5">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="inline-flex items-center h-5 px-2 text-xs font-medium text-gray-600 bg-gray-100 rounded-md">
                           {booth.category}
                         </span>
-                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors" />
+                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-all duration-150" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-0.5">{booth.name}</h3>
+                      <h3 className="text-sm font-semibold text-gray-900 mb-0.5">{booth.name}</h3>
                       <p className="text-xs text-gray-400 truncate">{booth.tagline}</p>
 
                       {/* Stats mini */}
                       {stats && (
-                        <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-50">
-                          <div className="flex items-center gap-1 text-xs text-gray-500">
-                            <Eye className="w-3 h-3" />
-                            <span>{stats.scans}</span>
-                            <span className="text-gray-300">스캔</span>
+                        <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-100">
+                          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                            <Eye className="w-3.5 h-3.5 text-gray-400" />
+                            <span className="font-medium text-gray-700">{stats.scans}</span>
+                            <span className="text-gray-400">스캔</span>
                           </div>
-                          <div className="flex items-center gap-1 text-xs text-gray-500">
-                            <span>♥</span>
-                            <span>{stats.favorites}</span>
-                            <span className="text-gray-300">관심</span>
+                          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                            <span className="text-gray-400">♥</span>
+                            <span className="font-medium text-gray-700">{stats.favorites}</span>
+                            <span className="text-gray-400">관심</span>
                           </div>
-                          <div className="flex items-center gap-1 text-xs text-gray-500">
-                            <span>✉</span>
-                            <span>{stats.inquiries}</span>
-                            <span className="text-gray-300">문의</span>
+                          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                            <span className="text-gray-400">✉</span>
+                            <span className="font-medium text-gray-700">{stats.inquiries}</span>
+                            <span className="text-gray-400">문의</span>
                           </div>
                         </div>
                       )}
@@ -110,35 +110,17 @@ export default function AdminBoothsPage() {
 
         {/* Summary cards */}
         {booths.length > 0 && (
-          <div className="mt-8 bg-white rounded-xl border border-gray-100 p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <BarChart3 className="w-4 h-4 text-brand-600" />
-              <h2 className="text-sm font-semibold text-gray-800">전체 통계 요약</h2>
-            </div>
-            <div className="grid grid-cols-3 gap-4">
+          <div className="mt-8">
+            <h2 className="text-[13px] font-medium text-gray-500 uppercase tracking-wider mb-4">전체 통계 요약</h2>
+            <div className="grid grid-cols-3 gap-6">
               {[
-                {
-                  label: '총 스캔',
-                  value: analytics.reduce((s, a) => s + a.scans, 0),
-                  color: 'text-brand-600',
-                  bg: 'bg-brand-50',
-                },
-                {
-                  label: '총 관심',
-                  value: analytics.reduce((s, a) => s + a.favorites, 0),
-                  color: 'text-brand-600',
-                  bg: 'bg-brand-50',
-                },
-                {
-                  label: '총 문의',
-                  value: analytics.reduce((s, a) => s + a.inquiries, 0),
-                  color: 'text-brand-600',
-                  bg: 'bg-brand-50',
-                },
+                { label: '총 스캔', value: analytics.reduce((s, a) => s + a.scans, 0) },
+                { label: '총 관심', value: analytics.reduce((s, a) => s + a.favorites, 0) },
+                { label: '총 문의', value: analytics.reduce((s, a) => s + a.inquiries, 0) },
               ].map((stat) => (
-                <div key={stat.label} className={`${stat.bg} rounded-xl p-4 text-center`}>
-                  <p className={`text-xl font-bold ${stat.color}`}>{stat.value}</p>
-                  <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
+                <div key={stat.label} className="bg-white border border-gray-200/60 rounded-xl p-6">
+                  <p className="text-2xl font-semibold text-gray-900">{stat.value}</p>
+                  <p className="text-sm text-gray-500 mt-1">{stat.label}</p>
                 </div>
               ))}
             </div>

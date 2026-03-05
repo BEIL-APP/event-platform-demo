@@ -17,36 +17,36 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="bg-gray-50 min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-10">
-          <div className="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center">
-            <QrCode className="w-5 h-5 text-white" />
+        <div className="flex items-center justify-center gap-2.5 mb-10">
+          <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
+            <QrCode className="w-4 h-4 text-white" />
           </div>
           <div>
-            <div className="font-bold text-gray-900">BoothLiner</div>
+            <div className="font-semibold text-gray-900 text-sm">BoothLiner</div>
             <div className="text-xs text-gray-400">운영자 대시보드</div>
           </div>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-xl shadow-card px-6 py-8">
-          <h1 className="text-xl font-bold text-gray-900 mb-2">운영자 로그인</h1>
-          <p className="text-sm text-gray-400 mb-8">
+        <div className="bg-white rounded-xl border border-gray-200/60 shadow-card p-8">
+          <h1 className="text-xl font-semibold text-gray-900 mb-1.5">운영자 로그인</h1>
+          <p className="text-sm text-gray-500 mb-8">
             데모 환경입니다. 버튼 하나로 로그인하세요.
           </p>
 
-          <div className="bg-brand-50 border border-brand-100 rounded-xl px-4 py-4 mb-6 flex items-start gap-2.5">
-            <Zap className="w-4 h-4 text-brand-500 mt-0.5 shrink-0" />
-            <p className="text-xs text-brand-700 leading-relaxed">
-              <span className="font-medium">데모 모드:</span> 실제 인증 없이 모든 운영자 기능을 체험할 수 있습니다.
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-6 flex items-start gap-2.5">
+            <Zap className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
+            <p className="text-xs text-gray-600 leading-relaxed">
+              <span className="font-medium text-gray-700">데모 모드:</span> 실제 인증 없이 모든 운영자 기능을 체험할 수 있습니다.
             </p>
           </div>
 
           <button
             onClick={handleLogin}
-            className="w-full h-10 flex items-center justify-center bg-brand-600 text-white font-medium rounded-xl hover:bg-brand-700 transition-colors"
+            className="w-full h-10 flex items-center justify-center bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-all duration-150 text-sm"
           >
             데모 로그인으로 시작하기
           </button>
@@ -54,7 +54,7 @@ export default function AdminLoginPage() {
 
         <p className="text-center text-xs text-gray-400 mt-6">
           관람객 화면은{' '}
-          <a href="/scan/booth-001" className="text-brand-600 hover:underline">
+          <a href="/scan/booth-001" className="text-gray-600 hover:text-gray-900 underline underline-offset-2 transition-colors">
             /scan/booth-001
           </a>{' '}
           에서 확인하세요

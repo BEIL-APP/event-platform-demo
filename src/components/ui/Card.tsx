@@ -19,8 +19,10 @@ export function Card({
     <Tag
       onClick={onClick}
       className={[
-        'bg-white border border-gray-200 rounded-xl shadow-card',
-        clickable ? 'hover:shadow-card-hover transition-all cursor-pointer' : '',
+        'bg-white border border-gray-200/60 rounded-xl',
+        clickable
+          ? 'hover:border-gray-300 hover:shadow-card-hover transition-all duration-150 cursor-pointer'
+          : '',
         Tag === 'button' ? 'text-left w-full' : '',
         className,
       ].join(' ')}

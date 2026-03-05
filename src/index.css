@@ -17,8 +17,12 @@
     box-sizing: border-box;
   }
 
-  *:focus-visible {
-    @apply outline-none ring-2 ring-brand-500/30 ring-offset-1;
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-500/25 ring-offset-1;
+  }
+
+  ::selection {
+    @apply bg-brand-100 text-brand-900;
   }
 }
 

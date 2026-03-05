@@ -57,12 +57,12 @@ export default function SignupPage() {
 
   if (done) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="bg-gray-50 min-h-screen flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-8 h-8 text-emerald-600" />
+          <div className="bg-emerald-50 rounded-xl w-14 h-14 flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-7 h-7 text-emerald-600" />
           </div>
-          <h2 className="text-base font-bold text-gray-900 mb-1">가입 완료!</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-1">가입 완료!</h2>
           <p className="text-sm text-gray-500">잠시 후 이동합니다…</p>
         </div>
       </div>
@@ -70,31 +70,31 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
+    <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-4">
       {/* Logo */}
-      <div className="flex items-center gap-2.5 mb-8">
-        <div className="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center">
+      <div className="flex items-center gap-2 mb-8">
+        <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
           <QrCode className="w-4 h-4 text-white" />
         </div>
-        <div className="text-base font-bold text-gray-900">BoothLiner</div>
+        <span className="text-sm font-semibold text-gray-900">BoothLiner</span>
       </div>
 
-      <div className="w-full max-w-sm bg-white rounded-xl shadow-card p-8">
+      <div className="bg-white rounded-xl border border-gray-200/60 shadow-card p-8 w-full max-w-sm">
         {/* Back */}
         <Link
           to="/auth"
-          className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 mb-6 transition-colors"
+          className="inline-flex items-center gap-1.5 text-[13px] text-gray-500 hover:text-gray-700 mb-6 transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           뒤로
         </Link>
 
         <div className="mb-6">
-          <div className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-600 bg-brand-50 rounded-lg px-2.5 py-1 mb-3">
+          <span className="inline-flex items-center bg-gray-100 text-gray-600 rounded-md text-xs px-2 h-5 mb-3">
             {isOrganizer ? '기업 (운영자)' : '개인 (관람객)'}
-          </div>
-          <h1 className="text-xl font-bold text-gray-900">이메일로 가입</h1>
-          <p className="text-sm text-gray-400 mt-1">
+          </span>
+          <h1 className="text-xl font-semibold text-gray-900">이메일로 가입</h1>
+          <p className="text-sm text-gray-500 mt-1">
             {isOrganizer ? '부스를 만들고 리드를 관리하세요' : '관심 부스를 저장하고 문의하세요'}
           </p>
         </div>
@@ -102,52 +102,52 @@ export default function SignupPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1.5">이름</label>
+            <label className="block text-[13px] font-medium text-gray-700 mb-1.5">이름</label>
             <input
               type="text"
               value={form.name}
               onChange={(e) => handleChange('name', e.target.value)}
               placeholder="홍길동"
-              className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-4 h-10 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
+              className="w-full h-10 bg-white border border-gray-200 rounded-lg px-3 text-sm focus:ring-2 focus:ring-brand-200 focus:border-brand-400 outline-none transition-all placeholder:text-gray-400"
             />
           </div>
 
           {/* Company (organizer only) */}
           {isOrganizer && (
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">회사명</label>
+              <label className="block text-[13px] font-medium text-gray-700 mb-1.5">회사명</label>
               <input
                 type="text"
                 value={form.company}
                 onChange={(e) => handleChange('company', e.target.value)}
                 placeholder="(주)예시컴퍼니"
-                className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-4 h-10 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
+                className="w-full h-10 bg-white border border-gray-200 rounded-lg px-3 text-sm focus:ring-2 focus:ring-brand-200 focus:border-brand-400 outline-none transition-all placeholder:text-gray-400"
               />
             </div>
           )}
 
           {/* Email */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1.5">이메일</label>
+            <label className="block text-[13px] font-medium text-gray-700 mb-1.5">이메일</label>
             <input
               type="email"
               value={form.email}
               onChange={(e) => handleChange('email', e.target.value)}
               placeholder="name@company.com"
-              className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-4 h-10 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
+              className="w-full h-10 bg-white border border-gray-200 rounded-lg px-3 text-sm focus:ring-2 focus:ring-brand-200 focus:border-brand-400 outline-none transition-all placeholder:text-gray-400"
             />
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1.5">비밀번호</label>
+            <label className="block text-[13px] font-medium text-gray-700 mb-1.5">비밀번호</label>
             <div className="relative">
               <input
                 type={showPw ? 'text' : 'password'}
                 value={form.password}
                 onChange={(e) => handleChange('password', e.target.value)}
                 placeholder="6자 이상"
-                className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-4 h-10 pr-10 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400"
+                className="w-full h-10 bg-white border border-gray-200 rounded-lg px-3 pr-10 text-sm focus:ring-2 focus:ring-brand-200 focus:border-brand-400 outline-none transition-all placeholder:text-gray-400"
               />
               <button
                 type="button"
@@ -165,7 +165,7 @@ export default function SignupPage() {
               type="checkbox"
               checked={form.agree}
               onChange={(e) => handleChange('agree', e.target.checked)}
-              className="mt-0.5 w-4 h-4 rounded text-brand-600 accent-brand-600"
+              className="mt-0.5 w-4 h-4 rounded text-gray-900 accent-gray-900"
             />
             <span className="text-xs text-gray-500 leading-relaxed">
               <span className="font-medium text-gray-700">이용약관</span> 및{' '}
@@ -182,7 +182,7 @@ export default function SignupPage() {
           <button
             type="submit"
             disabled={!isValid}
-            className="w-full bg-brand-600 text-white text-sm font-medium rounded-xl h-10 hover:bg-brand-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed mt-2"
+            className="w-full h-10 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed mt-2"
           >
             {isOrganizer ? '운영자 계정 만들기' : '관람객으로 가입하기'}
           </button>
@@ -190,15 +190,15 @@ export default function SignupPage() {
 
         {/* Divider */}
         <div className="flex items-center gap-3 my-5">
-          <div className="flex-1 h-px bg-gray-100" />
+          <div className="flex-1 h-px bg-gray-200" />
           <span className="text-xs text-gray-400">또는</span>
-          <div className="flex-1 h-px bg-gray-100" />
+          <div className="flex-1 h-px bg-gray-200" />
         </div>
 
         {/* OAuth */}
         <Link
           to="/auth/oauth"
-          className="block text-center text-sm text-brand-600 hover:text-brand-700 font-medium transition-colors"
+          className="block text-center text-[13px] text-gray-500 hover:text-gray-700 font-medium transition-colors"
         >
           소셜 계정으로 빠르게 가입 →
         </Link>

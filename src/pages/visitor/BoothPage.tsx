@@ -117,7 +117,6 @@ export default function BoothPage() {
       setFav(checkFav(boothId));
       setPolicy(getBoothPolicy(boothId));
       setAttachments(getBoothAttachments(boothId));
-      // Check if already surveyed this session
       const surveys = getBoothSurveys(boothId);
       const guestId = getGuestId();
       setSurveyDone(surveys.some((s) => s.visitorId === guestId));
@@ -159,7 +158,6 @@ export default function BoothPage() {
     if (!inquiryText.trim() || !boothId) return;
     if (!isLoggedIn && (!inquiryEmail.includes('@') || !inquiryAbuseCheck)) return;
 
-    // Rate limit check: 3 inquiries per day per visitor per booth
     const guestId = getGuestId();
     const rateLimitKey = `${guestId}:${boothId}:inquiry`;
     if (checkRateLimit(rateLimitKey, 3)) {
@@ -211,7 +209,6 @@ export default function BoothPage() {
 
   const handleSendEmailInfo = () => {
     if (!emailInfoAddr.includes('@') || !emailInfoConsent || !boothId) return;
-    // Save as lead
     saveLead({
       id: `lead-${Date.now()}`,
       boothId,
@@ -248,7 +245,6 @@ export default function BoothPage() {
     };
     saveSurvey(response);
 
-    // If wants contact, save as survey lead
     if (surveyWantsContact) {
       saveLead({
         id: `lead-survey-${Date.now()}`,
@@ -292,7 +288,7 @@ export default function BoothPage() {
               }}
             />
           ) : (
-            <div className="w-full aspect-[4/3] bg-brand-50 flex items-center justify-center">
+            <div className="w-full aspect-[4/3] bg-gray-100 flex items-center justify-center">
               <span className="text-5xl">🏪</span>
             </div>
           )}
@@ -304,7 +300,7 @@ export default function BoothPage() {
                 <button
                   key={i}
                   onClick={() => setImgIndex(i)}
-                  className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                  className={`w-1.5 h-1.5 rounded-full transition-all duration-150 ${
                     i === imgIndex ? 'bg-white' : 'bg-white/50'
                   }`}
                 />
@@ -317,13 +313,13 @@ export default function BoothPage() {
             <>
               <button
                 onClick={() => setImgIndex((p) => (p - 1 + booth.images.length) % booth.images.length)}
-                className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition-colors"
+                className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition-all duration-150"
               >
                 <ArrowLeft className="w-4 h-4 text-gray-700" />
               </button>
               <button
                 onClick={() => setImgIndex((p) => (p + 1) % booth.images.length)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition-all duration-150"
               >
                 <ArrowLeft className="w-4 h-4 text-gray-700 rotate-180" />
               </button>
@@ -332,7 +328,7 @@ export default function BoothPage() {
 
           {/* Expired overlay badge */}
           {expired && (
-            <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-gray-900/80 text-white text-xs font-medium px-3 py-1.5 rounded-lg backdrop-blur-sm">
+            <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-gray-900/80 text-white text-xs font-medium px-2.5 py-1 rounded-md backdrop-blur-sm">
               <Clock className="w-3.5 h-3.5" />
               운영 종료
             </div>
@@ -340,7 +336,7 @@ export default function BoothPage() {
 
           {/* Active badge */}
           {!expired && active && policy && (
-            <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-emerald-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg backdrop-blur-sm">
+            <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-emerald-500 text-white text-xs font-medium px-2.5 py-1 rounded-md backdrop-blur-sm">
               <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
               운영중
             </div>
@@ -348,14 +344,14 @@ export default function BoothPage() {
         </div>
 
         {/* Content */}
-        <div className="bg-white px-6 pt-6 pb-6">
+        <div className="bg-white px-4 pt-4 pb-6">
           {/* Category + policy */}
           <div className="flex items-center gap-2 mb-3">
-            <span className="inline-block text-xs font-medium text-brand-600 bg-brand-50 rounded-lg px-2.5 py-0.5">
+            <span className="inline-flex items-center text-xs font-medium text-gray-600 bg-gray-100 rounded-md px-2 h-5">
               {booth.category}
             </span>
             {expired && (
-              <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-500 bg-gray-100 rounded-lg px-2.5 py-0.5">
+              <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-500 bg-gray-100 rounded-md px-2 h-5">
                 <AlertCircle className="w-3 h-3" />
                 {new Date(policy!.endAt).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })} 종료
               </span>
@@ -363,12 +359,12 @@ export default function BoothPage() {
           </div>
 
           {/* Name + Tagline */}
-          <h1 className="text-xl font-bold text-gray-900 mb-1">{booth.name}</h1>
-          <p className="text-sm text-gray-500 mb-4 leading-relaxed">{booth.tagline}</p>
+          <h1 className="text-lg font-semibold text-gray-900 mb-1">{booth.name}</h1>
+          <p className="text-[13px] text-gray-500 mb-4 leading-relaxed">{booth.tagline}</p>
 
           {/* Login nudge (temporary banner) */}
           {showLoginNudge && (
-            <div className="mb-4 bg-brand-50 border border-brand-100 rounded-xl px-4 py-3 flex items-center gap-2">
+            <div className="mb-4 bg-brand-50 border border-brand-100 rounded-lg px-3 py-2.5 flex items-center gap-2">
               <LogIn className="w-4 h-4 text-brand-500 shrink-0" />
               <p className="text-xs text-brand-700">
                 <Link to="/auth" className="font-semibold underline">로그인</Link>하면 기기가 바뀌어도 저장 목록이 유지돼요
@@ -380,10 +376,10 @@ export default function BoothPage() {
           <div className="flex gap-2 mb-3">
             <button
               onClick={handleToggleFav}
-              className={`flex-1 flex items-center justify-center gap-2 h-10 rounded-xl text-sm font-medium transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 h-10 rounded-lg text-sm font-medium transition-all duration-150 ${
                 fav
                   ? 'bg-brand-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-brand-50 hover:text-brand-600'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               <Heart className={`w-4 h-4 ${fav ? 'fill-current' : ''}`} />
@@ -393,14 +389,14 @@ export default function BoothPage() {
               onClick={() => setShowInquiry(true)}
               disabled={!inquiryAllowed}
               title={!inquiryAllowed ? '운영 종료 후 문의가 닫혔습니다' : undefined}
-              className="flex-1 flex items-center justify-center gap-2 h-10 rounded-xl text-sm font-medium bg-brand-600 text-white hover:bg-brand-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex-1 flex items-center justify-center gap-2 h-10 rounded-lg text-sm font-medium bg-brand-600 text-white hover:bg-brand-500 transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <MessageSquare className="w-4 h-4" />
               {!inquiryAllowed ? '문의 마감' : '문의하기'}
             </button>
             <button
               onClick={handleShare}
-              className="w-12 flex items-center justify-center h-10 rounded-xl text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+              className="w-12 flex items-center justify-center h-10 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all duration-150"
               title="공유하기"
             >
               <Share2 className="w-4 h-4" />
@@ -410,7 +406,7 @@ export default function BoothPage() {
           {/* Email info CTA */}
           <button
             onClick={() => setShowEmailInfo(true)}
-            className="w-full flex items-center justify-center gap-2 h-10 rounded-xl text-sm font-medium border border-brand-200 text-brand-700 bg-brand-50 hover:bg-brand-100 transition-colors mb-6"
+            className="w-full flex items-center justify-center gap-2 h-10 rounded-lg text-sm font-medium border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-all duration-150 mb-6"
           >
             <Mail className="w-4 h-4" />
             이메일로 자료 받기
@@ -418,19 +414,19 @@ export default function BoothPage() {
 
           {/* Description */}
           <div className="mb-6">
-            <h2 className="text-sm font-semibold text-gray-800 mb-2">소개</h2>
+            <h2 className="text-[13px] font-semibold text-gray-900 mb-3">소개</h2>
             <p className="text-sm text-gray-600 leading-relaxed">{booth.description}</p>
           </div>
 
           {/* Attachments / Brochure */}
           {attachments.length > 0 && (
             <div className="mb-6">
-              <h2 className="text-sm font-semibold text-gray-800 mb-3">첨부 자료</h2>
+              <h2 className="text-[13px] font-semibold text-gray-900 mb-3">첨부 자료</h2>
               <div className="space-y-2">
                 {attachments.map((att) => (
                   <div
                     key={att.id}
-                    className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-xl px-4 py-3"
+                    className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5"
                   >
                     <span className="text-xl">{getFileIcon(att.filename)}</span>
                     <div className="flex-1 min-w-0">
@@ -439,7 +435,7 @@ export default function BoothPage() {
                     </div>
                     <button
                       onClick={() => showToast('다운로드 기능은 실제 연동 시 제공됩니다 (데모)', 'info')}
-                      className="flex items-center gap-1 text-xs text-brand-600 font-medium hover:text-brand-700 transition-colors"
+                      className="flex items-center gap-1 text-xs text-brand-600 font-medium hover:text-brand-700 transition-all duration-150"
                     >
                       <FileDown className="w-3.5 h-3.5" />
                       다운로드
@@ -453,16 +449,16 @@ export default function BoothPage() {
           {/* Links */}
           {(booth.links.instagram || booth.links.store || booth.links.site) && (
             <div className="mb-6">
-              <h2 className="text-sm font-semibold text-gray-800 mb-3">링크</h2>
+              <h2 className="text-[13px] font-semibold text-gray-900 mb-3">링크</h2>
               <div className="flex flex-wrap gap-2">
                 {booth.links.instagram && (
                   <a
                     href={booth.links.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-xs text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors rounded-lg px-3 py-2"
+                    className="flex items-center gap-1.5 text-xs text-gray-600 bg-gray-50 hover:bg-gray-100 transition-all duration-150 rounded-lg px-3 py-2"
                   >
-                    <Instagram className="w-3.5 h-3.5 text-brand-500" />
+                    <Instagram className="w-3.5 h-3.5 text-gray-500" />
                     인스타그램
                   </a>
                 )}
@@ -471,9 +467,9 @@ export default function BoothPage() {
                     href={booth.links.store}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-xs text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors rounded-lg px-3 py-2"
+                    className="flex items-center gap-1.5 text-xs text-gray-600 bg-gray-50 hover:bg-gray-100 transition-all duration-150 rounded-lg px-3 py-2"
                   >
-                    <ShoppingBag className="w-3.5 h-3.5 text-amber-500" />
+                    <ShoppingBag className="w-3.5 h-3.5 text-gray-500" />
                     스토어
                   </a>
                 )}
@@ -482,9 +478,9 @@ export default function BoothPage() {
                     href={booth.links.site}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-xs text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors rounded-lg px-3 py-2"
+                    className="flex items-center gap-1.5 text-xs text-gray-600 bg-gray-50 hover:bg-gray-100 transition-all duration-150 rounded-lg px-3 py-2"
                   >
-                    <Globe className="w-3.5 h-3.5 text-brand-500" />
+                    <Globe className="w-3.5 h-3.5 text-gray-500" />
                     홈페이지
                   </a>
                 )}
@@ -495,13 +491,13 @@ export default function BoothPage() {
           {/* FAQ */}
           {booth.faq.length > 0 && (
             <div className="mb-6">
-              <h2 className="text-sm font-semibold text-gray-800 mb-3">자주 묻는 질문</h2>
+              <h2 className="text-[13px] font-semibold text-gray-900 mb-3">자주 묻는 질문</h2>
               <div className="space-y-2">
                 {booth.faq.map((item, i) => (
-                  <div key={i} className="border border-gray-100 rounded-xl overflow-hidden">
+                  <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
                     <button
                       onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                      className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+                      className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-all duration-150"
                     >
                       <span className="text-sm font-medium text-gray-800 pr-4">
                         {item.question}
@@ -526,16 +522,16 @@ export default function BoothPage() {
           {/* Next Events */}
           {booth.nextEvents.length > 0 && (
             <div className="mb-6">
-              <h2 className="text-sm font-semibold text-gray-800 mb-3">다음 이벤트</h2>
+              <h2 className="text-[13px] font-semibold text-gray-900 mb-3">다음 이벤트</h2>
               <div className="space-y-2">
                 {booth.nextEvents.map((ev, i) => (
-                  <div key={i} className="bg-brand-50 rounded-xl px-4 py-3">
-                    <p className="text-sm font-medium text-brand-800">{ev.title}</p>
+                  <div key={i} className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <p className="text-sm font-medium text-gray-900">{ev.title}</p>
                     <div className="flex items-center gap-3 mt-1.5">
-                      <span className="flex items-center gap-1 text-xs text-brand-600">
+                      <span className="flex items-center gap-1 text-xs text-gray-500">
                         <Calendar className="w-3 h-3" /> {ev.date}
                       </span>
-                      <span className="flex items-center gap-1 text-xs text-brand-600">
+                      <span className="flex items-center gap-1 text-xs text-gray-500">
                         <MapPin className="w-3 h-3" /> {ev.location}
                       </span>
                     </div>
@@ -546,10 +542,10 @@ export default function BoothPage() {
           )}
 
           {/* Survey CTA */}
-          <div className="bg-brand-50 border border-brand-100 rounded-xl px-6 py-4">
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-1.5">
-              <ClipboardList className="w-4 h-4 text-brand-600" />
-              <span className="text-sm font-semibold text-gray-800">1분 설문에 참여해보세요</span>
+              <ClipboardList className="w-4 h-4 text-gray-500" />
+              <span className="text-[13px] font-semibold text-gray-900">1분 설문에 참여해보세요</span>
             </div>
             <p className="text-xs text-gray-500 mb-3">
               관심 분야와 방문 목적을 알려주시면 더 좋은 정보를 드릴 수 있어요
@@ -557,7 +553,7 @@ export default function BoothPage() {
             <button
               onClick={() => setShowSurvey(true)}
               disabled={surveyDone}
-              className="w-full bg-brand-600 text-white text-sm font-medium rounded-xl h-10 hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-brand-600 text-white text-sm font-medium rounded-lg h-10 hover:bg-brand-500 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {surveyDone ? '설문 완료 ✓' : '설문 참여하기'}
             </button>
@@ -566,11 +562,11 @@ export default function BoothPage() {
 
         {/* Login nudge banner (bottom) */}
         {!isLoggedIn && (
-          <div className="mx-4 mt-3 bg-brand-50 border border-brand-100 rounded-xl px-4 py-4">
-            <p className="text-xs text-brand-700 leading-relaxed">
+          <div className="mx-4 mt-3 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+            <p className="text-xs text-gray-600 leading-relaxed">
               <span className="font-medium">로그인하면</span> 문의 답변 알림과 저장 목록을 어디서든
               확인할 수 있어요.{' '}
-              <Link to="/auth" className="underline font-medium">지금 가입하기 →</Link>
+              <Link to="/auth" className="underline font-medium text-brand-600">지금 가입하기 →</Link>
             </p>
           </div>
         )}
@@ -589,7 +585,7 @@ export default function BoothPage() {
             </p>
             <button
               onClick={handleCloseInquiry}
-              className="w-full bg-brand-600 text-white text-sm font-medium rounded-xl h-10 hover:bg-brand-700 transition-colors"
+              className="w-full bg-brand-600 text-white text-sm font-medium rounded-lg h-10 hover:bg-brand-500 transition-all duration-150"
             >
               확인
             </button>
@@ -597,7 +593,7 @@ export default function BoothPage() {
         ) : (
           <>
             {isLoggedIn ? (
-              <p className="text-xs text-emerald-600 bg-emerald-50 rounded-xl px-3 py-2 mb-3">
+              <p className="text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 mb-3">
                 로그인 상태로 문의합니다. 답변 알림을 받을 수 있어요.
               </p>
             ) : (
@@ -610,12 +606,12 @@ export default function BoothPage() {
               value={inquiryText}
               onChange={(e) => setInquiryText(e.target.value)}
               placeholder={`${booth.name}에 궁금한 점을 남겨주세요.`}
-              className="w-full h-28 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 resize-none outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400 mb-3"
+              className="w-full h-28 text-sm text-gray-700 bg-white border border-gray-200 rounded-lg px-3 py-3 resize-none outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400 mb-3"
             />
 
             {/* Rate limit warning */}
             {inquiryRateLimited && (
-              <div className="mb-3 bg-red-50 border border-red-100 rounded-xl px-3 py-3">
+              <div className="mb-3 bg-red-50 border border-red-100 rounded-lg px-3 py-3">
                 <p className="text-xs text-red-700">
                   하루 3건까지 문의할 수 있어요. 내일 다시 시도해주세요.
                 </p>
@@ -632,7 +628,7 @@ export default function BoothPage() {
                     value={inquiryEmail}
                     onChange={(e) => setInquiryEmail(e.target.value)}
                     placeholder="답변을 받을 이메일"
-                    className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-4 h-10 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
+                    className="w-full h-10 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400"
                   />
                 </div>
 
@@ -681,7 +677,7 @@ export default function BoothPage() {
             <button
               onClick={handleSendInquiry}
               disabled={!inquiryFormValid}
-              className="w-full bg-brand-600 text-white text-sm font-medium rounded-xl h-10 hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-brand-600 text-white text-sm font-medium rounded-lg h-10 hover:bg-brand-500 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               문의 보내기
             </button>
@@ -696,7 +692,7 @@ export default function BoothPage() {
       <Modal open={showEmailInfo} onClose={handleCloseEmailInfo} title="이메일로 자료 받기">
         {emailInfoSent ? (
           <div className="text-center py-4">
-            <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <div className="w-14 h-14 bg-emerald-50 rounded-lg flex items-center justify-center mx-auto mb-3">
               <CheckCircle className="w-7 h-7 text-emerald-600" />
             </div>
             <p className="font-medium text-gray-900 mb-1">발송 완료!</p>
@@ -705,7 +701,7 @@ export default function BoothPage() {
             </p>
             <button
               onClick={handleCloseEmailInfo}
-              className="w-full bg-brand-600 text-white text-sm font-medium rounded-xl h-10 hover:bg-brand-700 transition-colors"
+              className="w-full bg-brand-600 text-white text-sm font-medium rounded-lg h-10 hover:bg-brand-500 transition-all duration-150"
             >
               확인
             </button>
@@ -722,7 +718,7 @@ export default function BoothPage() {
                 value={emailInfoAddr}
                 onChange={(e) => setEmailInfoAddr(e.target.value)}
                 placeholder="name@company.com"
-                className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-4 h-10 outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all"
+                className="w-full h-10 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400"
               />
             </div>
             <label className="flex items-start gap-2 mb-5 cursor-pointer">
@@ -740,7 +736,7 @@ export default function BoothPage() {
             <button
               onClick={handleSendEmailInfo}
               disabled={!emailInfoAddr.includes('@') || !emailInfoConsent}
-              className="w-full bg-brand-600 text-white text-sm font-medium rounded-xl h-10 hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-brand-600 text-white text-sm font-medium rounded-lg h-10 hover:bg-brand-500 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               자료 받기
             </button>
@@ -757,7 +753,7 @@ export default function BoothPage() {
             <p className="text-sm text-gray-500 mb-5">소중한 의견 감사해요.</p>
             <button
               onClick={handleCloseSurvey}
-              className="w-full bg-brand-600 text-white text-sm font-medium rounded-xl h-10 hover:bg-brand-700 transition-colors"
+              className="w-full bg-brand-600 text-white text-sm font-medium rounded-lg h-10 hover:bg-brand-500 transition-all duration-150"
             >
               확인
             </button>
@@ -766,7 +762,7 @@ export default function BoothPage() {
           <div className="space-y-5">
             {/* Interests */}
             <div>
-              <p className="text-sm font-semibold text-gray-800 mb-2.5">관심 분야를 선택해주세요</p>
+              <p className="text-[13px] font-semibold text-gray-900 mb-2.5">관심 분야를 선택해주세요</p>
               <div className="flex flex-wrap gap-2">
                 {INTEREST_CHIPS.map((chip) => (
                   <button
@@ -776,10 +772,10 @@ export default function BoothPage() {
                         prev.includes(chip) ? prev.filter((c) => c !== chip) : [...prev, chip]
                       )
                     }
-                    className={`text-xs font-medium rounded-lg px-3 py-1.5 border transition-all ${
+                    className={`text-xs font-medium rounded-lg px-3 py-1.5 border transition-all duration-150 ${
                       surveyInterests.includes(chip)
                         ? 'bg-brand-600 text-white border-brand-600'
-                        : 'bg-white text-gray-600 border-gray-200 hover:border-brand-300'
+                        : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
                     }`}
                   >
                     {chip}
@@ -790,7 +786,7 @@ export default function BoothPage() {
 
             {/* Purpose */}
             <div>
-              <p className="text-sm font-semibold text-gray-800 mb-2.5">방문 목적</p>
+              <p className="text-[13px] font-semibold text-gray-900 mb-2.5">방문 목적</p>
               <div className="space-y-2">
                 {PURPOSE_OPTIONS.map((opt) => (
                   <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer">
@@ -809,14 +805,14 @@ export default function BoothPage() {
             </div>
 
             {/* Contact toggle */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+            <div className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg">
               <div>
                 <p className="text-sm font-medium text-gray-800">연락 받기를 원해요</p>
                 <p className="text-xs text-gray-400 mt-0.5">운영자가 리드로 저장합니다</p>
               </div>
               <button
                 onClick={() => setSurveyWantsContact((v) => !v)}
-                className={`relative w-11 h-6 rounded-full transition-colors ${
+                className={`relative w-11 h-6 rounded-full transition-all duration-150 ${
                   surveyWantsContact ? 'bg-brand-600' : 'bg-gray-200'
                 }`}
               >
@@ -830,7 +826,7 @@ export default function BoothPage() {
 
             <button
               onClick={handleSendSurvey}
-              className="w-full bg-brand-600 text-white text-sm font-medium rounded-xl h-10 hover:bg-brand-700 transition-colors"
+              className="w-full bg-brand-600 text-white text-sm font-medium rounded-lg h-10 hover:bg-brand-500 transition-all duration-150"
             >
               제출하기
             </button>

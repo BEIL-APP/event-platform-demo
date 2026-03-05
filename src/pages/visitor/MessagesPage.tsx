@@ -50,19 +50,19 @@ export default function MessagesPage() {
         <VisitorHeader />
         <div className="max-w-sm mx-auto pb-4">
           {/* Thread header */}
-          <div className="bg-white px-4 py-3 flex items-center gap-3 border-b border-gray-100">
+          <div className="bg-white px-4 py-3 flex items-center gap-3 border-b border-gray-200">
             <button
               onClick={() => { setSelected(null); setReplyText(''); }}
-              className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-1 hover:bg-gray-100 rounded-lg transition-all duration-150"
             >
               <ArrowLeft className="w-5 h-5 text-gray-600" />
             </button>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm text-gray-900 truncate">{booth?.name ?? '알 수 없는 부스'}</p>
+              <p className="font-medium text-sm text-gray-900 truncate">{booth?.name ?? '알 수 없는 부스'}</p>
               <p className="text-xs text-gray-400">{booth?.category}</p>
             </div>
             <span
-              className={`text-xs px-2 py-1 rounded-lg font-medium ${
+              className={`h-5 px-1.5 rounded-md text-xs font-medium inline-flex items-center ${
                 selected.status === '처리'
                   ? 'bg-emerald-50 text-emerald-700'
                   : selected.status === '보류'
@@ -82,15 +82,15 @@ export default function MessagesPage() {
                 className={`flex ${msg.from === 'visitor' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.from === 'booth' && (
-                  <div className="w-7 h-7 bg-brand-100 rounded-full flex items-center justify-center mr-2 shrink-0 mt-1">
+                  <div className="w-7 h-7 bg-brand-50 rounded-lg flex items-center justify-center mr-2 shrink-0 mt-1">
                     <span className="text-xs">🏪</span>
                   </div>
                 )}
                 <div
-                  className={`max-w-[80%] rounded-xl px-4 py-3 ${
+                  className={`max-w-[80%] px-4 py-3 ${
                     msg.from === 'visitor'
-                      ? 'bg-brand-600 text-white rounded-br-md'
-                      : 'bg-white text-gray-800 rounded-bl-md shadow-card'
+                      ? 'bg-brand-600 text-white rounded-xl rounded-br-sm'
+                      : 'bg-white border border-gray-200 text-gray-800 rounded-xl rounded-bl-sm'
                   }`}
                 >
                   <p className="text-sm leading-relaxed">{msg.text}</p>
@@ -107,12 +107,12 @@ export default function MessagesPage() {
           </div>
 
           {/* Reply input */}
-          <div className="sticky bottom-0 bg-white border-t border-gray-100 px-4 py-3 flex items-end gap-2">
+          <div className="sticky bottom-0 bg-white border-t border-gray-200 px-4 py-3 flex items-end gap-2">
             <textarea
               value={replyText}
               onChange={(e) => setReplyText(e.target.value)}
               placeholder="추가 문의나 답변 확인 후 메시지를 보내세요…"
-              className="flex-1 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 resize-none outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition-all placeholder:text-gray-400 min-h-[44px] max-h-32"
+              className="flex-1 text-sm text-gray-700 bg-white border border-gray-200 rounded-lg px-3 py-2 resize-none outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400 min-h-[44px] max-h-32"
               rows={1}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -124,7 +124,7 @@ export default function MessagesPage() {
             <button
               onClick={() => handleSendReply(selected.id)}
               disabled={!replyText.trim()}
-              className="w-10 h-10 bg-brand-600 text-white rounded-xl flex items-center justify-center hover:bg-brand-700 transition-colors disabled:opacity-40 shrink-0"
+              className="w-10 h-10 bg-brand-600 text-white rounded-lg flex items-center justify-center hover:bg-brand-500 transition-all duration-150 disabled:opacity-40 shrink-0"
             >
               <Send className="w-4 h-4" />
             </button>
@@ -141,11 +141,11 @@ export default function MessagesPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h1 className="text-base font-bold text-gray-900">문의 내역</h1>
-            <p className="text-xs text-gray-400">부스에 남긴 문의와 답변을 확인해요</p>
+            <h1 className="text-base font-semibold text-gray-900">문의 내역</h1>
+            <p className="text-[13px] text-gray-500">부스에 남긴 문의와 답변을 확인해요</p>
           </div>
           {isLoggedIn && hasUnread && (
-            <div className="flex items-center gap-1.5 bg-brand-50 text-brand-700 text-xs font-medium px-3 py-1.5 rounded-lg">
+            <div className="h-5 px-1.5 rounded-md inline-flex items-center gap-1 bg-brand-50 text-brand-700 text-xs font-medium">
               <Bell className="w-3 h-3" />
               새 답변
             </div>
@@ -154,7 +154,7 @@ export default function MessagesPage() {
 
         {threads.length === 0 ? (
           <div className="text-center py-16">
-            <MessageSquare className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+            <MessageSquare className="w-10 h-10 text-gray-300 mx-auto mb-3" />
             <p className="text-sm text-gray-400">아직 문의가 없어요</p>
             <p className="text-xs text-gray-300 mt-1">부스 페이지에서 문의를 남겨보세요</p>
           </div>
@@ -169,10 +169,10 @@ export default function MessagesPage() {
                 <button
                   key={thread.id}
                   onClick={() => setSelected(thread)}
-                  className="w-full text-left bg-white rounded-xl p-4 shadow-card hover:shadow-card-hover transition-shadow"
+                  className="w-full text-left bg-white border border-gray-200/60 rounded-xl p-3 hover:border-gray-300 transition-all duration-150"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+                    <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                       {booth?.images[0] ? (
                         <img
                           src={booth.images[0]}
@@ -189,7 +189,7 @@ export default function MessagesPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-0.5">
-                        <p className="font-semibold text-sm text-gray-900 truncate">
+                        <p className="font-medium text-sm text-gray-900 truncate">
                           {booth?.name ?? '알 수 없는 부스'}
                         </p>
                         <span className="text-xs text-gray-400 shrink-0 ml-2">
@@ -199,17 +199,17 @@ export default function MessagesPage() {
                       <p className="text-xs text-gray-500 truncate">{lastMsg?.text}</p>
                       <div className="flex items-center gap-2 mt-1.5">
                         {isLoggedIn && isNew && (
-                          <span className="flex items-center gap-1 text-xs text-brand-600 bg-brand-50 rounded-lg px-2 py-0.5">
+                          <span className="h-5 px-1.5 rounded-md inline-flex items-center gap-1 text-xs font-medium text-brand-600 bg-brand-50">
                             <Bell className="w-2.5 h-2.5" /> 새 답변
                           </span>
                         )}
                         {hasBoothReply && (
-                          <span className="text-xs text-emerald-600 bg-emerald-50 rounded-lg px-2 py-0.5">
+                          <span className="h-5 px-1.5 rounded-md inline-flex items-center text-xs font-medium text-emerald-600 bg-emerald-50">
                             답변 완료
                           </span>
                         )}
                         <span
-                          className={`text-xs rounded-lg px-2 py-0.5 ${
+                          className={`h-5 px-1.5 rounded-md inline-flex items-center text-xs font-medium ${
                             thread.status === '처리'
                               ? 'text-emerald-600 bg-emerald-50'
                               : thread.status === '보류'

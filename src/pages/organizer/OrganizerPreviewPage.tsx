@@ -78,14 +78,14 @@ export default function OrganizerPreviewPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">주최자 프리뷰</h1>
-            <p className="text-sm text-gray-400 mt-1">이벤트 전체 통계와 부스 현황을 한눈에 파악하세요</p>
+            <h1 className="text-xl font-semibold text-gray-900">주최자 프리뷰</h1>
+            <p className="text-sm text-gray-500 mt-1">이벤트 전체 통계와 부스 현황을 한눈에 파악하세요</p>
           </div>
           <button
             onClick={handleExportAll}
-            className="flex items-center gap-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-xl px-4 h-10 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 h-9 rounded-lg px-4 text-[13px] font-medium hover:bg-gray-50 transition-all duration-150"
           >
-            <Download className="w-4 h-4 text-brand-500" />
+            <Download className="w-4 h-4" />
             전체 CSV Export
           </button>
         </div>
@@ -96,78 +96,64 @@ export default function OrganizerPreviewPage() {
             {
               label: '총 스캔 수',
               value: totalScans.toLocaleString(),
-              icon: <QrCode className="w-5 h-5" />,
-              color: 'text-brand-600',
-              bg: 'bg-brand-50',
-              iconBg: 'bg-brand-100',
+              icon: <QrCode className="w-4 h-4" />,
               trend: '+12% 전주 대비',
             },
             {
               label: '고유 방문자',
               value: uniqueVisitors.toLocaleString(),
-              icon: <UserCheck className="w-5 h-5" />,
-              color: 'text-brand-600',
-              bg: 'bg-brand-50',
-              iconBg: 'bg-brand-100',
+              icon: <UserCheck className="w-4 h-4" />,
               trend: '이 기기 기준',
             },
             {
               label: '관심 저장',
               value: totalFavorites.toLocaleString(),
-              icon: <Users className="w-5 h-5" />,
-              color: 'text-brand-600',
-              bg: 'bg-brand-50',
-              iconBg: 'bg-brand-100',
+              icon: <Users className="w-4 h-4" />,
               trend: '+8% 전주 대비',
             },
             {
               label: '총 문의',
               value: totalInquiries.toLocaleString(),
-              icon: <TrendingUp className="w-5 h-5" />,
-              color: 'text-brand-600',
-              bg: 'bg-brand-50',
-              iconBg: 'bg-brand-100',
+              icon: <TrendingUp className="w-4 h-4" />,
               trend: '+22% 전주 대비',
             },
           ].map((kpi) => (
-            <div key={kpi.label} className={`${kpi.bg} rounded-xl p-6`}>
-              <div className={`${kpi.iconBg} rounded-xl p-2.5 w-fit mb-3 ${kpi.color}`}>
-                {kpi.icon}
-              </div>
-              <p className={`text-xl font-bold ${kpi.color}`}>{kpi.value}</p>
-              <p className="text-sm font-medium text-gray-600 mt-1">{kpi.label}</p>
+            <div key={kpi.label} className="bg-white border border-gray-200/60 rounded-xl p-6">
+              <div className="text-gray-400 mb-3">{kpi.icon}</div>
+              <p className="text-2xl font-semibold text-gray-900">{kpi.value}</p>
+              <p className="text-sm text-gray-500 mt-1">{kpi.label}</p>
               <p className="text-xs text-gray-400 mt-1">{kpi.trend}</p>
             </div>
           ))}
         </div>
 
-        {/* Lead source + Survey count */}
+        {/* Lead source + Survey count — row 2 */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {[
-            { label: '명함 스캔 리드', value: leadsBySource.bizcard, icon: <CreditCard className="w-4 h-4" />, color: 'text-brand-600', bg: 'bg-brand-50' },
-            { label: '문의 동의 리드', value: leadsBySource.inquiry, icon: <UserCheck className="w-4 h-4" />, color: 'text-brand-600', bg: 'bg-brand-50' },
-            { label: '이메일 수신 신청', value: leadsBySource.email_info, icon: <TrendingUp className="w-4 h-4" />, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-            { label: '설문 응답 수', value: allSurveys.length, icon: <ClipboardList className="w-4 h-4" />, color: 'text-amber-600', bg: 'bg-amber-50' },
+            { label: '명함 스캔 리드', value: leadsBySource.bizcard, icon: <CreditCard className="w-4 h-4" /> },
+            { label: '문의 동의 리드', value: leadsBySource.inquiry, icon: <UserCheck className="w-4 h-4" /> },
+            { label: '이메일 수신 신청', value: leadsBySource.email_info, icon: <TrendingUp className="w-4 h-4" /> },
+            { label: '설문 응답 수', value: allSurveys.length, icon: <ClipboardList className="w-4 h-4" /> },
           ].map((item) => (
-            <div key={item.label} className={`${item.bg} rounded-xl p-4`}>
-              <div className={`${item.color} mb-2`}>{item.icon}</div>
-              <p className={`text-xl font-bold ${item.color}`}>{item.value}</p>
-              <p className="text-xs font-medium text-gray-500 mt-1">{item.label}</p>
+            <div key={item.label} className="bg-white border border-gray-200/60 rounded-xl p-4">
+              <div className="text-gray-400 mb-2">{item.icon}</div>
+              <p className="text-xl font-semibold text-gray-900">{item.value}</p>
+              <p className="text-xs text-gray-500 mt-1">{item.label}</p>
             </div>
           ))}
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
           {/* Top Booths Table */}
-          <div className="bg-white rounded-xl border border-gray-100 p-6">
+          <div className="bg-white border border-gray-200/60 rounded-xl p-6">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-brand-600" />
-                <h2 className="text-sm font-semibold text-gray-800">부스별 성과 (스캔 기준)</h2>
+                <BarChart3 className="w-4 h-4 text-gray-400" />
+                <h2 className="text-sm font-semibold text-gray-900">부스별 성과 (스캔 기준)</h2>
               </div>
               <Link
                 to="/admin/booths"
-                className="text-xs text-brand-600 hover:text-brand-700 flex items-center gap-1"
+                className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1 transition-colors"
               >
                 전체 보기 <ArrowRight className="w-3 h-3" />
               </Link>
@@ -188,12 +174,12 @@ export default function OrganizerPreviewPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <p className="text-sm font-medium text-gray-800 truncate">{booth?.name ?? a.boothId}</p>
+                          <p className="text-sm font-medium text-gray-900 truncate">{booth?.name ?? a.boothId}</p>
                           <span className="text-xs font-semibold text-gray-700 ml-2">{a.scans.toLocaleString()}</span>
                         </div>
                         <div className="mt-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-brand-400 rounded-full transition-all"
+                            className="h-full bg-brand-500 rounded-full transition-all"
                             style={{ width: `${(a.scans / maxScans) * 100}%` }}
                           />
                         </div>
@@ -206,18 +192,18 @@ export default function OrganizerPreviewPage() {
           </div>
 
           {/* Hourly visit bar chart (mock) */}
-          <div className="bg-white rounded-xl border border-gray-100 p-6">
+          <div className="bg-white border border-gray-200/60 rounded-xl p-6">
             <div className="flex items-center gap-2 mb-5">
-              <Clock className="w-4 h-4 text-brand-600" />
-              <h2 className="text-sm font-semibold text-gray-800">시간대별 방문 (오늘)</h2>
-              <span className="text-xs text-amber-600 bg-amber-50 rounded-lg px-2 py-0.5 ml-auto">mock 데이터</span>
+              <Clock className="w-4 h-4 text-gray-400" />
+              <h2 className="text-sm font-semibold text-gray-900">시간대별 방문 (오늘)</h2>
+              <span className="bg-amber-50 text-amber-700 rounded-md h-6 px-2 text-xs flex items-center ml-auto">mock 데이터</span>
             </div>
 
             <div className="flex items-end gap-1.5 h-32">
               {MOCK_HOURLY.map((val, i) => (
                 <div key={i} className="flex-1 flex flex-col items-center gap-1">
                   <div
-                    className="w-full bg-brand-400 rounded-t-md transition-all hover:bg-brand-500"
+                    className="w-full bg-brand-500 rounded-t-md transition-all hover:bg-brand-600"
                     style={{ height: `${(val / maxHourly) * 100}%` }}
                     title={`${val}명`}
                   />
@@ -231,11 +217,11 @@ export default function OrganizerPreviewPage() {
 
         {/* Survey Aggregate */}
         {allSurveys.length > 0 && (
-          <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
+          <div className="bg-white border border-gray-200/60 rounded-xl p-6 mb-6">
             <div className="flex items-center gap-2 mb-5">
-              <ClipboardList className="w-4 h-4 text-brand-600" />
-              <h2 className="text-sm font-semibold text-gray-800">전체 설문 집계</h2>
-              <span className="text-xs text-gray-400 bg-gray-100 rounded-lg px-2 py-0.5 ml-auto">
+              <ClipboardList className="w-4 h-4 text-gray-400" />
+              <h2 className="text-sm font-semibold text-gray-900">전체 설문 집계</h2>
+              <span className="text-xs text-gray-500 bg-gray-100 rounded-md px-2 h-5 flex items-center ml-auto">
                 총 {allSurveys.length}건
               </span>
             </div>
@@ -273,7 +259,7 @@ export default function OrganizerPreviewPage() {
                         <div key={purpose} className="flex items-center justify-between text-xs">
                           <span className="text-gray-700">{purpose}</span>
                           <div className="flex items-center gap-2">
-                            <div className="h-1.5 bg-brand-200 rounded-full" style={{ width: `${(count / allSurveys.length) * 80}px` }} />
+                            <div className="h-1.5 bg-brand-400 rounded-full" style={{ width: `${(count / allSurveys.length) * 80}px` }} />
                             <span className="font-medium text-gray-600 w-8 text-right">{count}건</span>
                           </div>
                         </div>
@@ -281,9 +267,9 @@ export default function OrganizerPreviewPage() {
                     </div>
                   </div>
                 )}
-                <div className="bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3">
+                <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
                   <p className="text-xs text-gray-500 mb-0.5">연락 희망 응답자</p>
-                  <p className="text-xl font-bold text-emerald-600">
+                  <p className="text-xl font-semibold text-emerald-600">
                     {globalWantsContact}명
                     <span className="text-sm font-normal text-emerald-500 ml-1.5">
                       ({allSurveys.length > 0 ? Math.round((globalWantsContact / allSurveys.length) * 100) : 0}%)
@@ -297,15 +283,15 @@ export default function OrganizerPreviewPage() {
         )}
 
         {/* Lead list quick view */}
-        <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
+        <div className="bg-white border border-gray-200/60 rounded-xl p-6 mb-6">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
-              <UserCheck className="w-4 h-4 text-brand-600" />
-              <h2 className="text-sm font-semibold text-gray-800">최근 리드</h2>
+              <UserCheck className="w-4 h-4 text-gray-400" />
+              <h2 className="text-sm font-semibold text-gray-900">최근 리드</h2>
             </div>
             <Link
               to="/admin/leads"
-              className="text-xs text-brand-600 hover:text-brand-700 flex items-center gap-1"
+              className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1 transition-colors"
             >
               전체 보기 <ArrowRight className="w-3 h-3" />
             </Link>
@@ -314,11 +300,11 @@ export default function OrganizerPreviewPage() {
           {allLeads.length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-6">아직 리드가 없어요</p>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-0">
               {allLeads.slice(0, 5).map((lead) => {
                 const sourceColors = {
-                  bizcard: 'bg-brand-50 text-brand-700',
-                  inquiry: 'bg-brand-50 text-brand-700',
+                  bizcard: 'bg-gray-100 text-gray-700',
+                  inquiry: 'bg-gray-100 text-gray-700',
                   email_info: 'bg-emerald-50 text-emerald-700',
                   survey: 'bg-amber-50 text-amber-700',
                 } as const;
@@ -329,15 +315,15 @@ export default function OrganizerPreviewPage() {
                   survey: '설문',
                 } as const;
                 return (
-                  <div key={lead.id} className="flex items-center gap-3 py-3 border-b border-gray-50 last:border-0">
-                    <span className={`text-xs font-medium rounded-lg px-2 py-0.5 ${sourceColors[lead.source]}`}>
+                  <div key={lead.id} className="flex items-center gap-3 py-3 border-b border-gray-100 last:border-0">
+                    <span className={`text-xs font-medium rounded-md px-2 py-0.5 ${sourceColors[lead.source]}`}>
                       {sourceLabels[lead.source]}
                     </span>
-                    <span className="text-sm font-medium text-gray-800">{lead.name ?? lead.email ?? '이름 없음'}</span>
+                    <span className="text-sm font-medium text-gray-900">{lead.name ?? lead.email ?? '이름 없음'}</span>
                     {lead.company && (
                       <span className="text-xs text-gray-400">{lead.company}</span>
                     )}
-                    <span className="text-xs text-gray-300 ml-auto">
+                    <span className="text-xs text-gray-400 ml-auto">
                       {boothMap[lead.boothId]?.name ?? lead.boothId}
                     </span>
                   </div>
@@ -348,20 +334,20 @@ export default function OrganizerPreviewPage() {
         </div>
 
         {/* All booths stats table */}
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+        <div className="bg-white border border-gray-200/60 rounded-xl overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-800">전체 부스 통계</h2>
+            <h2 className="text-sm font-semibold text-gray-900">전체 부스 통계</h2>
             <button
               onClick={handleExportAll}
-              className="flex items-center gap-1.5 text-xs text-brand-600 hover:text-brand-700 transition-colors"
+              className="flex items-center gap-1.5 bg-white border border-gray-200 text-gray-700 h-9 rounded-lg px-3 text-[13px] font-medium hover:bg-gray-50 transition-all duration-150"
             >
-              <Download className="w-3 h-3" /> CSV 다운로드
+              <Download className="w-3.5 h-3.5" /> CSV 다운로드
             </button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gray-50 text-xs font-medium text-gray-500">
+                <tr className="bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   <th className="text-left px-6 py-3">부스</th>
                   <th className="text-left px-4 py-3">카테고리</th>
                   <th className="text-right px-4 py-3">스캔</th>
@@ -371,13 +357,13 @@ export default function OrganizerPreviewPage() {
                   <th className="text-right px-6 py-3">전환율</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody>
                 {analytics.map((a) => {
                   const booth = boothMap[a.boothId];
                   const boothLeads = allLeads.filter((l) => l.boothId === a.boothId).length;
                   const convRate = a.scans > 0 ? ((a.inquiries / a.scans) * 100).toFixed(1) : '0.0';
                   return (
-                    <tr key={a.boothId} className="hover:bg-gray-50 transition-colors">
+                    <tr key={a.boothId} className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
                       <td className="px-6 py-3.5">
                         <div className="flex items-center gap-2.5">
                           <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 shrink-0">
@@ -387,21 +373,21 @@ export default function OrganizerPreviewPage() {
                           </div>
                           <Link
                             to={`/admin/booths/${a.boothId}`}
-                            className="text-sm font-medium text-gray-900 hover:text-brand-600 transition-colors"
+                            className="text-sm font-medium text-gray-900 hover:text-gray-700 transition-colors"
                           >
                             {booth?.name ?? a.boothId}
                           </Link>
                         </div>
                       </td>
                       <td className="px-4 py-3.5">
-                        <span className="text-xs text-gray-500 bg-gray-100 rounded-lg px-2 py-0.5">
+                        <span className="text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5">
                           {booth?.category ?? '-'}
                         </span>
                       </td>
-                      <td className="px-4 py-3.5 text-right text-sm font-medium text-gray-700">{a.scans}</td>
-                      <td className="px-4 py-3.5 text-right text-sm font-medium text-brand-600">{a.favorites}</td>
-                      <td className="px-4 py-3.5 text-right text-sm font-medium text-brand-600">{a.inquiries}</td>
-                      <td className="px-4 py-3.5 text-right text-sm font-medium text-brand-600">{boothLeads}</td>
+                      <td className="px-4 py-3.5 text-right text-sm font-medium text-gray-900">{a.scans}</td>
+                      <td className="px-4 py-3.5 text-right text-sm font-medium text-gray-700">{a.favorites}</td>
+                      <td className="px-4 py-3.5 text-right text-sm font-medium text-gray-700">{a.inquiries}</td>
+                      <td className="px-4 py-3.5 text-right text-sm font-medium text-gray-700">{boothLeads}</td>
                       <td className="px-6 py-3.5 text-right text-sm font-medium text-gray-500">{convRate}%</td>
                     </tr>
                   );

@@ -8,7 +8,6 @@ const providers = [
   {
     id: 'google',
     name: 'Google',
-    color: 'border-gray-200 hover:border-gray-300 hover:bg-gray-50',
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24">
         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -21,7 +20,6 @@ const providers = [
   {
     id: 'kakao',
     name: '카카오',
-    color: 'border-yellow-200 hover:border-yellow-300 bg-yellow-50 hover:bg-yellow-100',
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#191919">
         <path d="M12 3C6.477 3 2 6.477 2 10.88c0 2.734 1.64 5.129 4.117 6.585L5.13 21.3a.37.37 0 0 0 .558.41l4.617-3.074A11.6 11.6 0 0 0 12 18.76c5.523 0 10-3.477 10-7.88S17.523 3 12 3z"/>
@@ -31,7 +29,6 @@ const providers = [
   {
     id: 'naver',
     name: '네이버',
-    color: 'border-emerald-200 hover:border-emerald-300 bg-emerald-50 hover:bg-emerald-100',
     icon: (
       <span className="text-[#03C75A] font-bold text-base leading-none">N</span>
     ),
@@ -39,7 +36,6 @@ const providers = [
   {
     id: 'apple',
     name: 'Apple',
-    color: 'border-gray-200 hover:border-gray-300 hover:bg-gray-50',
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>
@@ -66,25 +62,25 @@ export default function OAuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
+    <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-4">
       {/* Logo */}
-      <div className="flex items-center gap-2.5 mb-8">
-        <div className="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center">
+      <div className="flex items-center gap-2 mb-8">
+        <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
           <QrCode className="w-4 h-4 text-white" />
         </div>
-        <div className="text-base font-bold text-gray-900">BoothLiner</div>
+        <span className="text-sm font-semibold text-gray-900">BoothLiner</span>
       </div>
 
-      <div className="w-full max-w-sm bg-white rounded-xl shadow-card p-8">
+      <div className="bg-white rounded-xl border border-gray-200/60 shadow-card p-8 w-full max-w-sm">
         <Link
           to="/auth"
-          className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 mb-6 transition-colors"
+          className="inline-flex items-center gap-1.5 text-[13px] text-gray-500 hover:text-gray-700 mb-6 transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           뒤로
         </Link>
 
-        <h1 className="text-xl font-bold text-gray-900 mb-1.5">소셜 계정으로 로그인</h1>
+        <h1 className="text-xl font-semibold text-gray-900 mb-1.5">소셜 계정으로 로그인</h1>
         <p className="text-sm text-gray-500 mb-7">
           아래 계정 중 하나를 선택해 빠르게 시작하세요
         </p>
@@ -95,7 +91,7 @@ export default function OAuthPage() {
               key={p.id}
               onClick={() => handleOAuth(p.id)}
               disabled={loading !== null}
-              className={`w-full flex items-center gap-3 px-4 h-10 rounded-xl border-2 transition-all ${p.color} disabled:opacity-60 disabled:cursor-not-allowed`}
+              className="w-full flex items-center gap-3 px-4 h-10 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <span className="w-5 h-5 flex items-center justify-center shrink-0">
                 {loading === p.id ? (
@@ -104,16 +100,16 @@ export default function OAuthPage() {
                   p.icon
                 )}
               </span>
-              <span className="text-sm font-medium text-gray-800">
+              <span className="text-sm font-medium text-gray-700">
                 {loading === p.id ? '연결 중…' : `${p.name}로 계속하기`}
               </span>
             </button>
           ))}
         </div>
 
-        <div className="mt-6 p-3.5 bg-amber-50 rounded-xl border border-amber-100">
-          <p className="text-xs text-amber-700 leading-relaxed">
-            <span className="font-medium">데모 안내:</span> 실제 OAuth 연동 없이 버튼 클릭 시
+        <div className="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-3">
+          <p className="text-xs text-gray-500 leading-relaxed">
+            <span className="font-medium text-gray-600">데모 안내:</span> 실제 OAuth 연동 없이 버튼 클릭 시
             로그인 상태로 전환됩니다.
           </p>
         </div>
@@ -121,7 +117,7 @@ export default function OAuthPage() {
         <div className="mt-5 text-center">
           <Link
             to="/auth/signup"
-            className="text-sm text-brand-600 hover:text-brand-700 font-medium transition-colors"
+            className="text-[13px] text-gray-500 hover:text-gray-700 font-medium transition-colors"
           >
             이메일로 가입하기 →
           </Link>

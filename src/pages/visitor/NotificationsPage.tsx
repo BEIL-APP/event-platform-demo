@@ -29,12 +29,12 @@ export default function NotificationsPage() {
       <VisitorHeader />
 
       <div className="max-w-sm mx-auto px-4 pt-6 pb-20">
-        <h1 className="text-base font-bold text-gray-900 mb-1">알림</h1>
-        <p className="text-xs text-gray-400 mb-5">이 기기에서 받은 알림 내역이에요</p>
+        <h1 className="text-base font-semibold text-gray-900 mb-1">알림</h1>
+        <p className="text-[13px] text-gray-500 mb-5">이 기기에서 받은 알림 내역이에요</p>
 
         {notifications.length === 0 ? (
           <div className="text-center py-16">
-            <Bell className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+            <Bell className="w-10 h-10 text-gray-300 mx-auto mb-3" />
             <p className="text-sm text-gray-400">아직 알림이 없어요</p>
             <p className="text-xs text-gray-300 mt-1">
               문의 답변이 오면 여기서 알려드릴게요
@@ -46,10 +46,10 @@ export default function NotificationsPage() {
               <Link
                 key={n.id}
                 to={n.threadId ? '/messages' : (n.boothId ? `/scan/${n.boothId}` : '#')}
-                className="flex items-start gap-3 bg-white rounded-xl p-4 shadow-card hover:shadow-card-hover transition-shadow"
+                className="flex items-start gap-3 bg-white border border-gray-200/60 rounded-xl p-3 hover:border-gray-300 transition-all duration-150"
               >
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
-                  n.type === 'reply' ? 'bg-brand-100' : 'bg-gray-100'
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                  n.type === 'reply' ? 'bg-brand-50' : 'bg-gray-100'
                 }`}>
                   {n.type === 'reply' ? (
                     <MessageSquare className="w-4 h-4 text-brand-600" />
@@ -58,7 +58,7 @@ export default function NotificationsPage() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-900 leading-tight">{n.title}</p>
+                  <p className="text-sm font-medium text-gray-900 leading-tight">{n.title}</p>
                   <p className="text-xs text-gray-500 mt-0.5 leading-relaxed line-clamp-2">{n.body}</p>
                   <p className="text-xs text-gray-300 mt-1.5">{formatTime(n.createdAt)}</p>
                 </div>
