@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { PlusCircle, QrCode, Eye, ChevronRight } from 'lucide-react';
+import { PlusCircle, QrCode, Eye, ChevronRight, Heart, Mail } from 'lucide-react';
 import { AdminLayout } from '../../components/AdminLayout';
 import { useBooths } from '../../hooks/useBooths';
 import { useAnalytics } from '../../hooks/useAnalytics';
@@ -89,12 +89,12 @@ export default function AdminBoothsPage() {
                             <span className="text-gray-400">스캔</span>
                           </div>
                           <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                            <span className="text-gray-400">♥</span>
+                            <Heart className="w-3.5 h-3.5 text-gray-400" />
                             <span className="font-medium text-gray-700">{stats.favorites}</span>
                             <span className="text-gray-400">관심</span>
                           </div>
                           <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                            <span className="text-gray-400">✉</span>
+                            <Mail className="w-3.5 h-3.5 text-gray-400" />
                             <span className="font-medium text-gray-700">{stats.inquiries}</span>
                             <span className="text-gray-400">문의</span>
                           </div>

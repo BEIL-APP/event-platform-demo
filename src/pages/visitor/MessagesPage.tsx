@@ -117,7 +117,7 @@ export default function MessagesPage() {
                           </div>
                           <p className="text-xs text-gray-500 truncate">{lastMsg?.text}</p>
                           <div className="flex items-center gap-2 mt-1.5">
-                            {isLoggedIn && isNew && (
+                            {isNew && (
                               <span className="h-5 px-1.5 rounded-md inline-flex items-center gap-1 text-xs font-medium text-brand-600 bg-brand-50">
                                 <Bell className="w-2.5 h-2.5" /> 새 답변
                               </span>

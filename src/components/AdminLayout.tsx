@@ -50,7 +50,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     <>
       <div className="h-14 flex items-center px-4 border-b border-white/[0.06]">
         <Link to="/admin/booths" className="flex items-center gap-2.5">
-          <div className="w-7 h-7 bg-brand-500 rounded-lg flex items-center justify-center">
+          <div className="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
             <QrCode className="w-3.5 h-3.5 text-white" />
           </div>
           <span className="text-[13px] font-semibold text-white tracking-tight">BoothLiner</span>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { QrCode, Heart, MessageSquare, User, LogIn, Bell, Settings } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getGuestId, getUnreadNotificationCount } from '../utils/localStorage';
@@ -7,6 +7,7 @@ import { getGuestId, getUnreadNotificationCount } from '../utils/localStorage';
 export function VisitorHeader() {
   const { isLoggedIn, toggleLogin } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
@@ -69,7 +70,7 @@ export function VisitorHeader() {
           <div className="w-px h-5 bg-gray-200 mx-1.5 hidden md:block" />
 
           <button
-            onClick={toggleLogin}
+            onClick={() => isLoggedIn ? toggleLogin() : navigate('/auth')}
             className={`flex items-center gap-1.5 h-9 px-2 md:px-3 rounded-lg transition-colors ${
               isLoggedIn
                 ? 'text-brand-600 bg-brand-50'
