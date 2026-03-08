@@ -29,7 +29,7 @@ function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-100">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-gray-900 rounded-lg flex items-center justify-center">
+          <div className="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
             <QrCode className="w-3.5 h-3.5 text-white" />
           </div>
           <span className="text-sm font-bold text-gray-900 tracking-tight">BoothLiner</span>
@@ -39,7 +39,7 @@ function Navbar() {
         <nav className="hidden md:flex items-center gap-6">
           <button onClick={() => scrollTo('features')} className="text-[13px] text-gray-500 hover:text-gray-900 transition-colors">기능</button>
           <button onClick={() => scrollTo('how-it-works')} className="text-[13px] text-gray-500 hover:text-gray-900 transition-colors">이용 방법</button>
-          <Link to="/explore" className="text-[13px] text-gray-500 hover:text-gray-900 transition-colors">부스 둘러보기</Link>
+          <Link to="/auth" className="text-[13px] text-gray-500 hover:text-gray-900 transition-colors">관람객 로그인</Link>
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
