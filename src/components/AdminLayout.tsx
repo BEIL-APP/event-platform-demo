@@ -56,12 +56,12 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
   const sidebarContent = (
     <>
-      <div className="h-14 flex items-center px-4 border-b border-white/[0.06]">
-        <Link to="/admin/booths" className="flex items-center gap-2.5">
-          <div className="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
-            <QrCode className="w-3.5 h-3.5 text-white" />
+      <div className="h-12 flex items-center px-4 border-b border-white/[0.06]">
+        <Link to="/admin/booths" className="flex items-center gap-2">
+          <div className="w-6 h-6 bg-brand-600 rounded-md flex items-center justify-center">
+            <QrCode className="w-3 h-3 text-white" />
           </div>
-          <span className="text-[13px] font-semibold text-white tracking-tight">BoothLiner</span>
+          <span className="text-sm font-semibold text-white tracking-tight">BoothLiner</span>
         </Link>
       </div>
 
@@ -154,7 +154,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
       <div className="flex-1 min-w-0 flex flex-col">
         {/* Mobile top bar */}
-        <header className="lg:hidden flex items-center justify-between h-14 px-4 bg-white border-b border-gray-100 shrink-0">
+        <header className="lg:hidden flex items-center justify-between h-12 px-4 bg-white border-b border-gray-100 shrink-0">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}

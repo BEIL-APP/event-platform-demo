@@ -27,12 +27,12 @@ function Navbar() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-100">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <div className="max-w-5xl mx-auto px-4 h-12 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
-            <QrCode className="w-3.5 h-3.5 text-white" />
+          <div className="w-6 h-6 bg-brand-600 rounded-md flex items-center justify-center">
+            <QrCode className="w-3 h-3 text-white" />
           </div>
-          <span className="text-sm font-bold text-gray-900 tracking-tight">BoothLiner</span>
+          <span className="text-sm font-semibold text-gray-900 tracking-tight">BoothLiner</span>
         </Link>
 
         {/* Desktop nav */}
@@ -66,7 +66,7 @@ function Navbar() {
       {/* Mobile menu */}
       {open && (
         <div className="md:hidden bg-white border-t border-gray-100 animate-fade-in">
-          <div className="max-w-6xl mx-auto px-4 py-4 space-y-1">
+          <div className="max-w-5xl mx-auto px-4 py-4 space-y-1">
             <button onClick={() => scrollTo('features')} className="block w-full text-left px-3 py-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-50">기능</button>
             <button onClick={() => scrollTo('how-it-works')} className="block w-full text-left px-3 py-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-50">이용 방법</button>
             <Link to="/explore" className="block px-3 py-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-50" onClick={() => setOpen(false)}>부스 둘러보기</Link>
@@ -82,6 +82,7 @@ function Navbar() {
 }
 
 const FEATURES = [
+// ... (rest of the file content)
   {
     icon: MessageSquare,
     title: '실시간 문의 인박스',
@@ -145,8 +146,8 @@ export default function LandingPage() {
       <Navbar />
 
       {/* ═══ Hero ═══ */}
-      <section className="pt-14">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24 pb-16 sm:pb-20">
+      <section className="pt-12">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24 pb-16 sm:pb-20">
           <div className="lg:flex lg:items-center lg:gap-16">
             <div className="flex-1 text-center lg:text-left">
               <div className="inline-flex items-center gap-1.5 bg-brand-50 text-brand-700 text-xs font-medium px-3 py-1 rounded-full mb-5">
@@ -225,7 +226,7 @@ export default function LandingPage() {
 
       {/* ═══ Features ═══ */}
       <section id="features" className="bg-gray-50 border-t border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
           <div className="text-center mb-12">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">현장에서 바로 쓰는 기능</h2>
             <p className="mt-3 text-sm sm:text-base text-gray-500">복잡한 설정 없이, 등록 즉시 사용할 수 있습니다</p>
@@ -249,7 +250,7 @@ export default function LandingPage() {
 
       {/* ═══ How It Works ═══ */}
       <section id="how-it-works" className="border-t border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
           <div className="text-center mb-14">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">이렇게 사용하세요</h2>
             <p className="mt-3 text-sm sm:text-base text-gray-500">운영자와 관람객 모두 간단한 3단계로 시작합니다</p>
@@ -315,7 +316,7 @@ export default function LandingPage() {
 
       {/* ═══ Stats ═══ */}
       <section className="bg-gray-950 border-t border-gray-800">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-14">
             {STATS.map((s) => (
               <div key={s.label} className="text-center">
@@ -347,7 +348,7 @@ export default function LandingPage() {
 
       {/* ═══ Event Booths Preview ═══ */}
       <section className="border-t border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
             <div>
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">부스를 둘러보세요</h2>
@@ -398,7 +399,7 @@ export default function LandingPage() {
 
       {/* ═══ Final CTA ═══ */}
       <section className="bg-gray-50 border-t border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24 text-center">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24 text-center">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">지금 바로 시작하세요</h2>
           <p className="mt-3 text-sm sm:text-base text-gray-500 max-w-md mx-auto">
             부스 운영이든 관람이든, 30초면 시작할 수 있습니다
@@ -422,7 +423,7 @@ export default function LandingPage() {
 
       {/* ═══ Footer ═══ */}
       <footer className="bg-gray-950 border-t border-gray-800">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
             <div>
               <div className="flex items-center gap-2 mb-2">
