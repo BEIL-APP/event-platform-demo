@@ -413,14 +413,7 @@ export default function BoothPage() {
           {/* Desktop action buttons — md: right col row 1 (hidden on mobile) */}
           <div className="hidden md:block md:col-start-2 md:row-start-1 bg-white border border-gray-200/60 rounded-xl p-5">
             <div className="space-y-2.5">
-              <button
-                onClick={() => setShowInquiry(true)}
-                disabled={!inquiryAllowed}
-                className="w-full flex items-center justify-center gap-2 h-10 rounded-lg text-sm font-medium bg-brand-600 text-white hover:bg-brand-500 transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <MessageSquare className="w-4 h-4" />
-                {!inquiryAllowed ? '문의 마감' : '문의하기'}
-              </button>
+
               <div className="flex gap-2">
                 <button
                   onClick={handleToggleFav}
@@ -438,6 +431,14 @@ export default function BoothPage() {
                   <Share2 className="w-4 h-4" />
                 </button>
               </div>
+              <button
+                onClick={() => setShowInquiry(true)}
+                disabled={!inquiryAllowed}
+                className="w-full flex items-center justify-center gap-2 h-10 rounded-lg text-sm font-medium bg-brand-600 text-white hover:bg-brand-500 transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <MessageSquare className="w-4 h-4" />
+                {!inquiryAllowed ? '문의 마감' : '문의하기'}
+              </button>
               <button
                 onClick={() => setShowEmailInfo(true)}
                 className="w-full flex items-center justify-center gap-2 h-10 rounded-lg text-sm font-medium border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-all duration-150"
