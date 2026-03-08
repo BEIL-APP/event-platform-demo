@@ -9,6 +9,7 @@ import {
   MapPin,
   X,
   Calendar,
+  MessageSquare,
 } from 'lucide-react';
 import { VisitorHeader } from '../../components/VisitorHeader';
 import { useBooths } from '../../hooks/useBooths';
@@ -128,45 +129,47 @@ export default function ExplorePage() {
 
       {/* Hero / Search */}
       <div className="bg-white border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">부스 둘러보기</h1>
-          <p className="text-sm text-gray-500 mb-4">관심 있는 부스를 찾아 문의하고 자료를 받아보세요</p>
+        <div className="max-w-5xl mx-auto px-4 py-8 sm:py-12">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mb-2">부스 둘러보기</h1>
+          <p className="text-sm sm:text-base text-gray-500 font-medium mb-6 sm:mb-8">관심 있는 부스를 찾아 문의하고 자료를 받아보세요</p>
 
-          {/* Event selector */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 mb-3 scrollbar-hide">
-            <Calendar className="w-4 h-4 text-gray-400 shrink-0" />
-            {MOCK_EVENTS.map((ev) => (
-              <button
-                key={ev.id}
-                onClick={() => setSelectedEvent(ev.id)}
-                className={`shrink-0 text-xs font-medium px-3 py-1.5 rounded-lg border transition-all duration-150 ${
-                  selectedEvent === ev.id
-                    ? 'bg-brand-600 text-white border-brand-600'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                {ev.name}
-              </button>
-            ))}
-          </div>
+          <div className="space-y-4">
+            {/* Event selector */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              <Calendar className="w-4 h-4 text-gray-400 shrink-0" />
+              {MOCK_EVENTS.map((ev) => (
+                <button
+                  key={ev.id}
+                  onClick={() => setSelectedEvent(ev.id)}
+                  className={`shrink-0 text-xs font-bold px-3 py-1.5 rounded-lg border transition-all duration-150 ${
+                    selectedEvent === ev.id
+                      ? 'bg-brand-600 text-white border-brand-600 shadow-md shadow-brand-100'
+                      : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  {ev.name}
+                </button>
+              ))}
+            </div>
 
-          <div className="relative max-w-xl">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="부스 이름, 카테고리, 키워드로 검색"
-              className="w-full h-11 bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-10 text-sm outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 focus:bg-white transition-all placeholder:text-gray-400"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
+            <div className="relative max-w-xl group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-gray-400 group-focus-within:text-brand-500 transition-colors" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="부스 이름, 카테고리, 키워드로 검색"
+                className="w-full h-12 bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-11 text-sm outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-400 focus:bg-white transition-all placeholder:text-gray-400"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-all"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -237,29 +240,29 @@ export default function ExplorePage() {
         </div>
 
         {/* Result count */}
-        <p className="text-xs text-gray-400 mt-3">
-          {filtered.length}개 부스
-          {activeCategory !== '전체' && <span> · {activeCategory}</span>}
+        <p className="text-[13px] text-gray-400 font-medium mt-4">
+          총 <span className="text-gray-900 font-bold">{filtered.length}</span>개의 부스
+          {activeCategory !== '전체' && <span className="text-brand-600"> · {activeCategory}</span>}
           {search && <span> · "{search}"</span>}
         </p>
       </div>
 
       {/* Booth Grid */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 pb-12">
+      <div className="max-w-5xl mx-auto px-4 py-6 pb-16">
         {filtered.length === 0 ? (
-          <div className="text-center py-16">
-            <Search className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-            <p className="text-sm text-gray-500 font-medium">검색 결과가 없어요</p>
-            <p className="text-xs text-gray-400 mt-1">다른 키워드나 카테고리로 찾아보세요</p>
+          <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <Search className="w-12 h-12 text-gray-200 mx-auto mb-4" />
+            <p className="text-base text-gray-500 font-bold">검색 결과가 없어요</p>
+            <p className="text-sm text-gray-400 mt-1">다른 키워드나 카테고리로 찾아보세요</p>
             <button
               onClick={() => { setSearch(''); setActiveCategory('전체'); setOnlyActive(false); }}
-              className="mt-4 text-[13px] font-medium text-brand-600 hover:text-brand-700 transition-colors"
+              className="mt-6 h-10 px-6 rounded-xl bg-brand-50 text-brand-600 text-sm font-bold hover:bg-brand-100 transition-colors"
             >
               필터 초기화
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
             {filtered.map((booth) => {
               const faved = checkFav(booth.id);
               const policies = policyMap[booth.id] ?? [];
@@ -270,7 +273,7 @@ export default function ExplorePage() {
               return (
                 <div
                   key={booth.id}
-                  className="group bg-white border border-gray-200/60 rounded-xl overflow-hidden hover:border-gray-300 hover:shadow-card-hover transition-all duration-200"
+                  className="group bg-white border border-gray-200/60 rounded-2xl overflow-hidden hover:border-brand-200 hover:shadow-card-hover transition-all duration-300 shadow-sm"
                 >
                   {/* Image */}
                   <Link to={`/scan/${booth.id}`} className="block relative">
@@ -278,7 +281,7 @@ export default function ExplorePage() {
                       <img
                         src={booth.images[0]}
                         alt={booth.name}
-                        className="w-full aspect-[16/10] object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                        className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src =
                             'https://images.unsplash.com/photo-1560472355-536de3962603?w=800&q=80';
@@ -292,57 +295,59 @@ export default function ExplorePage() {
 
                     {/* Status badge */}
                     {expired && (
-                      <span className="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-2 py-0.5 rounded-md flex items-center gap-1">
+                      <span className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white text-[11px] font-bold px-2 py-1 rounded-lg flex items-center gap-1">
                         <Clock className="w-3 h-3" /> 종료
                       </span>
                     )}
                     {!expired && active && policies.length > 0 && (
-                      <span className="absolute top-3 left-3 bg-emerald-500/90 backdrop-blur-sm text-white text-xs font-medium px-2 py-0.5 rounded-md flex items-center gap-1">
+                      <span className="absolute top-3 left-3 bg-emerald-500/90 backdrop-blur-md text-white text-[11px] font-bold px-2 py-1 rounded-lg flex items-center gap-1">
                         <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" /> 운영중
                       </span>
                     )}
                   </Link>
 
                   {/* Content */}
-                  <div className="p-4">
-                    <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="p-5">
+                    <div className="flex items-start justify-between gap-3 mb-2.5">
                       <div className="min-w-0">
-                        <span className="text-xs text-gray-500">{booth.category}</span>
+                        <span className="text-[11px] font-bold text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded uppercase tracking-wider">{booth.category}</span>
                         <Link to={`/scan/${booth.id}`}>
-                          <h3 className="text-sm font-semibold text-gray-900 mt-0.5 group-hover:text-brand-600 transition-colors truncate">
+                          <h3 className="text-base font-bold text-gray-900 mt-1.5 group-hover:text-brand-600 transition-colors truncate">
                             {booth.name}
                           </h3>
                         </Link>
                       </div>
                       <button
                         onClick={() => toggleFav(booth.id)}
-                        className={`shrink-0 w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-150 ${
+                        className={`shrink-0 w-9 h-9 flex items-center justify-center rounded-xl transition-all duration-200 ${
                           faved
-                            ? 'text-brand-600 bg-brand-50'
-                            : 'text-gray-300 hover:text-gray-500 hover:bg-gray-50'
+                            ? 'text-brand-600 bg-brand-50 shadow-sm'
+                            : 'text-gray-300 border border-gray-100 hover:text-gray-500 hover:bg-gray-50'
                         }`}
                       >
-                        <Heart className={`w-4 h-4 ${faved ? 'fill-current' : ''}`} />
+                        <Heart className={`w-4.5 h-4.5 ${faved ? 'fill-current' : ''}`} />
                       </button>
                     </div>
 
-                    <p className="text-[13px] text-gray-500 leading-relaxed line-clamp-2 mb-3">
+                    <p className="text-[13px] text-gray-500 font-medium leading-relaxed line-clamp-2 mb-4">
                       {booth.tagline}
                     </p>
 
                     {/* Stats row */}
-                    <div className="flex items-center gap-3 text-xs text-gray-400">
+                    <div className="flex items-center gap-4 pt-4 border-t border-gray-50 text-[11px] font-bold text-gray-400">
                       {stats && stats.scans > 0 && (
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3" /> {stats.scans}회 방문
+                        <span className="flex items-center gap-1.5">
+                          <MapPin className="w-3.5 h-3.5" /> {stats.scans.toLocaleString()}
                         </span>
                       )}
                       {stats && stats.inquiries > 0 && (
-                        <span>{stats.inquiries}건 문의</span>
+                        <span className="flex items-center gap-1.5">
+                          <MessageSquare className="w-3.5 h-3.5" /> {stats.inquiries.toLocaleString()}
+                        </span>
                       )}
                       {booth.nextEvents.length > 0 && (
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> 이벤트 {booth.nextEvents.length}
+                        <span className="flex items-center gap-1.5 text-brand-600 bg-brand-50/50 px-1.5 py-0.5 rounded">
+                          <Calendar className="w-3 h-3" /> EVENT
                         </span>
                       )}
                     </div>
