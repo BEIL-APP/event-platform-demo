@@ -148,8 +148,8 @@ export default function AdminSettingsPage() {
     <AdminLayout>
       <div className="px-4 py-5 sm:p-6 lg:p-8 max-w-5xl mx-auto">
         <div className="mb-8 lg:mb-10">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">관리자 설정</h1>
-          <p className="text-sm text-gray-500 font-medium mt-1">프로필 정보 및 서비스 운영 환경을 구성하세요</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight mb-2">관리자 설정</h1>
+          <p className="text-sm text-gray-500 font-medium">프로필 정보 및 서비스 운영 환경을 구성하세요</p>
         </div>
 
         <div className="space-y-6 sm:space-y-8">

@@ -231,8 +231,8 @@ export default function AdminBoothNewPage() {
             <ArrowLeft className="w-4 h-4 text-gray-500" />
           </button>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">새 부스 만들기</h1>
-            <p className="text-sm text-gray-500 mt-1">부스 정보를 입력하고 QR을 발급받으세요</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight mb-2">새 부스 만들기</h1>
+            <p className="text-sm text-gray-500">부스 정보를 입력하고 QR을 발급받으세요</p>
           </div>
         </div>
 

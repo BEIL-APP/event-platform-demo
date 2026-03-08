@@ -33,8 +33,8 @@ export default function NotificationsPage() {
         <p className="text-sm text-gray-500 font-medium mb-8">이 기기에서 받은 새로운 소식들을 확인하세요</p>
 
         {notifications.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
-            <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="text-center py-20 bg-white rounded-xl border border-gray-100 shadow-sm">
+            <div className="w-16 h-16 bg-gray-50 rounded-xl flex items-center justify-center mx-auto mb-4">
               <Bell className="w-8 h-8 text-gray-200" />
             </div>
             <p className="text-base text-gray-500 font-bold">아직 알림이 없어요</p>
@@ -48,7 +48,7 @@ export default function NotificationsPage() {
               <Link
                 key={n.id}
                 to={n.threadId ? '/messages' : (n.boothId ? `/scan/${n.boothId}` : '#')}
-                className="flex items-start gap-4 bg-white border border-gray-200/60 rounded-2xl p-4 hover:border-brand-200 hover:shadow-card-hover transition-all duration-200 shadow-sm group"
+                className="flex items-start gap-4 bg-white border border-gray-200/60 rounded-xl p-4 hover:border-brand-200 hover:shadow-card-hover transition-all duration-200 shadow-sm group"
               >
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform ${
                   n.type === 'reply' ? 'bg-brand-50' : 'bg-gray-50'
@@ -62,7 +62,7 @@ export default function NotificationsPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <p className="text-[15px] font-bold text-gray-900 leading-tight group-hover:text-brand-600 transition-colors">{n.title}</p>
-                    <p className="text-[11px] font-bold text-gray-300 uppercase tracking-tight ml-3 shrink-0">{formatTime(n.createdAt)}</p>
+                    <p className="text-[11px] font-bold text-gray-300 tracking-tight ml-3 shrink-0">{formatTime(n.createdAt)}</p>
                   </div>
                   <p className="text-sm text-gray-500 font-medium leading-relaxed line-clamp-2">{n.body}</p>
                 </div>

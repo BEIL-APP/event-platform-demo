@@ -163,13 +163,13 @@ export default function SettingsPage() {
       <div className="max-w-5xl mx-auto px-4 py-8 sm:py-12 pb-24">
         <div className="max-w-2xl">
           <div className="mb-8">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">설정</h1>
-            <p className="text-sm text-gray-500 font-medium mt-1">프로필, 관심 분야, 알림 설정을 관리하세요</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight mb-2">설정</h1>
+            <p className="text-sm text-gray-500 font-medium">프로필, 관심 분야, 알림 설정을 관리하세요</p>
           </div>
 
           {/* Login nudge */}
           {!isLoggedIn && (
-            <div className="mb-8 bg-white border border-gray-200 rounded-2xl p-5 flex items-start gap-4 shadow-sm">
+            <div className="mb-8 bg-white border border-gray-200 rounded-xl p-5 flex items-start gap-4 shadow-sm">
               <div className="w-11 h-11 bg-brand-50 rounded-xl flex items-center justify-center shrink-0">
                 <LogIn className="w-5 h-5 text-brand-600" />
               </div>
@@ -185,7 +185,7 @@ export default function SettingsPage() {
 
           <div className="space-y-6">
             {/* ─── Profile ─── */}
-            <section className="bg-white border border-gray-200/60 rounded-2xl shadow-sm overflow-hidden">
+            <section className="bg-white border border-gray-200/60 rounded-xl shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/30 flex items-center gap-2.5">
                 <User className="w-4.5 h-4.5 text-gray-400" />
                 <h2 className="text-sm font-semibold text-gray-900">프로필 설정</h2>
@@ -255,7 +255,7 @@ export default function SettingsPage() {
             </section>
 
             {/* ─── Interests ─── */}
-            <section className="bg-white border border-gray-200/60 rounded-2xl shadow-sm overflow-hidden">
+            <section className="bg-white border border-gray-200/60 rounded-xl shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/30 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <Tag className="w-4.5 h-4.5 text-gray-400" />
@@ -289,7 +289,7 @@ export default function SettingsPage() {
             </section>
 
             {/* ─── Notification Settings ─── */}
-            <section className="bg-white border border-gray-200/60 rounded-2xl shadow-sm overflow-hidden">
+            <section className="bg-white border border-gray-200/60 rounded-xl shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/30 flex items-center gap-2.5">
                 <Bell className="w-4.5 h-4.5 text-gray-400" />
                 <h2 className="text-sm font-semibold text-gray-900">알림 설정</h2>
@@ -339,7 +339,7 @@ export default function SettingsPage() {
             </section>
 
             {/* ─── Consent Withdrawal ─── */}
-            <section className="bg-white border border-gray-200/60 rounded-2xl shadow-sm overflow-hidden">
+            <section className="bg-white border border-gray-200/60 rounded-xl shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/30 flex items-center gap-2.5">
                 <FileText className="w-4.5 h-4.5 text-gray-400" />
                 <h2 className="text-sm font-semibold text-gray-900">데이터 동의 관리</h2>
@@ -373,7 +373,7 @@ export default function SettingsPage() {
                 )}
 
                 {showWithdrawForm ? (
-                  <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 space-y-4 animate-scale-in">
+                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 space-y-4 animate-scale-in">
                     <div>
                       <label className="block text-xs font-medium text-gray-500 mb-2 px-1">철회 사유 (선택 사항)</label>
                       <input
@@ -429,7 +429,7 @@ export default function SettingsPage() {
             </section>
 
             {/* ─── Account / Data ─── */}
-            <section className="bg-white border border-gray-200/60 rounded-2xl shadow-sm overflow-hidden">
+            <section className="bg-white border border-gray-200/60 rounded-xl shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/30 flex items-center gap-2.5">
                 <Shield className="w-4.5 h-4.5 text-gray-400" />
                 <h2 className="text-sm font-semibold text-gray-900">계정 및 보안</h2>
@@ -453,7 +453,7 @@ export default function SettingsPage() {
                   </h3>
                   <p className="text-[13px] text-gray-500 font-medium mb-4 leading-relaxed">이 기기에 저장된 모든 활동 기록과 설정이 즉시 삭제되며 복구할 수 없습니다.</p>
                   {showDeleteConfirm ? (
-                    <div className="bg-red-50 border border-red-100 rounded-2xl p-5 animate-scale-in">
+                    <div className="bg-red-50 border border-red-100 rounded-xl p-5 animate-scale-in">
                       <p className="text-sm text-red-700 font-bold mb-4">정말 모든 데이터를 영구적으로 삭제할까요?</p>
                       <div className="flex flex-col sm:flex-row gap-2">
                         <button

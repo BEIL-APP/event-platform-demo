@@ -107,8 +107,8 @@ export default function AdminDashboardPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 lg:mb-8">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">대시보드</h1>
-            <p className="text-sm text-gray-500 mt-1">내 부스의 전체 성과를 한눈에 확인하세요</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight mb-2">대시보드</h1>
+            <p className="text-sm text-gray-500">내 부스의 전체 성과를 한눈에 확인하세요</p>
           </div>
           <button
             onClick={handleExportAll}

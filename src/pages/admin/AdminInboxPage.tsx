@@ -316,8 +316,8 @@ export default function AdminInboxPage() {
         <div className={`flex flex-col border-gray-100 ${selectedThread ? 'hidden md:flex' : 'flex'} w-full md:w-[360px] md:border-r md:shrink-0 bg-gray-50/30`}>
           {/* Inbox header */}
           <div className="px-4 py-5 sm:p-6 lg:p-8 border-b border-gray-100 bg-white">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">문의 인박스</h1>
-            <p className="text-sm text-gray-500 mt-1">관람객 문의를 확인하고 응답하세요</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight mb-2">문의 인박스</h1>
+            <p className="text-sm text-gray-500">관람객 문의를 확인하고 응답하세요</p>
 
             {/* Search */}
             <div className="relative mt-6 lg:mt-8 group">
@@ -355,7 +355,7 @@ export default function AdminInboxPage() {
           {/* Thread list */}
           <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2.5">
             {filtered.length === 0 ? (
-              <div className="text-center py-20 px-4 bg-white rounded-2xl border border-gray-100 mx-2">
+              <div className="text-center py-20 px-4 bg-white rounded-xl border border-gray-100 mx-2">
                 <MessageSquare className="w-10 h-10 text-gray-200 mx-auto mb-3" />
                 <p className="text-sm text-gray-400 font-bold">도착한 문의가 없습니다</p>
               </div>
@@ -368,7 +368,7 @@ export default function AdminInboxPage() {
                   <button
                     key={t.id}
                     onClick={() => setSelected(t)}
-                    className={`w-full text-left px-4 py-4 rounded-2xl border transition-all duration-200 group ${
+                    className={`w-full text-left px-4 py-4 rounded-xl border transition-all duration-200 group ${
                       isActive
                         ? 'bg-white border-brand-400 shadow-lg ring-1 ring-brand-100'
                         : 'bg-white border-gray-200/60 hover:border-brand-200 hover:shadow-md'
@@ -546,8 +546,8 @@ export default function AdminInboxPage() {
                   <div
                     className={`max-w-[85%] sm:max-w-[70%] px-4 py-3.5 shadow-sm transition-all ${
                       msg.from === 'booth'
-                        ? 'bg-brand-600 text-white rounded-2xl rounded-tr-none'
-                        : 'bg-white border border-gray-100 text-gray-800 rounded-2xl rounded-tl-none'
+                        ? 'bg-brand-600 text-white rounded-xl rounded-tr-none'
+                        : 'bg-white border border-gray-100 text-gray-800 rounded-xl rounded-tl-none'
                     }`}
                   >
                     <p className="text-[15px] leading-relaxed font-medium">{msg.text}</p>
@@ -611,7 +611,7 @@ export default function AdminInboxPage() {
                   onChange={(e) => setReplyText(e.target.value)}
                   placeholder="관람객에게 보낼 답변을 입력하세요…"
                   rows={2}
-                  className="flex-1 text-[15px] text-gray-700 bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3.5 resize-none outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-400 focus:bg-white transition-all placeholder:text-gray-400 min-h-[60px]"
+                  className="flex-1 text-[15px] text-gray-700 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 resize-none outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-400 focus:bg-white transition-all placeholder:text-gray-400 min-h-[60px]"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
@@ -622,7 +622,7 @@ export default function AdminInboxPage() {
                 <button
                   onClick={handleSendReply}
                   disabled={!replyText.trim()}
-                  className="h-14 px-6 bg-brand-600 text-white text-sm font-bold rounded-2xl flex flex-col items-center justify-center gap-1 hover:bg-brand-500 transition-all duration-200 disabled:opacity-40 shadow-lg shadow-brand-100 shrink-0 group"
+                  className="h-14 px-6 bg-brand-600 text-white text-sm font-bold rounded-xl flex flex-col items-center justify-center gap-1 hover:bg-brand-500 transition-all duration-200 disabled:opacity-40 shadow-lg shadow-brand-100 shrink-0 group"
                 >
                   <Send className="w-5 h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                   <span className="text-[10px] uppercase tracking-tighter">전송</span>
@@ -633,7 +633,7 @@ export default function AdminInboxPage() {
         ) : (
           <div className="hidden md:flex flex-1 items-center justify-center text-center bg-gray-50/30">
             <div>
-              <div className="w-20 h-20 bg-white rounded-3xl border border-gray-100 shadow-sm flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 bg-white rounded-xl border border-gray-100 shadow-sm flex items-center justify-center mx-auto mb-6">
                 <MessageSquare className="w-10 h-10 text-gray-200" />
               </div>
               <p className="text-lg font-bold text-gray-400 tracking-tight">확인할 문의를 선택해 주세요</p>

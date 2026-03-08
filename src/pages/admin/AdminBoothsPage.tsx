@@ -16,8 +16,8 @@ export default function AdminBoothsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 lg:mb-8">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">내 부스</h1>
-            <p className="text-sm text-gray-500 mt-1">총 {booths.length}개 부스 운영 중</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight mb-2">내 부스</h1>
+            <p className="text-sm text-gray-500">총 {booths.length}개 부스 운영 중</p>
           </div>
           <Link
             to="/admin/booths/new"

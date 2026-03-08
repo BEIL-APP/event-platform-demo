@@ -346,7 +346,7 @@ export default function AdminBoothDetailPage() {
             </Link>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">{booth.name}</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight mb-2">{booth.name}</h1>
                 <span className="h-6 px-2 rounded-md text-xs font-medium inline-flex items-center bg-gray-100 text-gray-600">
                   {booth.category}
                 </span>
@@ -361,7 +361,7 @@ export default function AdminBoothDetailPage() {
                   </span>
                 )}
               </div>
-              <p className="text-sm text-gray-500 mt-0.5 truncate">{booth.tagline}</p>
+              <p className="text-sm text-gray-500 truncate">{booth.tagline}</p>
             </div>
           </div>
           <div className="flex gap-2 w-full sm:w-auto shrink-0">

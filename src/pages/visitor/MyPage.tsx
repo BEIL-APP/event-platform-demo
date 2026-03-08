@@ -27,7 +27,7 @@ function BoothCard({
   onAddToCollection?: () => void;
 }) {
   return (
-    <div className="flex items-center gap-4 bg-white border border-gray-200/60 rounded-2xl p-4 hover:border-brand-200 hover:shadow-card-hover transition-all duration-300 shadow-sm group">
+    <div className="flex items-center gap-4 bg-white border border-gray-200/60 rounded-xl p-4 hover:border-brand-200 hover:shadow-card-hover transition-all duration-300 shadow-sm group">
       <Link to={`/scan/${booth.id}`} className="flex items-center gap-4 flex-1 min-w-0">
         <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shrink-0">
           {booth.images[0] ? (
@@ -45,7 +45,7 @@ function BoothCard({
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">{booth.category}</p>
+          <p className="text-[10px] font-bold text-gray-400 tracking-wider mb-1">{booth.category}</p>
           <p className="text-sm font-bold text-gray-900 truncate group-hover:text-brand-600 transition-colors">{booth.name}</p>
           <p className="text-xs text-gray-500 mt-0.5 truncate font-medium">{booth.tagline}</p>
           {meta && <p className="text-[11px] font-bold text-brand-500 mt-1.5">{meta}</p>}
@@ -101,7 +101,7 @@ function AiInsights({ visitedBooths, favoriteBooths }: { visitedBooths: Booth[];
     <div className="mb-6">
       <button
         onClick={() => setExpanded((e) => !e)}
-        className="w-full flex items-center gap-3 bg-white border border-brand-100 rounded-2xl px-5 py-4 text-left transition-all duration-200 shadow-sm hover:shadow-md hover:border-brand-200 group"
+        className="w-full flex items-center gap-3 bg-white border border-brand-100 rounded-xl px-5 py-4 text-left transition-all duration-200 shadow-sm hover:shadow-md hover:border-brand-200 group"
       >
         <div className="w-9 h-9 bg-brand-50 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
           <Sparkles className="w-4.5 h-4.5 text-brand-600" />
@@ -116,7 +116,7 @@ function AiInsights({ visitedBooths, favoriteBooths }: { visitedBooths: Booth[];
       </button>
 
       {expanded && (
-        <div className="mt-3 bg-white rounded-2xl border border-gray-200 p-5 space-y-5 animate-fade-in shadow-lg">
+        <div className="mt-3 bg-white rounded-xl border border-gray-200 p-5 space-y-5 animate-fade-in shadow-lg">
           {/* Category summary */}
           <div>
             <p className="text-[13px] font-bold text-gray-900 mb-3 flex items-center gap-1.5">
@@ -163,7 +163,7 @@ function AiInsights({ visitedBooths, favoriteBooths }: { visitedBooths: Booth[];
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-bold text-gray-800 truncate group-hover:text-brand-600 transition-colors">{b.name}</p>
-                      <p className="text-[11px] text-gray-400 font-medium truncate uppercase tracking-tight">{b.category}</p>
+                      <p className="text-[11px] text-gray-400 font-medium truncate tracking-tight">{b.category}</p>
                     </div>
                     <ChevronRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-brand-500 transition-all" />
                   </Link>
@@ -247,13 +247,13 @@ function CollectionsTab({ favoriteBooths }: { favoriteBooths: Array<{ booth: Boo
       {!creating ? (
         <button
           onClick={() => setCreating(true)}
-          className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-2xl py-6 text-sm font-bold text-gray-400 hover:border-brand-300 hover:text-brand-600 hover:bg-brand-50 transition-all duration-200 mb-6 group"
+          className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-6 text-sm font-bold text-gray-400 hover:border-brand-300 hover:text-brand-600 hover:bg-brand-50 transition-all duration-200 mb-6 group"
         >
           <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" />
           새 컬렉션 만들기
         </button>
       ) : (
-        <div className="bg-white rounded-2xl border-2 border-brand-200 p-5 mb-6 shadow-lg animate-scale-in">
+        <div className="bg-white rounded-xl border-2 border-brand-200 p-5 mb-6 shadow-lg animate-scale-in">
           <p className="text-sm font-bold text-gray-900 mb-3">새 컬렉션 이름</p>
           <div className="flex gap-2">
             <input
@@ -283,7 +283,7 @@ function CollectionsTab({ favoriteBooths }: { favoriteBooths: Array<{ booth: Boo
       )}
 
       {collections.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
+        <div className="text-center py-20 bg-white rounded-xl border border-gray-100 shadow-sm">
           <Folder className="w-12 h-12 text-gray-200 mx-auto mb-4" />
           <p className="text-base text-gray-500 font-bold">아직 컬렉션이 없어요</p>
           <p className="text-sm text-gray-400 mt-1 font-medium">관심 부스를 목적별로 모아보세요</p>
@@ -298,7 +298,7 @@ function CollectionsTab({ favoriteBooths }: { favoriteBooths: Array<{ booth: Boo
               .filter((b) => !col.boothIds.includes(b.id));
 
             return (
-              <div key={col.id} className="bg-white rounded-2xl border border-gray-200/60 overflow-hidden shadow-sm hover:border-brand-200 transition-all duration-200">
+              <div key={col.id} className="bg-white rounded-xl border border-gray-200/60 overflow-hidden shadow-sm hover:border-brand-200 transition-all duration-200">
                 {/* Header */}
                 <div className="flex items-center gap-3 px-5 py-4">
                   <button
@@ -352,7 +352,7 @@ function CollectionsTab({ favoriteBooths }: { favoriteBooths: Array<{ booth: Boo
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-bold text-gray-800 truncate group-hover:text-brand-600 transition-colors">{b.name}</p>
-                            <p className="text-[10px] text-gray-400 font-bold truncate uppercase tracking-tight">{b.category}</p>
+                            <p className="text-[10px] text-gray-400 font-bold truncate tracking-tight">{b.category}</p>
                           </div>
                         </Link>
                         <button
@@ -368,7 +368,7 @@ function CollectionsTab({ favoriteBooths }: { favoriteBooths: Array<{ booth: Boo
                     {addable.length > 0 && (
                       addingToId === col.id ? (
                         <div className="pt-2 animate-fade-in">
-                          <p className="text-[11px] font-bold text-gray-400 mb-2 uppercase tracking-wider px-1">관심 부스 목록:</p>
+                          <p className="text-[11px] font-bold text-gray-400 mb-2 tracking-wider px-1">관심 부스 목록:</p>
                           <div className="space-y-1 max-h-40 overflow-y-auto pr-1 scrollbar-hide">
                             {addable.map((b) => (
                               <button
@@ -379,7 +379,7 @@ function CollectionsTab({ favoriteBooths }: { favoriteBooths: Array<{ booth: Boo
                                 <Plus className="w-3.5 h-3.5 text-brand-500 shrink-0 group-hover:scale-110 transition-transform" />
                                 <div className="flex-1 min-w-0">
                                   <p className="text-xs font-bold text-gray-700 truncate">{b.name}</p>
-                                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">{b.category}</p>
+                                  <p className="text-[10px] text-gray-400 font-bold tracking-tight">{b.category}</p>
                                 </div>
                               </button>
                             ))}
@@ -489,7 +489,7 @@ export default function MyPage() {
 
         {/* Login banner */}
         {!isLoggedIn && (
-          <div className="flex items-start gap-3 bg-white border border-gray-200 rounded-2xl p-4 mb-8 shadow-sm">
+          <div className="flex items-start gap-3 bg-white border border-gray-200 rounded-xl p-4 mb-8 shadow-sm">
             <div className="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center shrink-0">
               <LogIn className="w-5 h-5 text-brand-600" />
             </div>
@@ -617,7 +617,7 @@ export default function MyPage() {
 
         {/* Data Deletion */}
         <div className="mt-12 pt-8 border-t border-gray-100">
-          <p className="text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-3">개인정보 관리</p>
+          <p className="text-[13px] font-bold text-gray-400 tracking-wider mb-3">개인정보 관리</p>
           {!showDeleteConfirm ? (
             <button
               onClick={() => setShowDeleteConfirm(true)}
@@ -627,7 +627,7 @@ export default function MyPage() {
               내 데이터 삭제 요청
             </button>
           ) : (
-            <div className="bg-red-50 border border-red-100 rounded-2xl p-5 shadow-sm animate-scale-in">
+            <div className="bg-red-50 border border-red-100 rounded-xl p-5 shadow-sm animate-scale-in">
               <div className="flex items-start gap-3 mb-4">
                 <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
                 <p className="text-sm text-red-700 font-bold leading-relaxed">

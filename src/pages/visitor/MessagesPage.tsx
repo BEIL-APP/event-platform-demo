@@ -54,8 +54,8 @@ export default function MessagesPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">문의 내역</h1>
-            <p className="text-sm text-gray-500 font-medium mt-1">부스에 남긴 문의와 답변을 확인하세요</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight mb-2">문의 내역</h1>
+            <p className="text-sm text-gray-500 font-medium">부스에 남긴 문의와 답변을 확인하세요</p>
           </div>
           {isLoggedIn && hasUnread && (
             <div className="h-6 px-2 rounded-lg inline-flex items-center gap-1.5 bg-brand-50 text-brand-700 text-xs font-bold shadow-sm shadow-brand-100">
@@ -69,7 +69,7 @@ export default function MessagesPage() {
           {/* ── Thread list ── */}
           <div className={`w-full md:w-[360px] md:shrink-0 ${selected ? 'hidden md:block' : ''}`}>
             {threads.length === 0 ? (
-              <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
+              <div className="text-center py-20 bg-white rounded-xl border border-gray-100 shadow-sm">
                 <MessageSquare className="w-12 h-12 text-gray-200 mx-auto mb-4" />
                 <p className="text-base text-gray-500 font-bold">아직 문의가 없어요</p>
                 <p className="text-sm text-gray-400 mt-1">관심 있는 부스에 궁금한 점을 물어보세요</p>
@@ -86,7 +86,7 @@ export default function MessagesPage() {
                     <button
                       key={thread.id}
                       onClick={() => { setSelected(thread); setReplyText(''); }}
-                      className={`w-full text-left bg-white border rounded-2xl p-4 transition-all duration-200 shadow-sm group ${
+                      className={`w-full text-left bg-white border rounded-xl p-4 transition-all duration-200 shadow-sm group ${
                         isActive ? 'border-brand-400 ring-2 ring-brand-500/10' : 'border-gray-200/60 hover:border-brand-200 hover:shadow-md'
                       }`}
                     >
@@ -128,7 +128,7 @@ export default function MessagesPage() {
                               </span>
                             )}
                             <span
-                              className={`h-5 px-2 rounded font-bold text-[10px] uppercase tracking-tight ${
+                              className={`h-5 px-2 rounded font-bold text-[10px] tracking-tight ${
                                 thread.status === '처리'
                                   ? 'text-emerald-600 bg-emerald-50'
                                   : thread.status === '보류'
@@ -160,15 +160,15 @@ export default function MessagesPage() {
                 목록으로 돌아가기
               </button>
 
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden flex flex-col h-[600px] md:h-[700px] animate-fade-in">
+              <div className="bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden flex flex-col h-[600px] md:h-[700px] animate-fade-in">
                 {/* Thread header */}
                 <div className="px-6 py-4 flex items-center gap-4 border-b border-gray-100 bg-gray-50/30">
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-base text-gray-900 truncate">{selectedBooth?.name ?? '알 수 없는 부스'}</p>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{selectedBooth?.category}</p>
+                    <p className="text-xs font-bold text-gray-400">{selectedBooth?.category}</p>
                   </div>
                   <span
-                    className={`h-6 px-2 rounded-lg text-[11px] font-bold uppercase tracking-wider inline-flex items-center ${
+                    className={`h-6 px-2 rounded-lg text-[11px] font-bold inline-flex items-center ${
                       selected.status === '처리'
                         ? 'bg-emerald-50 text-emerald-700'
                         : selected.status === '보류'
@@ -195,13 +195,13 @@ export default function MessagesPage() {
                       <div
                         className={`max-w-[85%] md:max-w-[75%] px-4 py-3 shadow-sm ${
                           msg.from === 'visitor'
-                            ? 'bg-brand-600 text-white rounded-2xl rounded-tr-none'
-                            : 'bg-white border border-gray-100 text-gray-800 rounded-2xl rounded-tl-none'
+                            ? 'bg-brand-600 text-white rounded-xl rounded-tr-none'
+                            : 'bg-white border border-gray-100 text-gray-800 rounded-xl rounded-tl-none'
                         }`}
                       >
                         <p className="text-[15px] leading-relaxed font-medium">{msg.text}</p>
                         <p
-                          className={`text-[10px] font-bold mt-2 uppercase tracking-tight ${
+                          className={`text-[10px] font-bold mt-2 tracking-tight ${
                             msg.from === 'visitor' ? 'text-brand-200' : 'text-gray-400'
                           }`}
                         >
@@ -240,9 +240,9 @@ export default function MessagesPage() {
               </div>
             </div>
           ) : (
-            <div className="hidden md:flex flex-1 items-center justify-center bg-white rounded-2xl border border-gray-100 shadow-sm min-h-[600px]">
+            <div className="hidden md:flex flex-1 items-center justify-center bg-white rounded-xl border border-gray-100 shadow-sm min-h-[600px]">
               <div className="text-center">
-                <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-gray-50 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <MessageSquare className="w-8 h-8 text-gray-200" />
                 </div>
                 <p className="text-base text-gray-500 font-bold">확인할 문의를 선택해 주세요</p>

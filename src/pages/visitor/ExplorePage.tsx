@@ -250,7 +250,7 @@ export default function ExplorePage() {
       {/* Booth Grid */}
       <div className="max-w-5xl mx-auto px-4 py-6 pb-16">
         {filtered.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
+          <div className="text-center py-20 bg-white rounded-xl border border-gray-100 shadow-sm">
             <Search className="w-12 h-12 text-gray-200 mx-auto mb-4" />
             <p className="text-base text-gray-500 font-bold">검색 결과가 없어요</p>
             <p className="text-sm text-gray-400 mt-1">다른 키워드나 카테고리로 찾아보세요</p>
@@ -273,7 +273,7 @@ export default function ExplorePage() {
               return (
                 <div
                   key={booth.id}
-                  className="group bg-white border border-gray-200/60 rounded-2xl overflow-hidden hover:border-brand-200 hover:shadow-card-hover transition-all duration-300 shadow-sm"
+                  className="group bg-white border border-gray-200/60 rounded-xl overflow-hidden hover:border-brand-200 hover:shadow-card-hover transition-all duration-300 shadow-sm"
                 >
                   {/* Image */}
                   <Link to={`/scan/${booth.id}`} className="block relative">
@@ -310,7 +310,7 @@ export default function ExplorePage() {
                   <div className="p-5">
                     <div className="flex items-start justify-between gap-3 mb-2.5">
                       <div className="min-w-0">
-                        <span className="text-[11px] font-bold text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded uppercase tracking-wider">{booth.category}</span>
+                        <span className="text-[11px] font-bold text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">{booth.category}</span>
                         <Link to={`/scan/${booth.id}`}>
                           <h3 className="text-base font-bold text-gray-900 mt-1.5 group-hover:text-brand-600 transition-colors truncate">
                             {booth.name}

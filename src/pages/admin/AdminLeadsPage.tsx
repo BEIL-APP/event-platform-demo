@@ -126,8 +126,8 @@ export default function AdminLeadsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 lg:mb-10">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">리드 목록</h1>
-            <p className="text-sm text-gray-500 font-medium mt-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight mb-2">리드 목록</h1>
+            <p className="text-sm text-gray-500 font-medium">
               수집된 잠재 고객 데이터를 관리하고 필터링하세요
             </p>
           </div>
@@ -158,7 +158,7 @@ export default function AdminLeadsPage() {
 
         {/* Source stat chips */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8">
-          <div className="flex flex-col gap-1 bg-white border border-gray-200/60 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all">
+          <div className="flex flex-col gap-1 bg-white border border-gray-200/60 rounded-xl p-4 shadow-sm hover:shadow-md transition-all">
             <div className="flex items-center justify-between">
               <Users className="w-4 h-4 text-gray-400" />
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">전체</span>
@@ -167,7 +167,7 @@ export default function AdminLeadsPage() {
             <p className="text-[11px] font-bold text-gray-500 uppercase">전체 리드</p>
           </div>
           {(['bizcard', 'inquiry', 'email_info', 'survey'] as Lead['source'][]).map((src) => (
-            <div key={src} className="flex flex-col gap-1 bg-white border border-gray-200/60 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all">
+            <div key={src} className="flex flex-col gap-1 bg-white border border-gray-200/60 rounded-xl p-4 shadow-sm hover:shadow-md transition-all">
               <div className="flex items-center justify-between">
                 <span className="text-gray-400">{SOURCE_ICONS[src]}</span>
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{src.split('_')[0]}</span>
@@ -180,7 +180,7 @@ export default function AdminLeadsPage() {
 
         {/* Follow-up section */}
         {followUpLeads.length > 0 && (
-          <div className="bg-white border border-brand-100 rounded-2xl p-5 sm:p-6 mb-8 shadow-sm group">
+          <div className="bg-white border border-brand-100 rounded-xl p-5 sm:p-6 mb-8 shadow-sm group">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 bg-brand-50 rounded-xl flex items-center justify-center">
@@ -288,10 +288,10 @@ export default function AdminLeadsPage() {
         </div>
 
         {/* Lead Table */}
-        <div className="bg-white rounded-2xl border border-gray-200/60 overflow-hidden shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-200/60 overflow-hidden shadow-sm">
           {filtered.length === 0 ? (
             <div className="py-20 text-center">
-              <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gray-50 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8 text-gray-200" />
               </div>
               <p className="text-base text-gray-500 font-bold">조건에 맞는 리드가 없습니다</p>
@@ -372,8 +372,8 @@ export default function AdminLeadsPage() {
       {/* Lottery modal */}
       {showLottery && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-5 animate-fade-in">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl animate-scale-in border border-gray-100">
-            <div className="w-20 h-20 bg-brand-50 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+          <div className="bg-white rounded-xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl animate-scale-in border border-gray-100">
+            <div className="w-20 h-20 bg-brand-50 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-inner">
               <Dice5 className="w-10 h-10 text-brand-600 animate-pulse" />
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight mb-2">럭키 드로우 결과</h2>
@@ -382,7 +382,7 @@ export default function AdminLeadsPage() {
             </p>
             
             {lotteryWinner && (
-              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-8 text-left shadow-inner relative overflow-hidden">
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 mb-8 text-left shadow-inner relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-16 h-16 bg-brand-500/5 rounded-full -translate-y-8 translate-x-8" />
                 <p className="text-[11px] font-bold text-brand-600 uppercase tracking-widest mb-2">당첨자 정보</p>
                 <p className="text-lg font-bold text-gray-900 mb-1">
@@ -401,13 +401,13 @@ export default function AdminLeadsPage() {
             <div className="flex gap-3">
               <button
                 onClick={handleLottery}
-                className="flex-1 h-12 bg-white border border-gray-200 text-gray-700 text-sm font-bold rounded-2xl flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm"
+                className="flex-1 h-12 bg-white border border-gray-200 text-gray-700 text-sm font-bold rounded-xl flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm"
               >
                 다시 추첨
               </button>
               <button
                 onClick={() => { setShowLottery(false); setLotteryWinner(null); }}
-                className="flex-1 h-12 bg-brand-600 text-white text-sm font-bold rounded-2xl flex items-center justify-center hover:bg-brand-500 transition-all shadow-lg shadow-brand-100"
+                className="flex-1 h-12 bg-brand-600 text-white text-sm font-bold rounded-xl flex items-center justify-center hover:bg-brand-500 transition-all shadow-lg shadow-brand-100"
               >
                 확인
               </button>
