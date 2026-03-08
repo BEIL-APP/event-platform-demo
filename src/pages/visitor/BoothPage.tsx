@@ -282,7 +282,7 @@ export default function BoothPage() {
 
   const inquiryFormValid = isLoggedIn
     ? inquiryText.trim().length > 0
-    : inquiryText.trim().length > 0 && inquiryEmail.includes('@') && inquiryAbuseCheck;
+    : inquiryText.trim().length > 0 && inquiryEmail.includes('@') && inquiryAbuseCheck && inquiryConsent;
 
   const mockAiSummary = booth ? {
     keywords: [booth.category, ...booth.faq.slice(0, 2).map((f) => f.question.split(' ').slice(0, 2).join(' '))].filter(Boolean),
