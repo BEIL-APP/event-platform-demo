@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check:design-structure": "node scripts/design/check-page-structure.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.344.0",

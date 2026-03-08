@@ -345,8 +345,8 @@ export default function AdminBoothDetailPage() {
               <ArrowLeft className="w-5 h-5 text-gray-600" />
             </Link>
             <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap mb-1.5">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">{booth.name}</h1>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight mb-2">{booth.name}</h1>
                 <span className="h-6 px-2 rounded-md text-xs font-medium inline-flex items-center bg-gray-100 text-gray-600">
                   {booth.category}
                 </span>
@@ -391,7 +391,7 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* Two column: QR + Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-4 sm:mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-6">
           {/* QR Code Card */}
           <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6">
             <div className="flex items-center justify-between mb-4">
@@ -480,13 +480,13 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* ─── 운영 기간 설정 ─── */}
-        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
+        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <Calendar className="w-4 h-4 text-gray-500" />
             <h2 className="text-sm font-semibold text-gray-900">운영 기간 설정</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1.5">운영 시작</label>
               <input
@@ -554,13 +554,13 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* ─── 링크 관리 (A-5) ─── */}
-        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
+        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <Link2 className="w-4 h-4 text-gray-500" />
             <h2 className="text-sm font-semibold text-gray-900">외부 링크 관리</h2>
           </div>
 
-          <div className="space-y-3 mb-4">
+          <div className="space-y-4 mb-4">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center shrink-0">
                 <Instagram className="w-4 h-4 text-gray-500" />
@@ -601,7 +601,7 @@ export default function AdminBoothDetailPage() {
 
           {/* Custom links */}
           <p className="text-xs font-medium text-gray-600 mb-2">추가 링크</p>
-          <div className="space-y-2 mb-3">
+          <div className="space-y-3 mb-4">
             {customLinks.map((cl, i) => (
               <div key={i} className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
                 <div className="flex-1 min-w-0">
@@ -655,7 +655,7 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* ─── 파일 첨부 (브로셔) ─── */}
-        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
+        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Paperclip className="w-4 h-4 text-gray-500" />
@@ -726,7 +726,7 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* ─── 정보 수집 폼 관리 (B-12) ─── */}
-        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
+        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Settings2 className="w-4 h-4 text-gray-500" />
@@ -737,7 +737,7 @@ export default function AdminBoothDetailPage() {
 
           <p className="text-xs text-gray-500 mb-4">관람객이 부스 페이지에서 작성하는 설문 항목을 편집하세요.</p>
 
-          <div className="space-y-3 mb-4">
+          <div className="space-y-4 mb-4">
             {surveyFields.map((field, i) => (
               <div key={field.id} className="bg-gray-50 border border-gray-200/60 rounded-lg p-3 sm:p-4">
                 <div className="flex items-center gap-3 mb-2">
@@ -831,7 +831,7 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* ─── 설문 집계 결과 ─── */}
-        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
+        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
             <div className="flex items-center gap-2">
               <ClipboardList className="w-4 h-4 text-gray-500" />
@@ -901,7 +901,7 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* Export */}
-        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
+        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <h2 className="text-sm font-semibold text-gray-900 mb-4">데이터 내보내기</h2>
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-3">
             <button
@@ -933,7 +933,7 @@ export default function AdminBoothDetailPage() {
 
           {/* Basic info */}
           <div className="space-y-4 mb-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1.5">부스명</label>
                 <input
@@ -1110,7 +1110,7 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* ─── 행사 참여 관리 ─── */}
-        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
+        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-gray-500" />

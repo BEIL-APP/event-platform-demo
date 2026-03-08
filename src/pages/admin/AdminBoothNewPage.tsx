@@ -236,10 +236,10 @@ export default function AdminBoothNewPage() {
           </div>
         </div>
 
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-6">
           {/* Template Selection */}
           <div className="bg-white rounded-xl border border-gray-200/60 p-4 sm:p-6">
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-4">
               <Layout className="w-4 h-4 text-gray-500" />
               <h2 className="text-sm font-semibold text-gray-900">페이지 템플릿</h2>
             </div>
@@ -266,7 +266,7 @@ export default function AdminBoothNewPage() {
 
           {/* AI Auto-fill */}
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 sm:p-6">
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-4">
               <Sparkles className="w-4 h-4 text-gray-500" />
               <h2 className="text-sm font-semibold text-gray-900">AI 부스 자동 생성</h2>
               <span className="inline-flex items-center h-5 px-2 text-xs font-medium text-gray-600 bg-gray-200/70 rounded-md ml-auto">베타</span>
@@ -376,10 +376,10 @@ export default function AdminBoothNewPage() {
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   )}
-                  <p className="text-xs font-medium text-gray-500 mb-3">행사 {idx + 1}</p>
+                  <p className="text-xs font-medium text-gray-500 mb-4">행사 {idx + 1}</p>
 
-                  <div className="mb-3">
-                    <div className="flex gap-2 mb-3">
+                  <div className="mb-4">
+                    <div className="flex gap-2 mb-4">
                       <button
                         onClick={() => { const next = [...participations]; next[idx] = { ...next[idx], mode: 'existing' }; setParticipations(next); }}
                         className={`text-xs px-3 h-9 rounded-md font-medium transition-all ${p.mode === 'existing' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
@@ -421,7 +421,7 @@ export default function AdminBoothNewPage() {
                         </select>
                       </div>
                     ) : (
-                      <div className="space-y-3">
+                      <div className="space-y-4">
                         <div>
                           <FieldLabel required>행사명</FieldLabel>
                           <TextInput
@@ -430,7 +430,7 @@ export default function AdminBoothNewPage() {
                             placeholder="예: 2026 부산 IT 박람회"
                           />
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <FieldLabel required>행사 시작일</FieldLabel>
                             <input
@@ -470,7 +470,7 @@ export default function AdminBoothNewPage() {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3 pt-3 border-t border-gray-200/60">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-200/60">
                     <div>
                       <FieldLabel>참여 시작일</FieldLabel>
                       <input
@@ -508,7 +508,7 @@ export default function AdminBoothNewPage() {
             <h2 className="text-sm font-semibold text-gray-900 mb-1">이미지</h2>
             <p className="text-xs text-gray-400 mb-4">외부 이미지 URL을 입력하세요</p>
 
-            <div className="mb-5">
+            <div className="mb-6">
               <p className="text-xs font-medium text-gray-600 mb-2">대표 이미지 <span className="text-gray-400 font-normal">· 목록 카드 및 상단 슬라이드에 표시</span></p>
               <div className="space-y-2">
                 {images.map((img, i) => (
@@ -584,7 +584,7 @@ export default function AdminBoothNewPage() {
           {/* Links */}
           <div className="bg-white rounded-xl border border-gray-200/60 p-4 sm:p-6">
             <h2 className="text-sm font-semibold text-gray-900 mb-4">링크</h2>
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
                 <FieldLabel>인스타그램</FieldLabel>
                 <TextInput value={instagram} onChange={setInstagram} placeholder="https://instagram.com/..." />
@@ -634,7 +634,7 @@ export default function AdminBoothNewPage() {
           </div>
 
           {/* Save Button */}
-          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3 pb-4">
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pb-4">
             <button
               onClick={() => navigate(-1)}
               className="h-9 px-4 text-[13px] font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all duration-150 w-full sm:w-auto"
