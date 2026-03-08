@@ -22,14 +22,6 @@ const navItems = [
   { to: '/admin/leads', icon: Users, label: '리드 목록' },
 ];
 
-const pageTitles: Record<string, string> = {
-  '/admin/dashboard': '대시보드',
-  '/admin/booths': '내 부스',
-  '/admin/inbox': '문의 인박스',
-  '/admin/leads': '리드 목록',
-  '/admin/settings': '설정',
-};
-
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const { logoutAdmin } = useAuth();
   const location = useLocation();
@@ -155,16 +147,13 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       <div className="flex-1 min-w-0 flex flex-col">
         {/* Mobile top bar */}
         <header className="lg:hidden flex items-center justify-between h-12 px-4 bg-white border-b border-gray-100 shrink-0">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center">
             <button
               onClick={() => setSidebarOpen(true)}
               className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 transition-colors -ml-1"
             >
               <Menu className="w-5 h-5" />
             </button>
-            <span className="text-sm font-semibold text-gray-900">
-              {Object.entries(pageTitles).find(([key]) => location.pathname.startsWith(key))?.[1] ?? 'BoothLiner'}
-            </span>
           </div>
           <Link
             to="/admin/booths/new"
