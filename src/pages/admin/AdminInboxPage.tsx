@@ -315,11 +315,12 @@ export default function AdminInboxPage() {
         {/* Left: Thread List */}
         <div className={`flex flex-col border-gray-100 ${selectedThread ? 'hidden md:flex' : 'flex'} w-full md:w-[360px] md:border-r md:shrink-0 bg-gray-50/30`}>
           {/* Inbox header */}
-          <div className="px-5 py-6 sm:px-6 sm:py-8 border-b border-gray-100 bg-white">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight mb-5">문의 인박스</h1>
+          <div className="px-4 py-5 sm:p-6 lg:p-8 border-b border-gray-100 bg-white">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">문의 인박스</h1>
+            <p className="text-sm text-gray-500 mt-1">관람객 문의를 확인하고 응답하세요</p>
 
             {/* Search */}
-            <div className="relative mb-4 group">
+            <div className="relative mt-6 lg:mt-8 group">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-gray-400 group-focus-within:text-brand-500 transition-colors" />
               <input
                 type="text"
@@ -331,7 +332,7 @@ export default function AdminInboxPage() {
             </div>
 
             {/* Status filter */}
-            <div className="flex gap-1.5 flex-wrap">
+            <div className="flex gap-1.5 flex-wrap mt-3">
               {(['all', '미처리', '처리', '보류'] as StatusFilter[]).map((s) => (
                 <button
                   key={s}
@@ -352,7 +353,7 @@ export default function AdminInboxPage() {
           </div>
 
           {/* Thread list */}
-          <div className="flex-1 overflow-y-auto px-3 py-4 space-y-2.5">
+          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2.5">
             {filtered.length === 0 ? (
               <div className="text-center py-20 px-4 bg-white rounded-2xl border border-gray-100 mx-2">
                 <MessageSquare className="w-10 h-10 text-gray-200 mx-auto mb-3" />
