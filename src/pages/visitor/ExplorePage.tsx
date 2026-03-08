@@ -46,7 +46,7 @@ export default function ExplorePage() {
 
   const MOCK_EVENTS = [
     { id: 'all', name: '전체 행사' },
-    { id: 'event-001', name: '2026 서울 B2B 박람회', date: '2026-03-10 ~ 03-12' },
+    { id: 'event-001', name: '2026 서울 B2B 박람회', date: '2026-03-06 ~ 03-10' },
     { id: 'event-002', name: '스타트업 네트워킹 데이', date: '2026-03-15' },
     { id: 'event-003', name: '그린 비즈니스 엑스포', date: '2026-03-20 ~ 03-22' },
   ];

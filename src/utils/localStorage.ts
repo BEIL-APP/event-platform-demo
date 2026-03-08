@@ -85,8 +85,10 @@ export function getGuestId(): string {
 
 // ─── Seed ─────────────────────────────────────────────────────────────────────
 
+const SEED_VERSION = 'v2';
+
 export function initSeedData(): void {
-  if (localStorage.getItem(KEYS.seeded)) return;
+  if (localStorage.getItem(KEYS.seeded) === SEED_VERSION) return;
   set(KEYS.booths, SEED_BOOTHS);
   set(KEYS.analytics, SEED_ANALYTICS);
   set(KEYS.threads, SEED_THREADS);
@@ -99,7 +101,7 @@ export function initSeedData(): void {
   set(KEYS.boothEvents, SEED_PARTICIPATIONS);
   set(KEYS.visits, []);
   set(KEYS.favorites, []);
-  localStorage.setItem(KEYS.seeded, '1');
+  localStorage.setItem(KEYS.seeded, SEED_VERSION);
 }
 
 // ─── Booths ───────────────────────────────────────────────────────────────────
