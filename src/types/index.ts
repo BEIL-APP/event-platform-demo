@@ -5,6 +5,7 @@ export interface Booth {
   tagline: string;
   description: string;
   images: string[];
+  descriptionImages?: string[];
   links: {
     instagram?: string;
     store?: string;

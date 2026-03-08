@@ -462,9 +462,9 @@ export default function BoothPage() {
             <div className="bg-white border border-gray-200/60 rounded-xl p-5 md:p-6">
               <h2 className="text-sm font-semibold text-gray-900 mb-3">소개</h2>
               <p className="text-sm text-gray-600 leading-relaxed">{booth.description}</p>
-              {booth.images.length > 0 && (
+              {(booth.descriptionImages ?? []).length > 0 && (
                 <div className="flex gap-2 mt-4 overflow-x-auto pb-1 scrollbar-hide">
-                  {booth.images.map((src, i) => (
+                  {(booth.descriptionImages ?? []).map((src, i) => (
                     <button
                       key={i}
                       onClick={() => setLightboxIndex(i)}
@@ -472,7 +472,7 @@ export default function BoothPage() {
                     >
                       <img
                         src={src}
-                        alt={`${booth.name} 이미지 ${i + 1}`}
+                        alt={`${booth.name} 소개 이미지 ${i + 1}`}
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src =
@@ -497,16 +497,16 @@ export default function BoothPage() {
                 >
                   <X className="w-5 h-5" />
                 </button>
-                {booth.images.length > 1 && (
+                {(booth.descriptionImages ?? []).length > 1 && (
                   <>
                     <button
-                      onClick={(e) => { e.stopPropagation(); setLightboxIndex((lightboxIndex - 1 + booth.images.length) % booth.images.length); }}
+                      onClick={(e) => { e.stopPropagation(); setLightboxIndex((lightboxIndex - 1 + (booth.descriptionImages ?? []).length) % (booth.descriptionImages ?? []).length); }}
                       className="absolute left-4 w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
                     <button
-                      onClick={(e) => { e.stopPropagation(); setLightboxIndex((lightboxIndex + 1) % booth.images.length); }}
+                      onClick={(e) => { e.stopPropagation(); setLightboxIndex((lightboxIndex + 1) % (booth.descriptionImages ?? []).length); }}
                       className="absolute right-4 w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
                     >
                       <ChevronRight className="w-5 h-5" />
@@ -514,13 +514,13 @@ export default function BoothPage() {
                   </>
                 )}
                 <img
-                  src={booth.images[lightboxIndex]}
-                  alt={`${booth.name} 이미지 ${lightboxIndex + 1}`}
+                  src={(booth.descriptionImages ?? [])[lightboxIndex]}
+                  alt={`${booth.name} 소개 이미지 ${lightboxIndex + 1}`}
                   className="max-w-full max-h-[85vh] object-contain rounded-lg"
                   onClick={(e) => e.stopPropagation()}
                 />
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
-                  {booth.images.map((_, i) => (
+                  {(booth.descriptionImages ?? []).map((_, i) => (
                     <button
                       key={i}
                       onClick={(e) => { e.stopPropagation(); setLightboxIndex(i); }}

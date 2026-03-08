@@ -127,6 +127,7 @@ export default function AdminBoothNewPage() {
   const [tagline, setTagline] = useState('');
   const [description, setDescription] = useState('');
   const [images, setImages] = useState(['', '']);
+  const [descriptionImages, setDescriptionImages] = useState<string[]>(['']);
   const [instagram, setInstagram] = useState('');
   const [store, setStore] = useState('');
   const [site, setSite] = useState('');
@@ -202,6 +203,7 @@ export default function AdminBoothNewPage() {
       tagline: tagline.trim(),
       description: description.trim(),
       images: images.filter((img) => img.trim()),
+      descriptionImages: descriptionImages.filter((img) => img.trim()),
       links: {
         instagram: instagram.trim() || undefined,
         store: store.trim() || undefined,
@@ -503,37 +505,79 @@ export default function AdminBoothNewPage() {
 
           {/* Images */}
           <div className="bg-white rounded-xl border border-gray-200/60 p-4 sm:p-6">
-            <h2 className="text-sm font-semibold text-gray-900 mb-4">이미지 URL</h2>
-            <div className="space-y-3">
-              {images.map((img, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <TextInput
-                    value={img}
-                    onChange={(v) => {
-                      const next = [...images];
-                      next[i] = v;
-                      setImages(next);
-                    }}
-                    placeholder={`이미지 ${i + 1} URL (예: https://...)`}
-                  />
-                  {images.length > 1 && (
-                    <button
-                      onClick={() => setImages(images.filter((_, idx) => idx !== i))}
-                      className="p-2 text-gray-400 hover:text-red-500 transition-all duration-150"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              ))}
-              {images.length < 4 && (
-                <button
-                  onClick={() => setImages([...images, ''])}
-                  className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 transition-all duration-150"
-                >
-                  <Plus className="w-3.5 h-3.5" /> 이미지 추가
-                </button>
-              )}
+            <h2 className="text-sm font-semibold text-gray-900 mb-1">이미지</h2>
+            <p className="text-xs text-gray-400 mb-4">외부 이미지 URL을 입력하세요</p>
+
+            <div className="mb-5">
+              <p className="text-xs font-medium text-gray-600 mb-2">대표 이미지 <span className="text-gray-400 font-normal">· 목록 카드 및 상단 슬라이드에 표시</span></p>
+              <div className="space-y-2">
+                {images.map((img, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <TextInput
+                      value={img}
+                      onChange={(v) => { const next = [...images]; next[i] = v; setImages(next); }}
+                      placeholder={`이미지 ${i + 1} URL (예: https://...)`}
+                    />
+                    {img && (
+                      <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                        <img src={img} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                      </div>
+                    )}
+                    {images.length > 1 && (
+                      <button
+                        onClick={() => setImages(images.filter((_, idx) => idx !== i))}
+                        className="p-2 text-gray-400 hover:text-red-500 transition-all duration-150"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                {images.length < 4 && (
+                  <button
+                    onClick={() => setImages([...images, ''])}
+                    className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 transition-all duration-150"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> 이미지 추가
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="border-t border-gray-100 pt-4">
+              <p className="text-xs font-medium text-gray-600 mb-2">소개 이미지 <span className="text-gray-400 font-normal">· 부스 상세 소개란에 표시</span></p>
+              <div className="space-y-2">
+                {descriptionImages.map((img, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <TextInput
+                      value={img}
+                      onChange={(v) => { const next = [...descriptionImages]; next[i] = v; setDescriptionImages(next); }}
+                      placeholder={`소개 이미지 ${i + 1} URL (예: https://...)`}
+                    />
+                    {img && (
+                      <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                        <img src={img} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                      </div>
+                    )}
+                    {descriptionImages.length > 1 && (
+                      <button
+                        onClick={() => setDescriptionImages(descriptionImages.filter((_, idx) => idx !== i))}
+                        className="p-2 text-gray-400 hover:text-red-500 transition-all duration-150"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                {descriptionImages.length < 6 && (
+                  <button
+                    onClick={() => setDescriptionImages([...descriptionImages, ''])}
+                    className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 transition-all duration-150"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> 소개 이미지 추가
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 

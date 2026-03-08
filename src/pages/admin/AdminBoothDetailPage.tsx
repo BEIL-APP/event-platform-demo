@@ -73,6 +73,7 @@ export default function AdminBoothDetailPage() {
   const [editCategory, setEditCategory] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [editImages, setEditImages] = useState<string[]>([]);
+  const [editDescImages, setEditDescImages] = useState<string[]>([]);
   const [editFaq, setEditFaq] = useState<Array<{ question: string; answer: string }>>([]);
   // editNextEvents removed — managed via participation editing
   const [contentSaved, setContentSaved] = useState(false);
@@ -156,6 +157,7 @@ export default function AdminBoothDetailPage() {
       setEditCategory(booth.category);
       setEditDescription(booth.description);
       setEditImages([...booth.images]);
+      setEditDescImages([...(booth.descriptionImages ?? [])]);
       setEditFaq(booth.faq.map((f) => ({ ...f })));
     }
   }, [booth?.id]);
@@ -197,6 +199,7 @@ export default function AdminBoothDetailPage() {
       category: editCategory.trim() || booth.category,
       description: editDescription.trim(),
       images: editImages.filter((img) => img.trim()),
+      descriptionImages: editDescImages.filter((img) => img.trim()),
       faq: editFaq.filter((f) => f.question.trim()),
     };
     saveBooth(updated);
@@ -991,6 +994,46 @@ export default function AdminBoothDetailPage() {
             >
               <Plus className="w-3.5 h-3.5" />
               이미지 추가
+            </button>
+          </div>
+
+          {/* Description Images */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-2">
+              <ImagePlus className="w-3.5 h-3.5 text-gray-500" />
+              <p className="text-xs font-medium text-gray-600">소개 이미지 URL</p>
+              <span className="text-xs text-gray-400">· 부스 상세 소개란에 표시됩니다</span>
+            </div>
+            <div className="space-y-2 mb-2">
+              {editDescImages.map((img, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <input
+                    type="url"
+                    value={img}
+                    onChange={(e) => setEditDescImages((prev) => prev.map((v, idx) => idx === i ? e.target.value : v))}
+                    placeholder="https://..."
+                    className="flex-1 h-9 text-xs bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400"
+                  />
+                  {img && (
+                    <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                      <img src={img} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    </div>
+                  )}
+                  <button
+                    onClick={() => setEditDescImages((prev) => prev.filter((_, idx) => idx !== i))}
+                    className="p-1.5 text-gray-300 hover:text-red-400 rounded-md hover:bg-red-50 transition-all duration-150 shrink-0"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => setEditDescImages((prev) => [...prev, ''])}
+              className="text-xs text-brand-600 hover:text-brand-700 flex items-center gap-1 transition-all duration-150"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              소개 이미지 추가
             </button>
           </div>
 
