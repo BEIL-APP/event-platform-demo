@@ -662,7 +662,16 @@ export default function BoothPage() {
             </button>
           </div>
 
-          {/* FAQ — md: left col row 3; mobile: 7th */}
+          {/* 이메일로 자료 받기 — mobile only; 7th */}
+          <button
+            onClick={() => setShowEmailInfo(true)}
+            className="md:hidden w-full flex items-center justify-center gap-2 h-10 rounded-lg text-sm font-medium border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-all duration-150"
+          >
+            <Mail className="w-4 h-4" />
+            이메일로 자료 받기
+          </button>
+
+          {/* FAQ — md: left col row 3; mobile: 8th */}
           {booth.faq.length > 0 && (
             <div className="md:col-start-1 md:row-start-3 bg-white border border-gray-200/60 rounded-xl p-5 md:p-6">
               <h2 className="text-sm font-semibold text-gray-900 mb-3">자주 묻는 질문</h2>
@@ -686,15 +695,6 @@ export default function BoothPage() {
               </div>
             </div>
           )}
-
-          {/* 이메일로 자료 받기 — mobile only; 8th */}
-          <button
-            onClick={() => setShowEmailInfo(true)}
-            className="md:hidden w-full flex items-center justify-center gap-2 h-10 rounded-lg text-sm font-medium border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-all duration-150"
-          >
-            <Mail className="w-4 h-4" />
-            이메일로 자료 받기
-          </button>
 
         </div>
 
