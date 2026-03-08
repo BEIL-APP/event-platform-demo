@@ -382,13 +382,13 @@ export default function AdminBoothNewPage() {
                     <div className="flex gap-2 mb-3">
                       <button
                         onClick={() => { const next = [...participations]; next[idx] = { ...next[idx], mode: 'existing' }; setParticipations(next); }}
-                        className={`text-xs px-3 h-7 rounded-md font-medium transition-all ${p.mode === 'existing' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                        className={`text-xs px-3 h-9 rounded-md font-medium transition-all ${p.mode === 'existing' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                       >
                         기존 행사 선택
                       </button>
                       <button
                         onClick={() => { const next = [...participations]; next[idx] = { ...next[idx], mode: 'new', eventId: '' }; setParticipations(next); }}
-                        className={`text-xs px-3 h-7 rounded-md font-medium transition-all ${p.mode === 'new' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                        className={`text-xs px-3 h-9 rounded-md font-medium transition-all ${p.mode === 'new' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                       >
                         새 행사 등록
                       </button>

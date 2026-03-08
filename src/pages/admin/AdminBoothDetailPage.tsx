@@ -345,8 +345,8 @@ export default function AdminBoothDetailPage() {
               <ArrowLeft className="w-5 h-5 text-gray-600" />
             </Link>
             <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight mb-2">{booth.name}</h1>
+              <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">{booth.name}</h1>
                 <span className="h-6 px-2 rounded-md text-xs font-medium inline-flex items-center bg-gray-100 text-gray-600">
                   {booth.category}
                 </span>
@@ -361,7 +361,7 @@ export default function AdminBoothDetailPage() {
                   </span>
                 )}
               </div>
-              <p className="text-sm text-gray-500 truncate">{booth.tagline}</p>
+              <p className="text-sm text-gray-500 font-medium truncate">{booth.tagline}</p>
             </div>
           </div>
           <div className="flex gap-2 w-full sm:w-auto shrink-0">
@@ -440,7 +440,7 @@ export default function AdminBoothDetailPage() {
               <div className="flex flex-wrap gap-1.5 mb-4 pb-3 border-b border-gray-100">
                 <button
                   onClick={() => setSelectedEventId(null)}
-                  className={`text-xs px-3 h-7 rounded-full font-medium transition-all ${
+                  className={`text-xs px-3 h-9 rounded-full font-medium transition-all ${
                     !selectedEventId ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
@@ -452,7 +452,7 @@ export default function AdminBoothDetailPage() {
                     <button
                       key={p.id}
                       onClick={() => setSelectedEventId(p.eventId)}
-                      className={`text-xs px-3 h-7 rounded-full font-medium transition-all truncate max-w-[180px] ${
+                      className={`text-xs px-3 h-9 rounded-full font-medium transition-all truncate max-w-[180px] ${
                         selectedEventId === p.eventId ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                       title={ev?.name}
@@ -1154,13 +1154,13 @@ export default function AdminBoothDetailPage() {
                     <div className="flex gap-2 mb-3">
                       <button
                         onClick={() => { const next = [...editParticipations]; next[idx] = { ...next[idx], mode: 'existing' }; setEditParticipations(next); }}
-                        className={`text-xs px-3 h-7 rounded-md font-medium transition-all ${p.mode === 'existing' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                        className={`text-xs px-3 h-9 rounded-md font-medium transition-all ${p.mode === 'existing' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                       >
                         기존 행사
                       </button>
                       <button
                         onClick={() => { const next = [...editParticipations]; next[idx] = { ...next[idx], mode: 'new', eventId: '' }; setEditParticipations(next); }}
-                        className={`text-xs px-3 h-7 rounded-md font-medium transition-all ${p.mode === 'new' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                        className={`text-xs px-3 h-9 rounded-md font-medium transition-all ${p.mode === 'new' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                       >
                         새 행사
                       </button>

@@ -64,7 +64,7 @@ export default function SignupPage() {
             <CheckCircle className="w-7 h-7 text-emerald-600" />
           </div>
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight mb-1">가입 완료!</h2>
-          <p className="text-sm text-gray-500">잠시 후 이동합니다…</p>
+          <p className="text-sm text-gray-500 font-medium">잠시 후 이동합니다…</p>
         </div>
       </div>
     );

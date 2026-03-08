@@ -110,7 +110,7 @@ export default function AdminLeadsScanPage() {
               <CheckCircle className="w-7 h-7 text-emerald-600" />
             </div>
             <h2 className="text-base font-semibold text-gray-900 mb-1">리드 저장 완료!</h2>
-            <p className="text-sm text-gray-500">리드 목록으로 이동합니다…</p>
+            <p className="text-sm text-gray-500 font-medium">리드 목록으로 이동합니다…</p>
           </div>
         </div>
       </AdminLayout>

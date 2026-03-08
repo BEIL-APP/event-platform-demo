@@ -104,7 +104,7 @@ export default function AdminBoothTeamPage() {
     return (
       <AdminLayout>
         <div className="px-4 py-5 sm:p-6 lg:p-8 text-center">
-          <p className="text-sm text-gray-500">부스를 찾을 수 없어요</p>
+          <p className="text-sm text-gray-500 font-medium">부스를 찾을 수 없어요</p>
           <Link to="/admin/booths" className="text-sm text-gray-500 hover:text-gray-700 mt-2 inline-block transition-all duration-150">
             ← 목록으로
           </Link>
@@ -229,7 +229,7 @@ export default function AdminBoothTeamPage() {
                     <select
                       value={m.role}
                       onChange={(e) => handleRoleChange(m, e.target.value as 'owner' | 'staff')}
-                      className="text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none text-gray-600 bg-white h-7 transition-all hidden sm:block"
+                      className="text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none text-gray-600 bg-white h-9 transition-all hidden sm:block"
                     >
                       <option value="staff">스태프</option>
                       <option value="owner">오너</option>
