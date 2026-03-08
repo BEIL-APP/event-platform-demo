@@ -614,7 +614,16 @@ export default function BoothPage() {
             </div>
           )}
 
-          {/* 링크 — md: right col row 3; mobile: 5th */}
+          {/* 프로모션 소식 받기 — mobile only; 5th */}
+          <button
+            onClick={() => setShowEmailInfo(true)}
+            className="md:hidden w-full flex items-center justify-center gap-2 h-10 rounded-lg text-sm font-medium border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-all duration-150"
+          >
+            <Mail className="w-4 h-4" />
+            프로모션 소식 받기
+          </button>
+
+          {/* 링크 — md: right col row 3; mobile: 6th */}
           {(booth.links.instagram || booth.links.store || booth.links.site) && (
             <div className="md:col-start-2 md:row-start-3 bg-white border border-gray-200/60 rounded-xl p-5">
               <h2 className="text-sm font-semibold text-gray-900 mb-3">링크</h2>
@@ -644,7 +653,7 @@ export default function BoothPage() {
             </div>
           )}
 
-          {/* 1분 설문 — md: right col row 4; mobile: 6th */}
+          {/* 1분 설문 — md: right col row 4; mobile: 7th */}
           <div className="md:col-start-2 md:row-start-4 bg-white border border-gray-200/60 rounded-xl p-5">
             <div className="flex items-center gap-2 mb-1.5">
               <ClipboardList className="w-4 h-4 text-gray-500" />
@@ -662,14 +671,6 @@ export default function BoothPage() {
             </button>
           </div>
 
-          {/* 프로모션 소식 받기 — mobile only; 7th */}
-          <button
-            onClick={() => setShowEmailInfo(true)}
-            className="md:hidden w-full flex items-center justify-center gap-2 h-10 rounded-lg text-sm font-medium border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-all duration-150"
-          >
-            <Mail className="w-4 h-4" />
-            프로모션 소식 받기
-          </button>
 
           {/* FAQ — md: left col row 3; mobile: 8th */}
           {booth.faq.length > 0 && (
