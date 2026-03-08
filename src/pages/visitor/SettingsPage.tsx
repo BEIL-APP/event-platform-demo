@@ -142,7 +142,7 @@ export default function SettingsPage() {
 
   const handleDeleteData = () => {
     const keys = [
-      'favorites', 'visits', 'threads', 'notifications',
+      'bep_favorites', 'bep_visits', 'bep_threads', 'bep_notifications',
       STORAGE_KEY_PROFILE, STORAGE_KEY_NOTIFICATIONS, STORAGE_KEY_INTERESTS,
     ];
     keys.forEach((k) => localStorage.removeItem(k));

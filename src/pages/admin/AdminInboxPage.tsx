@@ -216,7 +216,7 @@ function TemplateModal({ onClose }: { onClose: () => void }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function AdminInboxPage() {
-  const { threads, reply, updateStatus, updateMemo, addTag, removeTag } = useThreads();
+  const { threads, reply, updateStatus, updateMemo, addTag, removeTag, refresh } = useThreads();
   const { showToast } = useToast();
   const [selected, setSelected] = useState<Thread | null>(null);
   const [filter, setFilter] = useState<StatusFilter>('all');
@@ -279,6 +279,7 @@ export default function AdminInboxPage() {
   const handleToggleBlock = () => {
     if (!selectedThread) return;
     blockThread(selectedThread.id);
+    refresh();
     showToast(
       selectedThread.blocked ? '차단이 해제됐어요' : '해당 문의를 차단했어요',
       selectedThread.blocked ? 'info' : 'error'

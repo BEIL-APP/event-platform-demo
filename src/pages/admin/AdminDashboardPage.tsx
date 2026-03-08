@@ -26,9 +26,12 @@ const HOUR_LABELS = ['9', '10', '11', '12', '13', '14', '15', '16', '17', '18'];
 const MOCK_HOURLY = [8, 22, 35, 28, 18, 42, 56, 38, 25, 14];
 
 export default function AdminDashboardPage() {
-  const { analytics } = useAnalytics();
+  const { analytics: allAnalytics } = useAnalytics();
   const { booths } = useBooths();
   const { showToast } = useToast();
+
+  // 이벤트별 항목 제외 — 총계 항목(eventId 없음)만 사용해 더블 카운팅 방지
+  const analytics = allAnalytics.filter((a) => !a.eventId);
 
   const totalScans = analytics.reduce((s, a) => s + a.scans, 0);
   const totalFavorites = analytics.reduce((s, a) => s + a.favorites, 0);
