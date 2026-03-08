@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Download, Eye, Heart, MessageSquare, ExternalLink, FileDown,
   Upload, Trash2, Calendar, ToggleLeft, ToggleRight, Paperclip,
@@ -28,17 +28,27 @@ import {
   saveParticipation,
   deleteParticipation,
   getBoothAnalyticsByEvent,
+  deleteBooth,
 } from '../../utils/localStorage';
 import type { BoothPolicy, Attachment, BoothEvent, BoothEventParticipation } from '../../types';
 
 export default function AdminBoothDetailPage() {
   const { boothId } = useParams<{ boothId: string }>();
+  const navigate = useNavigate();
   const { booth } = useBooth(boothId ?? '');
   const { data: stats, refresh: refreshStats } = useBoothAnalytics(boothId ?? '');
   const { threads } = useThreads();
   const { showToast } = useToast();
   const qrRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleDeleteBooth = () => {
+    if (!booth) return;
+    if (!window.confirm(`'${booth.name}' 부스를 삭제하시겠어요? 이 작업은 되돌릴 수 없습니다.`)) return;
+    deleteBooth(booth.id);
+    showToast('부스가 삭제됐어요.', 'success');
+    navigate('/admin/booths');
+  };
 
   const boothUrl = `${window.location.origin}/scan/${boothId}`;
 
@@ -370,6 +380,13 @@ export default function AdminBoothDetailPage() {
               <ExternalLink className="w-4 h-4" />
               관람객 보기
             </Link>
+            <button
+              onClick={handleDeleteBooth}
+              className="flex items-center justify-center gap-1.5 bg-white border border-red-200 text-red-600 hover:bg-red-50 h-9 px-4 text-[13px] font-medium rounded-lg transition-all duration-150 flex-1 sm:flex-initial"
+            >
+              <Trash2 className="w-4 h-4" />
+              삭제
+            </button>
           </div>
         </div>
 

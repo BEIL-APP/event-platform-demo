@@ -35,6 +35,11 @@ export const SEED_BOOTHS: Booth[] = [
           '문의 남겨주시면 5종 샘플 키트를 무료로 보내드립니다. (배송비 별도)',
       },
     ],
+    descriptionImages: [
+      'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=1200&q=80',
+      'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?w=1200&q=80',
+      'https://images.unsplash.com/photo-1523920290228-4f321a939b4c?w=1200&q=80',
+    ],
     nextEvents: [
       { title: '2026 서울 B2B 박람회', date: '2026-03-06~2026-03-10', location: '코엑스 A홀' },
       { title: '봄 바이어 미팅', date: '2026-04-15', location: 'COEX Hall A' },
@@ -70,6 +75,11 @@ export const SEED_BOOTHS: Booth[] = [
         answer:
           '네, 브랜드 가이드라인이나 참고 자료만 주셔도 디자인팀이 제작해드립니다.',
       },
+    ],
+    descriptionImages: [
+      'https://images.unsplash.com/photo-1586717799252-bd134ad00e26?w=1200&q=80',
+      'https://images.unsplash.com/photo-1612838320302-4b3b3996e5c4?w=1200&q=80',
+      'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1200&q=80',
     ],
     nextEvents: [
       { title: '2026 서울 B2B 박람회', date: '2026-03-06~2026-03-10', location: '코엑스 A홀' },
@@ -110,6 +120,11 @@ export const SEED_BOOTHS: Booth[] = [
           '수도권은 자체 배송 및 설치 서비스를 제공합니다. 지방은 협력사를 통해 진행됩니다.',
       },
     ],
+    descriptionImages: [
+      'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=1200&q=80',
+      'https://images.unsplash.com/photo-1580237072617-771c3ecc4a24?w=1200&q=80',
+      'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&q=80',
+    ],
     nextEvents: [
       { title: '2026 서울 B2B 박람회', date: '2026-03-06~2026-03-10', location: '코엑스 A홀' },
       { title: 'ESG 오피스 세미나', date: '2026-04-05', location: 'GreenSpace 쇼룸' },
@@ -146,6 +161,11 @@ export const SEED_BOOTHS: Booth[] = [
         answer:
           '전담 CS 매니저를 배정하고 온보딩 세션(4시간)을 무료로 제공합니다.',
       },
+    ],
+    descriptionImages: [
+      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80',
+      'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=1200&q=80',
+      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80',
     ],
     nextEvents: [
       { title: '2026 서울 B2B 박람회', date: '2026-03-06~2026-03-10', location: '코엑스 A홀' },
@@ -184,6 +204,11 @@ export const SEED_BOOTHS: Booth[] = [
           '샘플 1개를 원가에 제작해드립니다. 이후 대량 주문 시 샘플 비용은 차감됩니다.',
       },
     ],
+    descriptionImages: [
+      'https://images.unsplash.com/photo-1547949003-9792a18a2601?w=1200&q=80',
+      'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200&q=80',
+      'https://images.unsplash.com/photo-1510751007277-36932aac9b1b?w=1200&q=80',
+    ],
     nextEvents: [
       { title: '그린 비즈니스 엑스포', date: '2026-03-20~2026-03-22', location: '킨텍스 제2전시장' },
       { title: '봄 선물세트 주문 마감', date: '2026-04-01', location: '온라인 접수' },
@@ -219,6 +244,11 @@ export const SEED_BOOTHS: Booth[] = [
         question: '한 달 구독 후 해지가 가능한가요?',
         answer: '최소 약정 기간은 3개월이며, 이후 매달 해지 신청이 가능합니다.',
       },
+    ],
+    descriptionImages: [
+      'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=1200&q=80',
+      'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1200&q=80',
+      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1200&q=80',
     ],
     nextEvents: [
       { title: '2026 서울 B2B 박람회', date: '2026-03-06~2026-03-10', location: '코엑스 A홀' },

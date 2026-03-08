@@ -85,7 +85,7 @@ export function getGuestId(): string {
 
 // ─── Seed ─────────────────────────────────────────────────────────────────────
 
-const SEED_VERSION = 'v2';
+const SEED_VERSION = 'v3';
 
 export function initSeedData(): void {
   if (localStorage.getItem(KEYS.seeded) === SEED_VERSION) return;
