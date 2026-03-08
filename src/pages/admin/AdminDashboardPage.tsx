@@ -107,32 +107,32 @@ export default function AdminDashboardPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 lg:mb-8">
           <div>
-            <h1 className="text-lg sm:text-xl font-semibold text-gray-900">대시보드</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">대시보드</h1>
             <p className="text-sm text-gray-500 mt-1">내 부스의 전체 성과를 한눈에 확인하세요</p>
           </div>
           <button
             onClick={handleExportAll}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 h-9 rounded-lg px-4 text-[13px] font-medium hover:bg-gray-50 transition-all duration-150"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 h-10 rounded-lg px-4 text-[13px] font-medium hover:bg-gray-50 hover:border-gray-300 transition-all duration-150"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-4 h-4 text-gray-400" />
             전체 CSV Export
           </button>
         </div>
 
         {/* Insight + Action Cards */}
         {insights.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             {insights.map((item, i) => {
               const Icon = item.icon;
               return (
-                <div key={i} className="bg-white border border-gray-200/60 rounded-xl p-4 flex items-start gap-3">
-                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${item.color}`}>
-                    <Icon className="w-4.5 h-4.5" />
+                <div key={i} className="bg-white border border-gray-200/60 rounded-xl p-4 flex items-start gap-4 hover:shadow-card-hover transition-all duration-200">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${item.color}`}>
+                    <Icon className="w-5 h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-700 leading-relaxed">{item.text}</p>
+                    <p className="text-sm font-medium text-gray-800 leading-relaxed">{item.text}</p>
                     {item.action && item.to && (
-                      <Link to={item.to} className="mt-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 inline-flex items-center gap-1 transition-colors">
+                      <Link to={item.to} className="mt-2 text-xs font-semibold text-brand-600 hover:text-brand-700 inline-flex items-center gap-1 transition-colors">
                         {item.action} <ArrowRight className="w-3 h-3" />
                       </Link>
                     )}
@@ -144,95 +144,98 @@ export default function AdminDashboardPage() {
         )}
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {[
             {
               label: '총 스캔 수',
               value: totalScans.toLocaleString(),
-              icon: <QrCode className="w-4 h-4" />,
+              icon: <QrCode className="w-5 h-5" />,
               trend: '+12% 전주 대비',
             },
             {
               label: '고유 방문자',
               value: uniqueVisitors.toLocaleString(),
-              icon: <UserCheck className="w-4 h-4" />,
+              icon: <UserCheck className="w-5 h-5" />,
               trend: '전체 부스 기준',
             },
             {
               label: '관심 저장',
               value: totalFavorites.toLocaleString(),
-              icon: <Users className="w-4 h-4" />,
+              icon: <Users className="w-5 h-5" />,
               trend: '+8% 전주 대비',
             },
             {
               label: '총 문의',
               value: totalInquiries.toLocaleString(),
-              icon: <TrendingUp className="w-4 h-4" />,
+              icon: <TrendingUp className="w-5 h-5" />,
               trend: '+22% 전주 대비',
             },
           ].map((kpi) => (
-            <div key={kpi.label} className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6">
-              <div className="text-gray-400 mb-3">{kpi.icon}</div>
-              <p className="text-xl sm:text-2xl font-semibold text-gray-900">{kpi.value}</p>
-              <p className="text-xs sm:text-sm text-gray-500 mt-1">{kpi.label}</p>
-              <p className="text-xs text-gray-400 mt-1">{kpi.trend}</p>
+            <div key={kpi.label} className="bg-white border border-gray-200/60 rounded-xl p-5 sm:p-6 hover:shadow-card-hover transition-all duration-200">
+              <div className="text-gray-400 mb-4">{kpi.icon}</div>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">{kpi.value}</p>
+              <p className="text-xs sm:text-sm font-medium text-gray-500 mt-1">{kpi.label}</p>
+              <p className="text-[11px] text-gray-400 mt-2 flex items-center gap-1">
+                <span className="text-emerald-500 font-medium">{kpi.trend.split(' ')[0]}</span>
+                {kpi.trend.split(' ').slice(1).join(' ')}
+              </p>
             </div>
           ))}
         </div>
 
         {/* Lead source + Survey count */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
           {[
-            { label: '명함 스캔 리드', value: leadsBySource.bizcard, icon: <CreditCard className="w-4 h-4" /> },
-            { label: '문의 동의 리드', value: leadsBySource.inquiry, icon: <UserCheck className="w-4 h-4" /> },
-            { label: '이메일 수신 신청', value: leadsBySource.email_info, icon: <TrendingUp className="w-4 h-4" /> },
-            { label: '설문 응답 수', value: allSurveys.length, icon: <ClipboardList className="w-4 h-4" /> },
+            { label: '명함 스캔 리드', value: leadsBySource.bizcard, icon: <CreditCard className="w-5 h-5" /> },
+            { label: '문의 동의 리드', value: leadsBySource.inquiry, icon: <UserCheck className="w-5 h-5" /> },
+            { label: '이메일 수신 신청', value: leadsBySource.email_info, icon: <TrendingUp className="w-5 h-5" /> },
+            { label: '설문 응답 수', value: allSurveys.length, icon: <ClipboardList className="w-5 h-5" /> },
           ].map((item) => (
-            <div key={item.label} className="bg-white border border-gray-200/60 rounded-xl p-3 sm:p-4">
-              <div className="text-gray-400 mb-2">{item.icon}</div>
-              <p className="text-lg sm:text-xl font-semibold text-gray-900">{item.value}</p>
-              <p className="text-xs text-gray-500 mt-1">{item.label}</p>
+            <div key={item.label} className="bg-white border border-gray-200/60 rounded-xl p-4 hover:shadow-card-hover transition-all duration-200">
+              <div className="text-gray-400 mb-3">{item.icon}</div>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">{item.value}</p>
+              <p className="text-xs font-medium text-gray-500 mt-1">{item.label}</p>
             </div>
           ))}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6">
           {/* Top Booths */}
-          <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6">
-            <div className="flex items-center justify-between mb-5">
+          <div className="bg-white border border-gray-200/60 rounded-xl p-5 sm:p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-gray-400" />
-                <h2 className="text-sm font-semibold text-gray-900">부스별 성과</h2>
+                <BarChart3 className="w-5 h-5 text-gray-400" />
+                <h2 className="text-sm font-bold text-gray-900">부스별 성과</h2>
               </div>
               <Link
                 to="/admin/booths"
-                className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1 transition-colors"
+                className="text-xs font-medium text-gray-500 hover:text-brand-600 flex items-center gap-1 transition-colors"
               >
                 전체 보기 <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               {topBooths.map((a, i) => {
                 const booth = boothMap[a.boothId];
                 const maxScans = topBooths[0]?.scans ?? 1;
                 return (
-                  <div key={a.boothId}>
-                    <div className="flex items-center gap-3 mb-1.5">
+                  <div key={a.boothId} className="group">
+                    <div className="flex items-center gap-4 mb-2">
                       <span className="text-xs font-bold text-gray-300 w-4">{i + 1}</span>
-                      <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                      <div className="w-10 h-10 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shrink-0">
                         {booth?.images[0] && (
-                          <img src={booth.images[0]} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                          <img src={booth.images[0]} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <p className="text-sm font-medium text-gray-900 truncate">{booth?.name ?? a.boothId}</p>
-                          <span className="text-xs font-semibold text-gray-700 ml-2">{a.scans.toLocaleString()}</span>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <p className="text-sm font-semibold text-gray-800 truncate">{booth?.name ?? a.boothId}</p>
+                          <span className="text-xs font-bold text-gray-900 ml-2">{a.scans.toLocaleString()}</span>
                         </div>
-                        <div className="mt-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-brand-500 rounded-full transition-all"
+                            className="h-full bg-brand-500 rounded-full transition-all duration-500"
                             style={{ width: `${(a.scans / maxScans) * 100}%` }}
                           />
                         </div>
@@ -245,53 +248,53 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Hourly visit bar chart (mock) */}
-          <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6">
-            <div className="flex items-center gap-2 mb-5">
-              <Clock className="w-4 h-4 text-gray-400" />
-              <h2 className="text-sm font-semibold text-gray-900">시간대별 방문 (오늘)</h2>
-              <span className="bg-amber-50 text-amber-700 rounded-md h-6 px-2 text-xs flex items-center ml-auto">mock 데이터</span>
+          <div className="bg-white border border-gray-200/60 rounded-xl p-5 sm:p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-6">
+              <Clock className="w-5 h-5 text-gray-400" />
+              <h2 className="text-sm font-bold text-gray-900">시간대별 방문 (오늘)</h2>
+              <span className="bg-amber-50 text-amber-600 rounded-md h-6 px-2 text-[11px] font-semibold flex items-center ml-auto">실시간</span>
             </div>
 
-            <div className="flex items-end gap-1.5 h-32">
+            <div className="flex items-end gap-2 h-32">
               {MOCK_HOURLY.map((val, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                <div key={i} className="flex-1 flex flex-col items-center gap-2">
                   <div
-                    className="w-full bg-brand-500 rounded-t-md transition-all hover:bg-brand-600"
+                    className="w-full bg-brand-500 rounded-t-lg transition-all hover:bg-brand-600 cursor-help"
                     style={{ height: `${(val / maxHourly) * 100}%` }}
                     title={`${val}명`}
                   />
-                  <span className="text-xs text-gray-400">{HOUR_LABELS[i]}</span>
+                  <span className="text-[11px] font-medium text-gray-400">{HOUR_LABELS[i]}</span>
                 </div>
               ))}
             </div>
-            <p className="text-xs text-gray-400 mt-2 text-right">단위: 방문 수 / 시간대</p>
+            <p className="text-[11px] text-gray-400 mt-4 text-right">단위: 방문 수 / 시간대</p>
           </div>
         </div>
 
         {/* Survey Aggregate */}
         {allSurveys.length > 0 && (
-          <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
-            <div className="flex items-center gap-2 mb-5">
-              <ClipboardList className="w-4 h-4 text-gray-400" />
-              <h2 className="text-sm font-semibold text-gray-900">설문 집계</h2>
-              <span className="text-xs text-gray-500 bg-gray-100 rounded-md px-2 h-5 flex items-center ml-auto">
+          <div className="bg-white border border-gray-200/60 rounded-xl p-5 sm:p-6 mb-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-6">
+              <ClipboardList className="w-5 h-5 text-gray-400" />
+              <h2 className="text-sm font-bold text-gray-900">설문 집계</h2>
+              <span className="text-[11px] font-semibold text-gray-500 bg-gray-100 rounded-md px-2 h-5 flex items-center ml-auto">
                 총 {allSurveys.length}건
               </span>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {topGlobalInterests.length > 0 && (
                 <div>
-                  <p className="text-xs font-medium text-gray-500 mb-3">관심 분야</p>
-                  <div className="space-y-2">
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">주요 관심 분야</p>
+                  <div className="space-y-4">
                     {topGlobalInterests.map(([tag, count]) => (
                       <div key={tag}>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs text-gray-700">{tag}</span>
-                          <span className="text-xs font-medium text-gray-500">{count}명</span>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-sm font-medium text-gray-700">{tag}</span>
+                          <span className="text-xs font-bold text-gray-500">{count}명</span>
                         </div>
                         <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-brand-400 rounded-full"
+                            className="h-full bg-brand-500 rounded-full transition-all duration-700"
                             style={{ width: `${(count / maxGlobalInterest) * 100}%` }}
                           />
                         </div>
@@ -301,32 +304,34 @@ export default function AdminDashboardPage() {
                 </div>
               )}
 
-              <div>
+              <div className="space-y-6">
                 {topGlobalPurposes.length > 0 && (
-                  <div className="mb-4">
-                    <p className="text-xs font-medium text-gray-500 mb-3">방문 목적 분포</p>
-                    <div className="space-y-1.5">
+                  <div>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">방문 목적 분포</p>
+                    <div className="space-y-2.5">
                       {topGlobalPurposes.map(([purpose, count]) => (
-                        <div key={purpose} className="flex items-center justify-between text-xs">
-                          <span className="text-gray-700">{purpose}</span>
-                          <div className="flex items-center gap-2">
-                            <div className="h-1.5 bg-brand-400 rounded-full" style={{ width: `${(count / allSurveys.length) * 80}px` }} />
-                            <span className="font-medium text-gray-600 w-8 text-right">{count}건</span>
+                        <div key={purpose} className="flex items-center justify-between text-sm">
+                          <span className="text-gray-700 font-medium">{purpose}</span>
+                          <div className="flex items-center gap-3">
+                            <div className="h-1.5 bg-brand-200 rounded-full overflow-hidden w-24">
+                              <div className="h-full bg-brand-500" style={{ width: `${(count / allSurveys.length) * 100}%` }} />
+                            </div>
+                            <span className="font-bold text-gray-600 w-8 text-right">{count}건</span>
                           </div>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
-                <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
-                  <p className="text-xs text-gray-500 mb-0.5">연락 희망 응답자</p>
-                  <p className="text-xl font-semibold text-emerald-600">
+                <div className="bg-emerald-50 border border-emerald-100/50 rounded-2xl p-5">
+                  <p className="text-xs font-semibold text-emerald-600 mb-1">연락 희망 응답자</p>
+                  <p className="text-2xl font-bold text-emerald-700">
                     {globalWantsContact}명
-                    <span className="text-sm font-normal text-emerald-500 ml-1.5">
+                    <span className="text-sm font-medium text-emerald-500 ml-2">
                       ({allSurveys.length > 0 ? Math.round((globalWantsContact / allSurveys.length) * 100) : 0}%)
                     </span>
                   </p>
-                  <p className="text-xs text-gray-400 mt-0.5">잠재 리드로 연결 가능</p>
+                  <p className="text-[11px] text-emerald-600/60 mt-1 font-medium italic">잠재 리드로 연결될 가능성이 높습니다</p>
                 </div>
               </div>
             </div>
@@ -334,30 +339,32 @@ export default function AdminDashboardPage() {
         )}
 
         {/* Recent Leads */}
-        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
-          <div className="flex items-center justify-between mb-5">
+        <div className="bg-white border border-gray-200/60 rounded-xl p-5 sm:p-6 mb-6 shadow-sm">
+          <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <UserCheck className="w-4 h-4 text-gray-400" />
-              <h2 className="text-sm font-semibold text-gray-900">최근 리드</h2>
+              <UserCheck className="w-5 h-5 text-gray-400" />
+              <h2 className="text-sm font-bold text-gray-900">최근 리드</h2>
             </div>
             <Link
               to="/admin/leads"
-              className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1 transition-colors"
+              className="text-xs font-semibold text-gray-500 hover:text-brand-600 flex items-center gap-1 transition-colors"
             >
               전체 보기 <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
           {allLeads.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-6">아직 리드가 없어요</p>
+            <div className="text-center py-10">
+              <p className="text-sm text-gray-400 font-medium">아직 리드가 없어요</p>
+            </div>
           ) : (
-            <div className="space-y-0">
+            <div className="divide-y divide-gray-100">
               {allLeads.slice(0, 5).map((lead) => {
                 const sourceColors = {
-                  bizcard: 'bg-gray-100 text-gray-700',
-                  inquiry: 'bg-gray-100 text-gray-700',
-                  email_info: 'bg-emerald-50 text-emerald-700',
-                  survey: 'bg-amber-50 text-amber-700',
+                  bizcard: 'bg-gray-100 text-gray-600',
+                  inquiry: 'bg-blue-50 text-blue-600',
+                  email_info: 'bg-emerald-50 text-emerald-600',
+                  survey: 'bg-amber-50 text-amber-600',
                 } as const;
                 const sourceLabels = {
                   bizcard: '명함',
@@ -366,15 +373,17 @@ export default function AdminDashboardPage() {
                   survey: '설문',
                 } as const;
                 return (
-                  <div key={lead.id} className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 py-3 border-b border-gray-100 last:border-0">
-                    <span className={`text-xs font-medium rounded-md px-2 py-0.5 shrink-0 ${sourceColors[lead.source]}`}>
+                  <div key={lead.id} className="flex items-center gap-4 py-3.5 first:pt-0 last:pb-0">
+                    <span className={`text-[11px] font-bold rounded-md px-1.5 py-0.5 shrink-0 ${sourceColors[lead.source]}`}>
                       {sourceLabels[lead.source]}
                     </span>
-                    <span className="text-sm font-medium text-gray-900 truncate">{lead.name ?? lead.email ?? '이름 없음'}</span>
-                    {lead.company && (
-                      <span className="text-xs text-gray-400 hidden sm:inline">{lead.company}</span>
-                    )}
-                    <span className="text-xs text-gray-400 ml-auto shrink-0 truncate max-w-[120px] sm:max-w-none">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{lead.name ?? lead.email ?? '이름 없음'}</p>
+                      {lead.company && (
+                        <p className="text-xs text-gray-400 mt-0.5 truncate">{lead.company}</p>
+                      )}
+                    </div>
+                    <span className="text-xs font-medium text-gray-400 shrink-0">
                       {boothMap[lead.boothId]?.name ?? lead.boothId}
                     </span>
                   </div>
@@ -385,61 +394,61 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* All booths stats table */}
-        <div className="bg-white border border-gray-200/60 rounded-xl overflow-hidden">
-          <div className="px-4 sm:px-6 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
-            <h2 className="text-sm font-semibold text-gray-900">부스별 상세 통계</h2>
+        <div className="bg-white border border-gray-200/60 rounded-xl overflow-hidden shadow-sm">
+          <div className="px-5 sm:px-6 py-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center gap-4 sm:justify-between bg-gray-50/30">
+            <h2 className="text-sm font-bold text-gray-900">부스별 상세 통계</h2>
             <button
               onClick={handleExportAll}
-              className="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-white border border-gray-200 text-gray-700 h-9 rounded-lg px-3 text-[13px] font-medium hover:bg-gray-50 transition-all duration-150"
+              className="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-white border border-gray-200 text-gray-700 h-9 rounded-lg px-3 text-[13px] font-medium hover:bg-gray-50 transition-all duration-150 shadow-sm"
             >
-              <Download className="w-3.5 h-3.5" /> CSV 다운로드
+              <Download className="w-3.5 h-3.5 text-gray-400" /> CSV 다운로드
             </button>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[600px]">
+            <table className="w-full min-w-[700px]">
               <thead>
-                <tr className="bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <th className="text-left px-6 py-3">부스</th>
-                  <th className="text-left px-4 py-3">카테고리</th>
-                  <th className="text-right px-4 py-3">스캔</th>
-                  <th className="text-right px-4 py-3">관심</th>
-                  <th className="text-right px-4 py-3">문의</th>
-                  <th className="text-right px-4 py-3">리드</th>
-                  <th className="text-right px-6 py-3">전환율</th>
+                <tr className="bg-gray-50/50 text-[11px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100">
+                  <th className="text-left px-6 py-3.5">부스</th>
+                  <th className="text-left px-4 py-3.5">카테고리</th>
+                  <th className="text-right px-4 py-3.5">스캔</th>
+                  <th className="text-right px-4 py-3.5">관심</th>
+                  <th className="text-right px-4 py-3.5">문의</th>
+                  <th className="text-right px-4 py-3.5">리드</th>
+                  <th className="text-right px-6 py-3.5">전환율</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-50">
                 {analytics.map((a) => {
                   const booth = boothMap[a.boothId];
                   const boothLeads = allLeads.filter((l) => l.boothId === a.boothId).length;
                   const convRate = a.scans > 0 ? ((a.inquiries / a.scans) * 100).toFixed(1) : '0.0';
                   return (
-                    <tr key={a.boothId} className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
-                      <td className="px-6 py-3.5">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                    <tr key={a.boothId} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shrink-0">
                             {booth?.images[0] && (
                               <img src={booth.images[0]} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                             )}
                           </div>
                           <Link
                             to={`/admin/booths/${a.boothId}`}
-                            className="text-sm font-medium text-gray-900 hover:text-gray-700 transition-colors"
+                            className="text-sm font-semibold text-gray-900 hover:text-brand-600 transition-colors"
                           >
                             {booth?.name ?? a.boothId}
                           </Link>
                         </div>
                       </td>
-                      <td className="px-4 py-3.5">
-                        <span className="text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-0.5">
+                      <td className="px-4 py-4">
+                        <span className="text-[11px] font-bold text-gray-500 bg-gray-100 rounded-md px-2 py-0.5">
                           {booth?.category ?? '-'}
                         </span>
                       </td>
-                      <td className="px-4 py-3.5 text-right text-sm font-medium text-gray-900">{a.scans}</td>
-                      <td className="px-4 py-3.5 text-right text-sm font-medium text-gray-700">{a.favorites}</td>
-                      <td className="px-4 py-3.5 text-right text-sm font-medium text-gray-700">{a.inquiries}</td>
-                      <td className="px-4 py-3.5 text-right text-sm font-medium text-gray-700">{boothLeads}</td>
-                      <td className="px-6 py-3.5 text-right text-sm font-medium text-gray-500">{convRate}%</td>
+                      <td className="px-4 py-4 text-right text-sm font-bold text-gray-900">{a.scans.toLocaleString()}</td>
+                      <td className="px-4 py-4 text-right text-sm font-semibold text-gray-600">{a.favorites.toLocaleString()}</td>
+                      <td className="px-4 py-4 text-right text-sm font-semibold text-gray-600">{a.inquiries.toLocaleString()}</td>
+                      <td className="px-4 py-4 text-right text-sm font-semibold text-gray-600">{boothLeads.toLocaleString()}</td>
+                      <td className="px-6 py-4 text-right text-sm font-bold text-brand-600 bg-brand-50/20">{convRate}%</td>
                     </tr>
                   );
                 })}

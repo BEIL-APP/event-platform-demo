@@ -385,35 +385,33 @@ export default function BoothPage() {
       </div>
 
       {/* ═══ Content Area ═══ */}
-      <div className="max-w-5xl mx-auto px-4 md:px-6 py-5 md:py-8">
+      <div className="max-w-5xl mx-auto px-4 md:px-6 py-6 md:py-10">
 
         {/* Login nudge — mobile: persistent top banner / desktop: inside action card */}
         {!isLoggedIn && (
-          <div className="md:hidden mb-4 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+          <div className="md:hidden mb-6 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 shadow-sm">
             <p className="text-xs text-gray-600 leading-relaxed">
-              <span className="font-medium">로그인하면</span> 문의 답변 알림과 저장 목록을 어디서든 확인할 수 있어요.{' '}
-              <Link to={loginHref} className="underline font-medium text-brand-600">지금 가입하기 →</Link>
+              <span className="font-bold text-gray-900">로그인하면</span> 문의 답변 알림과 저장 목록을 어디서든 확인할 수 있어요.{' '}
+              <Link to={loginHref} className="underline font-bold text-brand-600">지금 가입하기 →</Link>
             </p>
           </div>
         )}
 
         {/* Login nudge (temporary, on fav toggle) */}
         {showLoginNudge && (
-          <div className="mb-4 bg-brand-50 border border-brand-100 rounded-lg px-3 py-2.5 flex items-center gap-2 animate-slide-up">
+          <div className="mb-6 bg-brand-50 border border-brand-100 rounded-xl px-4 py-3 flex items-center gap-3 animate-slide-up shadow-sm">
             <LogIn className="w-4 h-4 text-brand-500 shrink-0" />
-            <p className="text-xs text-brand-700">
-              <Link to={loginHref} className="font-semibold underline">로그인</Link>하면 기기가 바뀌어도 저장 목록이 유지돼요
+            <p className="text-xs text-brand-700 font-medium">
+              <Link to={loginHref} className="font-bold underline">로그인</Link>하면 기기가 바뀌어도 저장 목록이 유지돼요
             </p>
           </div>
         )}
 
-        {/* Two-column layout: independent stacks on desktop, CSS-ordered single column on mobile
-             Mobile: both wrappers use display:contents → all items are flat grid children, ordered by CSS order property
-             Desktop: wrappers become flex columns (left: flex-1, right: w-80) */}
-        <div className="grid grid-cols-1 gap-5 md:flex md:gap-8 md:items-start">
+        {/* Two-column layout */}
+        <div className="grid grid-cols-1 gap-6 md:flex md:gap-8 md:items-start">
 
           {/* ── Left column ── */}
-          <div className="contents md:flex md:flex-col md:flex-1 md:gap-5">
+          <div className="contents md:flex md:flex-col md:flex-1 md:gap-6">
 
             {/* 행사 일정 — mobile order: 1 */}
             {booth.nextEvents.length > 0 && (() => {
@@ -433,27 +431,27 @@ export default function BoothPage() {
                 .map((ev) => ({ ...ev, status: getEventStatus(ev.date) }))
                 .sort((a, b) => a.status.order - b.status.order);
               return (
-                <div className="order-1 md:order-none bg-white border border-gray-200/60 rounded-xl p-5 md:p-6">
-                  <h2 className="text-sm font-semibold text-gray-900 mb-3">행사 일정</h2>
-                  <div className="space-y-2.5">
+                <div className="order-1 md:order-none bg-white border border-gray-200/60 rounded-xl p-6 shadow-sm">
+                  <h2 className="text-sm font-bold text-gray-900 mb-4">행사 일정</h2>
+                  <div className="space-y-3">
                     {sorted.map((ev, i) => (
-                      <div key={i} className={`flex items-start gap-3 p-3 rounded-lg ${ev.status.order === 2 ? 'bg-gray-50/60' : 'bg-gray-50'}`}>
-                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${ev.status.order === 0 ? 'bg-emerald-100' : 'bg-gray-200'}`}>
-                          <Calendar className={`w-4 h-4 ${ev.status.order === 0 ? 'text-emerald-600' : 'text-gray-500'}`} />
+                      <div key={i} className={`flex items-start gap-4 p-4 rounded-xl border ${ev.status.order === 2 ? 'bg-gray-50/60 border-gray-100' : 'bg-gray-50 border-gray-100/50 hover:border-gray-200 transition-colors'}`}>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${ev.status.order === 0 ? 'bg-emerald-100' : 'bg-gray-200/50'}`}>
+                          <Calendar className={`w-5 h-5 ${ev.status.order === 0 ? 'text-emerald-600' : 'text-gray-500'}`} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className={`text-sm font-medium ${ev.status.order === 2 ? 'text-gray-400' : 'text-gray-900'}`}>{ev.title}</p>
-                            <span className={`inline-flex items-center h-5 px-1.5 rounded text-[11px] font-medium ${ev.status.color}`}>
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className={`text-sm font-bold ${ev.status.order === 2 ? 'text-gray-400' : 'text-gray-900'}`}>{ev.title}</p>
+                            <span className={`inline-flex items-center h-5 px-1.5 rounded text-[11px] font-bold ${ev.status.color}`}>
                               {ev.status.label}
                             </span>
                           </div>
-                          <div className="flex items-center gap-3 mt-1">
-                            <span className={`flex items-center gap-1 text-xs ${ev.status.order === 2 ? 'text-gray-400' : 'text-gray-500'}`}>
-                              <Clock className="w-3 h-3" /> {ev.date}
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                            <span className={`flex items-center gap-1 text-xs font-medium ${ev.status.order === 2 ? 'text-gray-400' : 'text-gray-500'}`}>
+                              <Clock className="w-3.5 h-3.5" /> {ev.date}
                             </span>
-                            <span className={`flex items-center gap-1 text-xs ${ev.status.order === 2 ? 'text-gray-400' : 'text-gray-500'}`}>
-                              <MapPin className="w-3 h-3" /> {ev.location}
+                            <span className={`flex items-center gap-1 text-xs font-medium ${ev.status.order === 2 ? 'text-gray-400' : 'text-gray-500'}`}>
+                              <MapPin className="w-3.5 h-3.5" /> {ev.location}
                             </span>
                           </div>
                         </div>
@@ -466,55 +464,57 @@ export default function BoothPage() {
 
             {/* AI 요약 — mobile order: 2 */}
             {mockAiSummary && (
-              <div className="order-2 md:order-none bg-gray-50 border border-gray-200 rounded-xl overflow-hidden">
+              <div className="order-2 md:order-none bg-white border border-gray-200/60 rounded-xl overflow-hidden shadow-sm">
                 <button
                   onClick={() => setShowAiSummary(!showAiSummary)}
-                  className="w-full flex items-center gap-2.5 px-5 py-3.5 md:px-6 text-left hover:bg-gray-100 transition-all duration-150"
+                  className="w-full flex items-center gap-3 px-6 py-4 text-left hover:bg-gray-50 transition-all duration-150"
                 >
-                  <div className="w-7 h-7 bg-gray-200 rounded-lg flex items-center justify-center shrink-0">
-                    <Sparkles className="w-3.5 h-3.5 text-gray-500" />
+                  <div className="w-8 h-8 bg-brand-50 rounded-lg flex items-center justify-center shrink-0">
+                    <Sparkles className="w-4 h-4 text-brand-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-gray-800">AI 부스 요약</p>
-                    <p className="text-xs text-gray-500 truncate">{mockAiSummary.highlight}</p>
+                    <p className="text-xs font-bold text-gray-900">AI 부스 요약</p>
+                    <p className="text-[11px] text-gray-500 truncate mt-0.5">{mockAiSummary.highlight}</p>
                   </div>
                   <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 shrink-0 ${showAiSummary ? 'rotate-180' : ''}`} />
                 </button>
                 {showAiSummary && (
-                  <div className="px-5 pb-4 md:px-6 animate-fade-in">
-                    <p className="text-sm text-gray-600 leading-relaxed mb-3">{mockAiSummary.summary}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {mockAiSummary.keywords.map((kw, i) => (
-                        <span key={i} className="text-xs bg-white border border-gray-200 text-gray-600 px-2 py-0.5 rounded-md">{kw}</span>
-                      ))}
+                  <div className="px-6 pb-5 animate-fade-in">
+                    <div className="p-4 bg-gray-50 rounded-xl">
+                      <p className="text-sm text-gray-700 leading-relaxed font-medium mb-4">{mockAiSummary.summary}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {mockAiSummary.keywords.map((kw, i) => (
+                          <span key={i} className="text-[11px] font-bold bg-white border border-gray-200 text-gray-600 px-2 py-0.5 rounded-md shadow-sm">{kw}</span>
+                        ))}
+                      </div>
+                      <p className="text-[10px] text-gray-400 mt-4 italic">AI 요약은 부스 정보 기반 자동 생성입니다</p>
                     </div>
-                    <p className="text-xs text-gray-300 mt-3">AI 요약은 부스 정보 기반 자동 생성입니다</p>
                   </div>
                 )}
               </div>
             )}
 
             {/* 소개 — mobile order: 3 */}
-            <div className="order-3 md:order-none bg-white border border-gray-200/60 rounded-xl p-5 md:p-6">
-              <h2 className="text-sm font-semibold text-gray-900 mb-3">회사 소개</h2>
-              <p className="text-sm text-gray-600 leading-relaxed">{booth.description}</p>
+            <div className="order-3 md:order-none bg-white border border-gray-200/60 rounded-xl p-6 shadow-sm">
+              <h2 className="text-sm font-bold text-gray-900 mb-4">회사 소개</h2>
+              <p className="text-sm text-gray-600 leading-relaxed font-medium">{booth.description}</p>
             </div>
 
             {/* 제품 갤러리 — mobile order: 4 */}
             {(booth.descriptionImages ?? []).length > 0 && (
-              <div className="order-4 md:order-none bg-white border border-gray-200/60 rounded-xl p-5 md:p-6">
-                <h2 className="text-sm font-semibold text-gray-900 mb-3">제품 갤러리</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div className="order-4 md:order-none bg-white border border-gray-200/60 rounded-xl p-6 shadow-sm">
+                <h2 className="text-sm font-bold text-gray-900 mb-4">제품 갤러리</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {(booth.descriptionImages ?? []).map((src, i) => (
                     <button
                       key={i}
                       onClick={() => setLightboxIndex(i)}
-                      className="relative aspect-[4/3] rounded-lg overflow-hidden border border-gray-200 hover:border-brand-400 hover:shadow-md transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-brand-300"
+                      className="relative aspect-[4/3] rounded-xl overflow-hidden border border-gray-200 hover:border-brand-400 hover:shadow-md transition-all duration-200 focus:outline-none group"
                     >
                       <img
                         src={src}
                         alt={`${booth.name} 제품 이미지 ${i + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src =
                             'https://images.unsplash.com/photo-1560472355-536de3962603?w=800&q=80';
@@ -574,21 +574,21 @@ export default function BoothPage() {
 
             {/* FAQ — mobile order: 9 */}
             {booth.faq.length > 0 && (
-              <div className="order-9 md:order-none bg-white border border-gray-200/60 rounded-xl p-5 md:p-6">
-                <h2 className="text-sm font-semibold text-gray-900 mb-3">자주 묻는 질문</h2>
-                <div className="space-y-2">
+              <div className="order-9 md:order-none bg-white border border-gray-200/60 rounded-xl p-6 shadow-sm">
+                <h2 className="text-sm font-bold text-gray-900 mb-4">자주 묻는 질문</h2>
+                <div className="space-y-3">
                   {booth.faq.map((item, i) => (
-                    <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
+                    <div key={i} className="border border-gray-100 rounded-xl overflow-hidden hover:border-gray-200 transition-colors">
                       <button
                         onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-all duration-150"
+                        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition-all duration-150"
                       >
-                        <span className="text-sm font-medium text-gray-800 pr-4">{item.question}</span>
+                        <span className="text-sm font-bold text-gray-800 pr-6">{item.question}</span>
                         <ChevronDown className={`w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200 ${openFaq === i ? 'rotate-180' : ''}`} />
                       </button>
                       {openFaq === i && (
-                        <div className="px-4 pb-4 bg-gray-50 animate-fade-in">
-                          <p className="text-sm text-gray-600 leading-relaxed">{item.answer}</p>
+                        <div className="px-5 pb-5 bg-gray-50/50 animate-fade-in border-t border-gray-50">
+                          <p className="text-sm text-gray-600 leading-relaxed font-medium pt-4">{item.answer}</p>
                         </div>
                       )}
                     </div>
@@ -600,49 +600,49 @@ export default function BoothPage() {
           </div>
 
           {/* ── Right column ── */}
-          <div className="contents md:flex md:flex-col md:w-80 md:shrink-0 md:gap-5">
+          <div className="contents md:flex md:flex-col md:w-80 md:shrink-0 md:gap-6">
 
             {/* Desktop action buttons — desktop only */}
-            <div className="hidden md:block bg-white border border-gray-200/60 rounded-xl p-5">
-              <div className="space-y-2.5">
+            <div className="hidden md:block bg-white border border-gray-200/60 rounded-xl p-6 shadow-sm">
+              <div className="space-y-3">
                 <div className="flex gap-2">
                   <button
                     onClick={handleToggleFav}
-                    className={`flex-1 flex items-center justify-center gap-2 h-10 rounded-lg text-sm font-medium transition-all duration-150 ${
-                      fav ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
+                    className={`flex-1 flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-bold transition-all duration-200 ${
+                      fav ? 'bg-brand-600 text-white shadow-lg shadow-brand-200' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300'
                     }`}
                   >
-                    <Heart className={`w-4 h-4 ${fav ? 'fill-current' : ''}`} />
+                    <Heart className={`w-4.5 h-4.5 ${fav ? 'fill-current' : ''}`} />
                     {fav ? '저장됨' : '저장'}
                   </button>
                   <button
                     onClick={handleShare}
-                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 transition-all duration-150"
+                    className="w-11 h-11 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm"
                   >
-                    <Share2 className="w-4 h-4" />
+                    <Share2 className="w-4.5 h-4.5" />
                   </button>
                 </div>
                 <button
                   onClick={() => setShowInquiry(true)}
                   disabled={!inquiryAllowed}
-                  className="w-full flex items-center justify-center gap-2 h-10 rounded-lg text-sm font-medium bg-brand-600 text-white hover:bg-brand-500 transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="w-full flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-bold bg-brand-600 text-white hover:bg-brand-500 transition-all duration-200 shadow-lg shadow-brand-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
                 >
-                  <MessageSquare className="w-4 h-4" />
+                  <MessageSquare className="w-4.5 h-4.5" />
                   {!inquiryAllowed ? '문의 마감' : '문의하기'}
                 </button>
                 <button
                   onClick={() => setShowEmailInfo(true)}
-                  className="w-full flex items-center justify-center gap-2 h-10 rounded-lg text-sm font-medium border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-all duration-150"
+                  className="w-full flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-bold border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm"
                 >
-                  <Mail className="w-4 h-4" />
+                  <Mail className="w-4.5 h-4.5 text-gray-400" />
                   프로모션 소식 받기
                 </button>
               </div>
               {!isLoggedIn && (
-                <div className="mt-3 pt-3 border-t border-gray-100">
-                  <p className="text-xs text-gray-500 leading-relaxed">
-                    <span className="font-medium text-gray-700">로그인하면</span> 문의 답변 알림과 저장 목록을 어디서든 확인할 수 있어요.{' '}
-                    <Link to={loginHref} className="underline font-medium text-brand-600">지금 가입하기 →</Link>
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                  <p className="text-xs text-gray-500 leading-relaxed font-medium">
+                    <span className="font-bold text-gray-700">로그인하면</span> 문의 답변 알림과 저장 목록을 어디서든 확인할 수 있어요.{' '}
+                    <Link to={loginHref} className="underline font-bold text-brand-600">지금 가입하기 →</Link>
                   </p>
                 </div>
               )}
@@ -650,21 +650,21 @@ export default function BoothPage() {
 
             {/* 첨부 자료 — mobile order: 5 */}
             {attachments.length > 0 && (
-              <div className="order-5 md:order-none bg-white border border-gray-200/60 rounded-xl p-5">
-                <h2 className="text-sm font-semibold text-gray-900 mb-3">첨부 자료</h2>
-                <div className="space-y-2">
+              <div className="order-5 md:order-none bg-white border border-gray-200/60 rounded-xl p-6 shadow-sm">
+                <h2 className="text-sm font-bold text-gray-900 mb-4">첨부 자료</h2>
+                <div className="space-y-2.5">
                   {attachments.map((att) => (
-                    <div key={att.id} className="flex items-center gap-3 bg-gray-50 rounded-lg px-3 py-2.5">
-                      <span className="text-lg">{getFileIcon(att.filename)}</span>
+                    <div key={att.id} className="group flex items-center gap-3 bg-gray-50 border border-gray-100/50 rounded-xl px-4 py-3 hover:bg-white hover:border-brand-200 hover:shadow-sm transition-all duration-200">
+                      <span className="text-xl shrink-0 grayscale group-hover:grayscale-0 transition-all">{getFileIcon(att.filename)}</span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-800 truncate">{att.filename}</p>
-                        {att.size && <p className="text-xs text-gray-400">{att.size}</p>}
+                        <p className="text-sm font-bold text-gray-800 truncate">{att.filename}</p>
+                        {att.size && <p className="text-[11px] font-bold text-gray-400 mt-0.5">{att.size}</p>}
                       </div>
                       <button
                         onClick={() => showToast('다운로드 기능은 실제 연동 시 제공됩니다 (데모)', 'info')}
-                        className="flex items-center gap-1 text-xs text-brand-600 font-medium hover:text-brand-700 transition-colors shrink-0"
+                        className="flex items-center justify-center w-8 h-8 rounded-lg text-brand-600 bg-brand-50 hover:bg-brand-100 transition-colors shrink-0"
                       >
-                        <FileDown className="w-3.5 h-3.5" />
+                        <FileDown className="w-4 h-4" />
                       </button>
                     </div>
                   ))}
@@ -675,36 +675,36 @@ export default function BoothPage() {
             {/* 프로모션 소식 받기 — mobile only, order: 6 */}
             <button
               onClick={() => setShowEmailInfo(true)}
-              className="order-6 md:hidden w-full flex items-center justify-center gap-2 h-10 rounded-lg text-sm font-medium border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-all duration-150"
+              className="order-6 md:hidden w-full flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-bold border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200 shadow-sm"
             >
-              <Mail className="w-4 h-4" />
+              <Mail className="w-4.5 h-4.5 text-gray-400" />
               프로모션 소식 받기
             </button>
 
             {/* 링크 — mobile order: 7 */}
             {(booth.links.instagram || booth.links.store || booth.links.site) && (
-              <div className="order-7 md:order-none bg-white border border-gray-200/60 rounded-xl p-5">
-                <h2 className="text-sm font-semibold text-gray-900 mb-3">링크</h2>
-                <div className="space-y-1.5">
+              <div className="order-7 md:order-none bg-white border border-gray-200/60 rounded-xl p-6 shadow-sm">
+                <h2 className="text-sm font-bold text-gray-900 mb-4">공식 채널</h2>
+                <div className="grid grid-cols-1 gap-2">
                   {booth.links.instagram && (
                     <a href={booth.links.instagram} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-2.5 text-sm text-gray-600 hover:text-gray-900 transition-colors px-2 py-2 rounded-lg hover:bg-gray-50">
-                      <Instagram className="w-4 h-4 text-gray-400" /> 인스타그램
-                      <ExternalLink className="w-3 h-3 text-gray-300 ml-auto" />
+                      className="flex items-center gap-3 text-sm font-bold text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all px-3 py-2.5 rounded-xl border border-transparent hover:border-gray-100">
+                      <Instagram className="w-4.5 h-4.5 text-pink-500" /> 인스타그램
+                      <ExternalLink className="w-3.5 h-3.5 text-gray-300 ml-auto" />
                     </a>
                   )}
                   {booth.links.store && (
                     <a href={booth.links.store} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-2.5 text-sm text-gray-600 hover:text-gray-900 transition-colors px-2 py-2 rounded-lg hover:bg-gray-50">
-                      <ShoppingBag className="w-4 h-4 text-gray-400" /> 스토어
-                      <ExternalLink className="w-3 h-3 text-gray-300 ml-auto" />
+                      className="flex items-center gap-3 text-sm font-bold text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all px-3 py-2.5 rounded-xl border border-transparent hover:border-gray-100">
+                      <ShoppingBag className="w-4.5 h-4.5 text-brand-600" /> 온라인 스토어
+                      <ExternalLink className="w-3.5 h-3.5 text-gray-300 ml-auto" />
                     </a>
                   )}
                   {booth.links.site && (
                     <a href={booth.links.site} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-2.5 text-sm text-gray-600 hover:text-gray-900 transition-colors px-2 py-2 rounded-lg hover:bg-gray-50">
-                      <Globe className="w-4 h-4 text-gray-400" /> 홈페이지
-                      <ExternalLink className="w-3 h-3 text-gray-300 ml-auto" />
+                      className="flex items-center gap-3 text-sm font-bold text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all px-3 py-2.5 rounded-xl border border-transparent hover:border-gray-100">
+                      <Globe className="w-4.5 h-4.5 text-blue-500" /> 홈페이지
+                      <ExternalLink className="w-3.5 h-3.5 text-gray-300 ml-auto" />
                     </a>
                   )}
                 </div>
@@ -712,18 +712,18 @@ export default function BoothPage() {
             )}
 
             {/* 1분 설문 — mobile order: 8 */}
-            <div className="order-8 md:order-none bg-white border border-gray-200/60 rounded-xl p-5">
-              <div className="flex items-center gap-2 mb-1.5">
-                <ClipboardList className="w-4 h-4 text-gray-500" />
-                <span className="text-sm font-semibold text-gray-900">1분 설문 참여</span>
+            <div className="order-8 md:order-none bg-white border border-gray-200/60 rounded-xl p-6 shadow-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <ClipboardList className="w-5 h-5 text-brand-600" />
+                <span className="text-sm font-bold text-gray-900">1분 설문 참여</span>
               </div>
-              <p className="text-xs text-gray-500 mb-3 leading-relaxed">
+              <p className="text-xs font-medium text-gray-500 mb-4 leading-relaxed">
                 관심 분야와 방문 목적을 알려주시면 더 좋은 정보를 드릴 수 있어요
               </p>
               <button
                 onClick={() => setShowSurvey(true)}
                 disabled={surveyDone}
-                className="w-full bg-brand-600 text-white text-sm font-medium rounded-lg h-10 hover:bg-brand-500 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-brand-600 text-white text-sm font-bold rounded-xl h-11 hover:bg-brand-500 transition-all duration-200 shadow-lg shadow-brand-100 disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed"
               >
                 {surveyDone ? '설문 완료 ✓' : '설문 참여하기'}
               </button>
@@ -736,29 +736,29 @@ export default function BoothPage() {
       </div>
 
       {/* ═══ Mobile Sticky Bottom Bar ═══ */}
-      <div className="fixed bottom-0 left-0 right-0 md:hidden z-30 bg-white/95 backdrop-blur-lg border-t border-gray-200 px-4 py-2.5">
-        <div className="max-w-5xl mx-auto flex gap-2">
+      <div className="fixed bottom-0 left-0 right-0 md:hidden z-30 bg-white/95 backdrop-blur-xl border-t border-gray-200 px-4 pt-3 pb-6 safe-area-bottom shadow-[0_-8px_24px_rgba(0,0,0,0.05)]">
+        <div className="max-w-5xl mx-auto flex gap-2.5">
           <button
             onClick={handleToggleFav}
-            className={`h-10 px-4 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-all duration-150 ${
-              fav ? 'bg-brand-100 text-brand-700' : 'bg-gray-100 text-gray-700'
+            className={`h-12 px-5 rounded-2xl text-sm font-bold flex items-center gap-2 transition-all duration-200 ${
+              fav ? 'bg-brand-50 text-brand-700' : 'bg-gray-100 text-gray-700'
             }`}
           >
-            <Heart className={`w-4 h-4 ${fav ? 'fill-current' : ''}`} />
+            <Heart className={`w-5 h-5 ${fav ? 'fill-current' : ''}`} />
             {fav ? '저장됨' : '저장'}
           </button>
           <button
             onClick={() => setShowInquiry(true)}
             disabled={!inquiryAllowed}
-            className="flex-1 h-10 rounded-lg text-sm font-medium bg-brand-600 text-white hover:bg-brand-500 transition-all duration-150 disabled:opacity-40"
+            className="flex-1 h-12 rounded-2xl text-sm font-bold bg-brand-600 text-white hover:bg-brand-500 transition-all duration-200 shadow-lg shadow-brand-100 disabled:opacity-40 disabled:shadow-none"
           >
             {!inquiryAllowed ? '문의 마감' : '문의하기'}
           </button>
           <button
             onClick={handleShare}
-            className="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 transition-all duration-150"
+            className="w-12 h-12 flex items-center justify-center rounded-2xl bg-gray-100 text-gray-600 transition-all duration-200 active:scale-95"
           >
-            <Share2 className="w-4 h-4" />
+            <Share2 className="w-5 h-5" />
           </button>
         </div>
       </div>
