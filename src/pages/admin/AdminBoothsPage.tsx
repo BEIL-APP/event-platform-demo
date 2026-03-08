@@ -43,14 +43,14 @@ export default function AdminBoothsPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
             {booths.map((booth) => {
               const stats = analyticsMap[booth.id];
               return (
                 <Link
                   key={booth.id}
                   to={`/admin/booths/${booth.id}`}
-                  className="bg-white rounded-xl border border-gray-200/60 p-4 sm:p-6 hover:border-gray-300 hover:shadow-card-hover transition-all duration-150 group"
+                  className="bg-white rounded-xl border border-gray-200/60 p-4 sm:p-6 hover:border-gray-300 hover:shadow-card-hover transition-all duration-150 group overflow-hidden"
                 >
                   <div className="flex items-start gap-3 sm:gap-4">
                     {/* Thumbnail */}
@@ -82,7 +82,7 @@ export default function AdminBoothsPage() {
 
                       {/* Stats mini */}
                       {stats && (
-                        <div className="flex items-center gap-3 sm:gap-4 mt-3 pt-3 border-t border-gray-100">
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-3 pt-3 border-t border-gray-100">
                           <div className="flex items-center gap-1.5 text-xs text-gray-500">
                             <Eye className="w-3.5 h-3.5 text-gray-400" />
                             <span className="font-medium text-gray-700">{stats.scans}</span>

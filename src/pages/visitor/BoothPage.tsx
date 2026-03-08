@@ -23,6 +23,9 @@ import {
   Copy,
   Link2,
   QrCode,
+  X,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { VisitorHeader } from '../../components/VisitorHeader';
 import { Modal } from '../../components/Modal';
@@ -80,6 +83,7 @@ export default function BoothPage() {
   const { createInquiry } = useThreads();
 
   const [imgIndex, setImgIndex] = useState(0);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [fav, setFav] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [showLoginNudge, setShowLoginNudge] = useState(false);
@@ -458,7 +462,74 @@ export default function BoothPage() {
             <div className="bg-white border border-gray-200/60 rounded-xl p-5 md:p-6">
               <h2 className="text-sm font-semibold text-gray-900 mb-3">소개</h2>
               <p className="text-sm text-gray-600 leading-relaxed">{booth.description}</p>
+              {booth.images.length > 0 && (
+                <div className="flex gap-2 mt-4 overflow-x-auto pb-1 scrollbar-hide">
+                  {booth.images.map((src, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setLightboxIndex(i)}
+                      className="shrink-0 w-24 h-16 rounded-lg overflow-hidden border border-gray-200 hover:border-brand-400 hover:shadow-md transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-brand-300"
+                    >
+                      <img
+                        src={src}
+                        alt={`${booth.name} 이미지 ${i + 1}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src =
+                            'https://images.unsplash.com/photo-1560472355-536de3962603?w=800&q=80';
+                        }}
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
+
+            {/* Lightbox */}
+            {lightboxIndex !== null && (
+              <div
+                className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+                onClick={() => setLightboxIndex(null)}
+              >
+                <button
+                  onClick={() => setLightboxIndex(null)}
+                  className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+                {booth.images.length > 1 && (
+                  <>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setLightboxIndex((lightboxIndex - 1 + booth.images.length) % booth.images.length); }}
+                      className="absolute left-4 w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setLightboxIndex((lightboxIndex + 1) % booth.images.length); }}
+                      className="absolute right-4 w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </>
+                )}
+                <img
+                  src={booth.images[lightboxIndex]}
+                  alt={`${booth.name} 이미지 ${lightboxIndex + 1}`}
+                  className="max-w-full max-h-[85vh] object-contain rounded-lg"
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {booth.images.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={(e) => { e.stopPropagation(); setLightboxIndex(i); }}
+                      className={`w-1.5 h-1.5 rounded-full transition-all ${i === lightboxIndex ? 'bg-white scale-125' : 'bg-white/40 hover:bg-white/70'}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* FAQ */}
             {booth.faq.length > 0 && (
