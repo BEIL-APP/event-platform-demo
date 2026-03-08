@@ -387,7 +387,17 @@ export default function BoothPage() {
       {/* ═══ Content Area ═══ */}
       <div className="max-w-5xl mx-auto px-4 md:px-6 py-5 md:py-8">
 
-        {/* Login nudge (temporary) */}
+        {/* Login nudge — mobile: persistent top banner / desktop: inside action card */}
+        {!isLoggedIn && (
+          <div className="md:hidden mb-4 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+            <p className="text-xs text-gray-600 leading-relaxed">
+              <span className="font-medium">로그인하면</span> 문의 답변 알림과 저장 목록을 어디서든 확인할 수 있어요.{' '}
+              <Link to={loginHref} className="underline font-medium text-brand-600">지금 가입하기 →</Link>
+            </p>
+          </div>
+        )}
+
+        {/* Login nudge (temporary, on fav toggle) */}
         {showLoginNudge && (
           <div className="mb-4 bg-brand-50 border border-brand-100 rounded-lg px-3 py-2.5 flex items-center gap-2 animate-slide-up">
             <LogIn className="w-4 h-4 text-brand-500 shrink-0" />
@@ -436,6 +446,14 @@ export default function BoothPage() {
                 프로모션 소식 받기
               </button>
             </div>
+            {!isLoggedIn && (
+              <div className="mt-3 pt-3 border-t border-gray-100">
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  <span className="font-medium text-gray-700">로그인하면</span> 문의 답변 알림과 저장 목록을 어디서든 확인할 수 있어요.{' '}
+                  <Link to={loginHref} className="underline font-medium text-brand-600">지금 가입하기 →</Link>
+                </p>
+              </div>
+            )}
           </div>
 
           {/* 행사 일정 — md: left col row 4; mobile: 1st */}
@@ -699,15 +717,6 @@ export default function BoothPage() {
 
         </div>
 
-        {/* Login nudge banner */}
-        {!isLoggedIn && (
-          <div className="mt-6 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
-            <p className="text-xs text-gray-600 leading-relaxed">
-              <span className="font-medium">로그인하면</span> 문의 답변 알림과 저장 목록을 어디서든 확인할 수 있어요.{' '}
-              <Link to={loginHref} className="underline font-medium text-brand-600">지금 가입하기 →</Link>
-            </p>
-          </div>
-        )}
       </div>
 
       {/* ═══ Mobile Sticky Bottom Bar ═══ */}
