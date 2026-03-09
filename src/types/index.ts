@@ -67,7 +67,7 @@ export type LeadStatus = 'NEW' | 'CONTACTED' | 'MEETING' | 'WON' | 'LOST';
 export interface Lead {
   id: string;
   boothId: string;
-  source: 'bizcard' | 'inquiry' | 'email_info' | 'survey';
+  source: 'bizcard' | 'inquiry' | 'email_info' | 'survey' | 'manual';
   status?: LeadStatus;
   name?: string;
   company?: string;

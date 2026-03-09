@@ -14,6 +14,8 @@ import {
   PhoneCall,
   ArrowRight,
   ChevronDown,
+  Plus,
+  X,
 } from 'lucide-react';
 import { AdminLayout } from '../../components/AdminLayout';
 import { useBooths } from '../../hooks/useBooths';
@@ -27,6 +29,7 @@ const SOURCE_LABELS: Record<Lead['source'], string> = {
   inquiry: '문의 동의',
   email_info: '이메일 수신',
   survey: '설문',
+  manual: '수동 추가',
 };
 
 const SOURCE_ICONS: Record<Lead['source'], React.ReactNode> = {
@@ -34,6 +37,7 @@ const SOURCE_ICONS: Record<Lead['source'], React.ReactNode> = {
   inquiry: <Mail className="w-3.5 h-3.5" />,
   email_info: <Mail className="w-3.5 h-3.5" />,
   survey: <ClipboardList className="w-3.5 h-3.5" />,
+  manual: <Plus className="w-3.5 h-3.5" />,
 };
 
 const SOURCE_COLORS: Record<Lead['source'], string> = {
@@ -41,6 +45,7 @@ const SOURCE_COLORS: Record<Lead['source'], string> = {
   inquiry: 'bg-brand-50 text-brand-700',
   email_info: 'bg-emerald-50 text-emerald-700',
   survey: 'bg-amber-50 text-amber-700',
+  manual: 'bg-purple-50 text-purple-700',
 };
 
 const STATUS_LABELS: Record<LeadStatus, string> = {
@@ -69,6 +74,30 @@ export default function AdminLeadsPage() {
   const [filterStatus, setFilterStatus] = useState<LeadStatus | 'all'>('all');
   const [showLottery, setShowLottery] = useState(false);
   const [lotteryWinner, setLotteryWinner] = useState<Lead | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [addForm, setAddForm] = useState({ name: '', company: '', phone: '', email: '', boothId: '', memo: '' });
+
+  const handleAddLead = () => {
+    if (!addForm.boothId) { showToast('부스를 선택해주세요', 'error'); return; }
+    if (!addForm.name && !addForm.email) { showToast('이름 또는 이메일을 입력해주세요', 'error'); return; }
+    saveLead({
+      id: `lead-manual-${Date.now()}`,
+      boothId: addForm.boothId,
+      source: 'manual',
+      name: addForm.name || undefined,
+      company: addForm.company || undefined,
+      phone: addForm.phone || undefined,
+      email: addForm.email || undefined,
+      memo: addForm.memo,
+      consent: true,
+      status: 'NEW',
+      createdAt: new Date().toISOString(),
+    });
+    setLeads(getLeads());
+    setAddForm({ name: '', company: '', phone: '', email: '', boothId: '', memo: '' });
+    setShowAddModal(false);
+    showToast('리드가 추가됐어요', 'success');
+  };
 
   const boothMap = Object.fromEntries(booths.map((b) => [b.id, b.name]));
 
@@ -153,6 +182,13 @@ export default function AdminLeadsPage() {
               <Dice5 className="w-4 h-4 text-gray-400" />
               명함 추첨
             </button>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 h-10 px-4 text-[13px] font-bold rounded-xl transition-all duration-200 shadow-sm"
+            >
+              <Plus className="w-4 h-4 text-gray-400" />
+              리드 추가
+            </button>
             <Link
               to="/admin/leads/scan"
               className="flex items-center justify-center gap-2 bg-brand-600 text-white hover:bg-brand-500 h-10 px-5 text-[13px] font-bold rounded-xl transition-all duration-200 shadow-lg shadow-brand-100"
@@ -173,7 +209,7 @@ export default function AdminLeadsPage() {
             <p className="text-xl font-bold text-gray-900 mt-1">{leads.length}</p>
             <p className="text-[11px] font-bold text-gray-500 uppercase">전체 리드</p>
           </div>
-          {(['bizcard', 'inquiry', 'email_info', 'survey'] as Lead['source'][]).map((src) => (
+          {(['bizcard', 'inquiry', 'email_info', 'survey', 'manual'] as Lead['source'][]).map((src) => (
             <div key={src} className="flex flex-col gap-1 bg-white border border-gray-200/60 rounded-xl p-4 shadow-sm hover:shadow-md transition-all">
               <div className="flex items-center justify-between">
                 <span className="text-gray-400">{SOURCE_ICONS[src]}</span>
@@ -262,6 +298,7 @@ export default function AdminLeadsPage() {
                 <option value="inquiry">문의 동의</option>
                 <option value="email_info">이메일 수신</option>
                 <option value="survey">설문 응답</option>
+                <option value="manual">수동 추가</option>
               </select>
               <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
             </div>
@@ -427,6 +464,77 @@ export default function AdminLeadsPage() {
                 className="flex-1 h-12 bg-brand-600 text-white text-sm font-bold rounded-xl flex items-center justify-center hover:bg-brand-500 transition-all shadow-lg shadow-brand-100"
               >
                 확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Lead Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl w-full max-w-md shadow-2xl border border-gray-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+              <h2 className="text-sm font-bold text-gray-900">리드 직접 추가</h2>
+              <button onClick={() => setShowAddModal(false)} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <X className="w-4 h-4 text-gray-500" />
+              </button>
+            </div>
+            <div className="px-6 py-5 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-500 mb-1.5">부스 <span className="text-red-400">*</span></label>
+                <select
+                  value={addForm.boothId}
+                  onChange={(e) => setAddForm((f) => ({ ...f, boothId: e.target.value }))}
+                  className="w-full h-10 text-sm bg-white border border-gray-200 rounded-xl px-3 outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-400 transition-all"
+                >
+                  <option value="">부스 선택</option>
+                  {booths.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5">이름</label>
+                  <input value={addForm.name} onChange={(e) => setAddForm((f) => ({ ...f, name: e.target.value }))}
+                    placeholder="홍길동"
+                    className="w-full h-10 text-sm bg-white border border-gray-200 rounded-xl px-3 outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-400 transition-all placeholder:text-gray-300" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5">회사</label>
+                  <input value={addForm.company} onChange={(e) => setAddForm((f) => ({ ...f, company: e.target.value }))}
+                    placeholder="(주)회사명"
+                    className="w-full h-10 text-sm bg-white border border-gray-200 rounded-xl px-3 outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-400 transition-all placeholder:text-gray-300" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5">이메일</label>
+                  <input type="email" value={addForm.email} onChange={(e) => setAddForm((f) => ({ ...f, email: e.target.value }))}
+                    placeholder="example@co.kr"
+                    className="w-full h-10 text-sm bg-white border border-gray-200 rounded-xl px-3 outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-400 transition-all placeholder:text-gray-300" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1.5">전화번호</label>
+                  <input value={addForm.phone} onChange={(e) => setAddForm((f) => ({ ...f, phone: e.target.value }))}
+                    placeholder="010-0000-0000"
+                    className="w-full h-10 text-sm bg-white border border-gray-200 rounded-xl px-3 outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-400 transition-all placeholder:text-gray-300" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 mb-1.5">메모</label>
+                <input value={addForm.memo} onChange={(e) => setAddForm((f) => ({ ...f, memo: e.target.value }))}
+                  placeholder="현장 상담, 명함 수령 등"
+                  className="w-full h-10 text-sm bg-white border border-gray-200 rounded-xl px-3 outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-400 transition-all placeholder:text-gray-300" />
+              </div>
+            </div>
+            <div className="flex gap-3 px-6 pb-5">
+              <button onClick={() => setShowAddModal(false)}
+                className="flex-1 h-10 text-sm font-bold bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all">
+                취소
+              </button>
+              <button onClick={handleAddLead}
+                className="flex-1 h-10 text-sm font-bold bg-brand-600 text-white rounded-xl hover:bg-brand-500 transition-all shadow-lg shadow-brand-100">
+                추가
               </button>
             </div>
           </div>
