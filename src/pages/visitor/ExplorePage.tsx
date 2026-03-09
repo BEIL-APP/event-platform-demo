@@ -12,11 +12,14 @@ import {
   X,
   Calendar,
   MessageSquare,
+  Sparkles,
+  RefreshCw,
 } from 'lucide-react';
 import { VisitorHeader } from '../../components/VisitorHeader';
 import { useBooths } from '../../hooks/useBooths';
 import { useFavorites } from '../../hooks/useFavorites';
-import { getAnalytics, getPolicies } from '../../utils/localStorage';
+import { getAnalytics, getPolicies, getFavorites, getVisits } from '../../utils/localStorage';
+
 import type { Analytics, BoothPolicy } from '../../types';
 
 type SortOption = 'latest' | 'popular' | 'name';
@@ -51,6 +54,42 @@ export default function ExplorePage() {
   const [onlyActive, setOnlyActive] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<string>('all');
   const categoryScrollRef = useRef<HTMLDivElement>(null);
+
+  // AI 추천 로직: 방문·좋아요 기록 기반, 없으면 목데이터로 폴백
+  const { aiRecommended, topCategory } = useMemo(() => {
+    const boothMap = Object.fromEntries(booths.map((b) => [b.id, b]));
+    const visits = getVisits();
+    const favIds = new Set(getFavorites().map((f) => f.boothId));
+
+    const categoryScore: Record<string, number> = {};
+    visits.forEach((v) => {
+      const cat = boothMap[v.boothId]?.category;
+      if (cat) categoryScore[cat] = (categoryScore[cat] ?? 0) + 1;
+    });
+    favIds.forEach((id) => {
+      const cat = boothMap[id]?.category;
+      if (cat) categoryScore[cat] = (categoryScore[cat] ?? 0) + 3;
+    });
+
+    const topCats = Object.entries(categoryScore)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([cat]) => cat);
+
+    const visited = new Set(visits.map((v) => v.boothId));
+    const fromHistory = booths
+      .filter((b) => !visited.has(b.id) && !favIds.has(b.id) && topCats.includes(b.category))
+      .sort((a, b) => (categoryScore[b.category] ?? 0) - (categoryScore[a.category] ?? 0))
+      .slice(0, 4);
+
+    // 기록 없으면 목데이터: 시드 부스 중 앞에서 4개
+    const mockRecommended = booths.slice(0, 4);
+
+    return {
+      aiRecommended: fromHistory.length > 0 ? fromHistory : mockRecommended,
+      topCategory: topCats[0] ?? null,
+    };
+  }, [booths]);
 
   const scrollCategories = (dir: 'left' | 'right') => {
     if (!categoryScrollRef.current) return;
@@ -143,7 +182,53 @@ export default function ExplorePage() {
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-5xl mx-auto px-4 py-8 sm:py-12">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight mb-2">부스 둘러보기</h1>
-          <p className="text-sm text-gray-500 font-medium mb-6 sm:mb-8">관심 있는 부스를 찾아 문의하고 자료를 받아보세요</p>
+          <p className="text-sm text-gray-500 font-medium mb-6">관심 있는 부스를 찾아 문의하고 자료를 받아보세요</p>
+
+          {/* AI 추천 섹션 */}
+          <div className="bg-gradient-to-br from-brand-50 to-indigo-50 border border-brand-100 rounded-2xl p-5 mb-6">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
+                <Sparkles className="w-3.5 h-3.5 text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-gray-900">AI 맞춤 추천</p>
+                <p className="text-xs text-gray-500 font-medium">
+                  {topCategory
+                    ? `${topCategory} 분야에 관심이 높으시네요`
+                    : '지금 주목받는 부스를 소개해요'}
+                </p>
+              </div>
+            </div>
+
+            {aiRecommended.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {aiRecommended.map((b) => (
+                  <Link
+                    key={b.id}
+                    to={`/scan/${b.id}`}
+                    className="bg-white rounded-xl p-3 flex items-center gap-2.5 border border-white hover:border-brand-200 hover:shadow-md transition-all duration-200 group"
+                  >
+                    <div className="w-9 h-9 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                      {b.images[0] ? (
+                        <img src={b.images[0]} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-sm">🏪</div>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-gray-800 truncate group-hover:text-brand-600 transition-colors">{b.name}</p>
+                      <p className="text-[10px] text-gray-400 font-medium truncate">{b.category}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white/60 rounded-xl py-5 text-center border border-white">
+                <RefreshCw className="w-5 h-5 text-gray-300 mx-auto mb-1.5" />
+                <p className="text-xs text-gray-400 font-medium">부스를 둘러보면 맞춤 추천이 시작돼요</p>
+              </div>
+            )}
+          </div>
 
           <div className="space-y-4">
             {/* Event selector */}
