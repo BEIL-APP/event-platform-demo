@@ -393,16 +393,23 @@ export default function AdminInboxPage() {
                     }`}
                   >
                     <div className="flex items-start gap-3.5">
-                      <div className="w-11 h-11 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shrink-0">
-                        {booth?.images[0] ? (
-                          <img src={booth.images[0]} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-lg">🏪</div>
-                        )}
+                      <div className="shrink-0 flex flex-col items-center gap-1">
+                        <div className="w-11 h-11 rounded-xl overflow-hidden bg-gray-50 border border-gray-100">
+                          {booth?.images[0] ? (
+                            <img src={booth.images[0]} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-lg">🏪</div>
+                          )}
+                        </div>
+                        <p className="text-[10px] font-bold text-gray-400 truncate max-w-[44px] text-center leading-tight">
+                          {booth?.name ?? t.boothId}
+                        </p>
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
-                          <p className="text-sm font-bold text-gray-900 truncate group-hover:text-brand-600 transition-colors">{booth?.name ?? t.boothId}</p>
+                          <p className="text-sm font-bold text-gray-900 truncate group-hover:text-brand-600 transition-colors">
+                            {t.visitorName ?? t.visitorEmail ?? '방문자'}
+                          </p>
                           <span className="text-[10px] font-bold text-gray-400 shrink-0 ml-2 uppercase">{formatTime(t.lastUpdated)}</span>
                         </div>
                         <p className="text-xs text-gray-500 truncate mb-3 font-medium">{lastMsg?.text}</p>
@@ -551,11 +558,18 @@ export default function AdminInboxPage() {
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto px-5 py-6 sm:px-8 sm:py-8 space-y-5 bg-gray-50/20 backdrop-blur-sm">
-              {selectedThread.messages.map((msg, i) => (
+              {selectedThread.messages.map((msg, i) => {
+                const visitorLabel = selectedThread.visitorName ?? selectedThread.visitorEmail ?? '방문자';
+                const boothLabel = boothMap[selectedThread.boothId]?.name ?? '운영자';
+                return (
                 <div
                   key={i}
-                  className={`flex ${msg.from === 'booth' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex flex-col ${msg.from === 'booth' ? 'items-end' : 'items-start'}`}
                 >
+                  <span className="text-[11px] font-bold text-gray-400 mb-1 px-1">
+                    {msg.from === 'booth' ? boothLabel : visitorLabel}
+                  </span>
+                  <div className={`flex ${msg.from === 'booth' ? 'justify-end' : 'justify-start'} w-full`}>
                   {msg.from === 'visitor' && (
                     <div className="w-9 h-9 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-3 shrink-0 mt-1 shadow-sm text-lg">
                       {selectedThread.visitorId === 'user' ? '👤' : '👻'}
@@ -573,11 +587,12 @@ export default function AdminInboxPage() {
                       msg.from === 'booth' ? 'text-brand-200' : 'text-gray-400'
                     }`}>
                       {formatTime(msg.at)}
-                      {msg.from === 'booth' && <span className="bg-brand-500 text-white px-1.5 rounded-sm">운영자</span>}
                     </div>
                   </div>
+                  </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Memo */}
