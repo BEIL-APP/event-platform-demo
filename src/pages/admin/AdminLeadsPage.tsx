@@ -308,7 +308,7 @@ export default function AdminLeadsPage() {
                     <th className="text-left px-4 py-4">수집 경로</th>
                     <th className="text-left px-4 py-4">상태</th>
                     <th className="text-left px-4 py-4">부스</th>
-                    <th className="text-left px-4 py-4">수집일</th>
+                    <th className="text-left px-4 py-4 whitespace-nowrap">수집일</th>
                     <th className="px-6 py-4" />
                   </tr>
                 </thead>
