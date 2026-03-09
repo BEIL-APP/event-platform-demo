@@ -11,9 +11,9 @@ import {
   X,
   Zap,
   ScanLine,
-  FileDown,
   ChevronRight,
   Star,
+  Mail
 } from 'lucide-react';
 import { useBooths } from '../hooks/useBooths';
 
@@ -109,7 +109,7 @@ const STEPS_OPERATOR = [
 const STEPS_VISITOR = [
   { num: '01', icon: ScanLine, title: 'QR 스캔', desc: '부스 앞에서 QR을 스캔하면 부스 정보를 바로 확인.' },
   { num: '02', icon: MessageSquare, title: '문의 & 저장', desc: '관심 있는 부스에 바로 문의하고 관심 목록에 저장.' },
-  { num: '03', icon: FileDown, title: '자료 받기', desc: '이메일로 카탈로그와 제품 자료를 편리하게 받아보세요.' },
+  { num: '03', icon: Mail, title: '프로모션 소식 받기', desc: '이메일로 프로모션 소식을 받아보세요.' },
 ];
 
 const STATS = [
