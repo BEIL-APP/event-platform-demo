@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
-  ArrowLeft, Download, Eye, Heart, MessageSquare, ExternalLink, FileDown,
+  ArrowLeft, Download, ExternalLink, FileDown,
   Upload, Trash2, Calendar, ToggleLeft, ToggleRight, Paperclip,
   ClipboardList, Link2, Plus, X, Instagram, ShoppingBag, Globe,
   Edit3, ImagePlus, HelpCircle, Settings2,
@@ -9,7 +9,6 @@ import {
 import { QRCodeCanvas } from 'qrcode.react';
 import { AdminLayout } from '../../components/AdminLayout';
 import { useBooth } from '../../hooks/useBooths';
-import { useBoothAnalytics } from '../../hooks/useAnalytics';
 import { useThreads } from '../../hooks/useThreads';
 import { useToast } from '../../contexts/ToastContext';
 import { exportBoothThreadsCSV, exportAnalyticsCSV } from '../../utils/csv';
@@ -27,7 +26,6 @@ import {
   saveEvent,
   saveParticipation,
   deleteParticipation,
-  getBoothAnalyticsByEvent,
   deleteBooth,
 } from '../../utils/localStorage';
 import type { BoothPolicy, Attachment, BoothEvent, BoothEventParticipation } from '../../types';
@@ -37,7 +35,6 @@ export default function AdminBoothDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { booth } = useBooth(boothId ?? '');
-  const { data: stats, refresh: refreshStats } = useBoothAnalytics(boothId ?? '');
   const { threads } = useThreads();
   const { showToast } = useToast();
   const qrRef = useRef<HTMLDivElement>(null);
@@ -112,8 +109,6 @@ export default function AdminBoothDetailPage() {
   });
   const [surveyFieldsSaved, setSurveyFieldsSaved] = useState(false);
 
-  // Event filter for analytics
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [boothParticipations, setBoothParticipations] = useState<BoothEventParticipation[]>([]);
   const [allEvents, setAllEvents] = useState<BoothEvent[]>([]);
 
@@ -236,10 +231,7 @@ export default function AdminBoothDetailPage() {
   };
 
   const handleExportCSV = () => {
-    const all = getAnalytics();
-    const filtered = selectedEventId
-      ? all.filter((a) => a.boothId === boothId && a.eventId === selectedEventId)
-      : all.filter((a) => a.boothId === boothId);
+    const filtered = getAnalytics().filter((a) => a.boothId === boothId && !a.eventId);
     exportAnalyticsCSV(filtered);
     showToast('CSV 파일이 다운로드됐어요!', 'success');
   };
@@ -307,31 +299,6 @@ export default function AdminBoothDetailPage() {
       </AdminLayout>
     );
   }
-
-  const displayStats = selectedEventId && boothId
-    ? getBoothAnalyticsByEvent(boothId, selectedEventId)
-    : stats;
-
-  const statCards = [
-    {
-      label: '총 스캔',
-      value: displayStats.scans,
-      icon: <Eye className="w-5 h-5" />,
-      desc: 'QR 스캔 횟수',
-    },
-    {
-      label: '관심 저장',
-      value: displayStats.favorites,
-      icon: <Heart className="w-5 h-5" />,
-      desc: '하트 누른 관람객',
-    },
-    {
-      label: '문의 건수',
-      value: displayStats.inquiries,
-      icon: <MessageSquare className="w-5 h-5" />,
-      desc: '접수된 문의',
-    },
-  ];
 
   const isPolicyExpired = new Date(policy.endAt) < new Date();
   const isPolicyActive = new Date(policy.startAt) <= new Date() && !isPolicyExpired;
@@ -408,22 +375,20 @@ export default function AdminBoothDetailPage() {
           })}
         </div>
 
-        {/* Two column: QR + Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-6">
-          {/* QR Code Card */}
-          <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold text-gray-900">QR 코드</h2>
-              <button
-                onClick={handleDownloadQR}
-                className="flex items-center gap-1.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 h-9 px-3 text-xs font-medium rounded-lg transition-all duration-150"
-              >
-                <Download className="w-3.5 h-3.5" />
-                PNG 다운로드
-              </button>
-            </div>
-
-            <div ref={qrRef} className="flex justify-center mb-4">
+        {/* QR Code Card */}
+        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-gray-900">QR 코드</h2>
+            <button
+              onClick={handleDownloadQR}
+              className="flex items-center gap-1.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 h-9 px-3 text-xs font-medium rounded-lg transition-all duration-150"
+            >
+              <Download className="w-3.5 h-3.5" />
+              PNG 다운로드
+            </button>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+            <div ref={qrRef} className="shrink-0">
               <div className="p-3 sm:p-4 bg-white border border-gray-200/60 rounded-xl inline-block">
                 <QRCodeCanvas
                   id="booth-qr-canvas"
@@ -434,65 +399,11 @@ export default function AdminBoothDetailPage() {
                 />
               </div>
             </div>
-
-            <div className="text-center">
-              <p className="text-xs text-gray-400 mb-1">스캔 URL</p>
+            <div className="flex-1 min-w-0 w-full">
+              <p className="text-xs text-gray-400 mb-1.5">스캔 URL</p>
               <p className="text-xs font-mono text-gray-600 bg-gray-50 rounded-lg px-3 py-2 break-all">
                 {boothUrl}
               </p>
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-gray-900">통계</h2>
-              <button
-                onClick={() => { refreshStats(); showToast('통계를 새로고침했어요', 'info'); }}
-                className="text-xs text-gray-500 hover:bg-gray-100 hover:text-gray-700 px-2 py-1 rounded-md transition-all duration-150"
-              >
-                새로고침
-              </button>
-            </div>
-            {boothParticipations.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-4 pb-3 border-b border-gray-100">
-                <button
-                  onClick={() => setSelectedEventId(null)}
-                  className={`text-xs px-3 h-9 rounded-full font-medium transition-all ${
-                    !selectedEventId ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  전체
-                </button>
-                {boothParticipations.map((p) => {
-                  const ev = allEvents.find((e) => e.id === p.eventId);
-                  return (
-                    <button
-                      key={p.id}
-                      onClick={() => setSelectedEventId(p.eventId)}
-                      className={`text-xs px-3 h-9 rounded-full font-medium transition-all truncate max-w-[180px] ${
-                        selectedEventId === p.eventId ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                      title={ev?.name}
-                    >
-                      {ev?.name ?? p.eventId}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-            <div className="divide-y divide-gray-100">
-              {statCards.map((s) => (
-                <div key={s.label} className="flex items-center gap-3 py-3.5 first:pt-0 last:pb-0">
-                  <div className="w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500">
-                    {s.icon}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-500 font-medium">{s.desc}</p>
-                    <p className="text-xl sm:text-2xl font-semibold text-gray-900">{s.value.toLocaleString()}</p>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </div>
