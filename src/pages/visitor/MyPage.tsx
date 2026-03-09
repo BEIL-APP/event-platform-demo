@@ -421,6 +421,7 @@ export default function MyPage() {
   const { visits } = useVisits();
   const { favorites } = useFavorites();
   const [activeTab, setActiveTab] = useState<'recent' | 'favorites' | 'collections'>('recent');
+  const resolvedTab = (!isLoggedIn && activeTab === 'collections') ? 'recent' : activeTab;
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const allBooths = getBooths();
@@ -507,17 +508,20 @@ export default function MyPage() {
 
         {/* Tabs */}
         <div className="flex bg-gray-200/50 p-1 rounded-xl mb-8 sm:max-w-md shadow-inner">
-          {(['recent', 'favorites', 'collections'] as const).map((tab) => {
-            const labels = { recent: '최근 본', favorites: '관심', collections: '컬렉션' };
-            const Icons = { recent: Clock, favorites: Heart, collections: Folder };
+          {(isLoggedIn
+            ? (['recent', 'favorites', 'collections'] as const)
+            : (['recent', 'favorites'] as const)
+          ).map((tab) => {
+            const labels: Record<string, string> = { recent: '최근 본', favorites: '관심', collections: '컬렉션' };
+            const Icons: Record<string, typeof Clock> = { recent: Clock, favorites: Heart, collections: Folder };
             const Icon = Icons[tab];
-            const isActive = activeTab === tab;
+            const isActive = resolvedTab === tab;
             const count = tab === 'recent' ? recentBooths.length : (tab === 'favorites' ? favoriteBooths.length : 0);
 
             return (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => setActiveTab(tab as 'recent' | 'favorites' | 'collections')}
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold transition-all duration-200 ${
                   isActive
                     ? 'bg-white shadow-md text-gray-900'
@@ -537,7 +541,7 @@ export default function MyPage() {
         </div>
 
         {/* ─── Recent Tab ──────────────────────────────────────────────────── */}
-        {activeTab === 'recent' && (
+        {resolvedTab === 'recent' && (
           <div>
             {/* AI Auto-Organize */}
             {recentBooths.length > 3 && (
@@ -584,7 +588,7 @@ export default function MyPage() {
         )}
 
         {/* ─── Favorites Tab ───────────────────────────────────────────────── */}
-        {activeTab === 'favorites' && (
+        {resolvedTab === 'favorites' && (
           <div>
             {favoriteBooths.length === 0 ? (
               <div className="text-center py-16">
@@ -599,10 +603,10 @@ export default function MyPage() {
                     key={booth.id}
                     booth={booth}
                     onShare={() => handleShare(booth)}
-                    onAddToCollection={() => {
+                    onAddToCollection={isLoggedIn ? () => {
                       setActiveTab('collections');
                       showToast('컬렉션 탭에서 추가할 수 있어요', 'info');
-                    }}
+                    } : undefined}
                   />
                 ))}
               </div>
@@ -611,7 +615,7 @@ export default function MyPage() {
         )}
 
         {/* ─── Collections Tab ─────────────────────────────────────────────── */}
-        {activeTab === 'collections' && (
+        {resolvedTab === 'collections' && (
           <CollectionsTab favoriteBooths={favoriteBooths} />
         )}
 

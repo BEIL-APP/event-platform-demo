@@ -365,12 +365,14 @@ export default function AdminDashboardPage() {
                   inquiry: 'bg-blue-50 text-blue-600',
                   email_info: 'bg-emerald-50 text-emerald-600',
                   survey: 'bg-amber-50 text-amber-600',
+                  manual: 'bg-purple-50 text-purple-600',
                 } as const;
                 const sourceLabels = {
                   bizcard: '명함',
                   inquiry: '문의',
                   email_info: '이메일',
                   survey: '설문',
+                  manual: '수동',
                 } as const;
                 return (
                   <div key={lead.id} className="flex items-center gap-4 py-3.5 first:pt-0 last:pb-0">
