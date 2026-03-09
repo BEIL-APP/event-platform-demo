@@ -11,15 +11,17 @@ export function VisitorHeader() {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
+    if (!isLoggedIn) { setUnreadCount(0); return; }
     const guestId = getGuestId();
     setUnreadCount(getUnreadNotificationCount(guestId));
-  }, [location.pathname]);
+  }, [location.pathname, isLoggedIn]);
 
   const navItems = [
-    { to: '/explore', icon: Compass, label: '탐색' },
-    { to: '/me', icon: Heart, label: '마이' },
-    { to: '/messages', icon: MessageSquare, label: '문의' },
-    { to: '/notifications', icon: Bell, label: '알림' },
+    { to: '/explore', icon: Compass, label: '탐색', authOnly: false },
+    { to: '/me', icon: Heart, label: '마이', authOnly: false },
+    { to: '/messages', icon: MessageSquare, label: '문의', authOnly: true },
+    { to: '/notifications', icon: Bell, label: '알림', authOnly: true },
+    { to: '/settings', icon: Settings, label: '설정', authOnly: true },
   ];
 
   return (
@@ -33,7 +35,7 @@ export function VisitorHeader() {
         </Link>
 
         <div className="flex items-center">
-          {navItems.map((item) => {
+          {navItems.filter((item) => !item.authOnly || isLoggedIn).map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.to;
             const isBell = item.to === '/notifications';
@@ -58,19 +60,7 @@ export function VisitorHeader() {
             );
           })}
 
-          <Link
-            to="/settings"
-            className={`relative flex items-center gap-1.5 h-9 px-2 md:px-3 rounded-lg transition-colors ${
-              location.pathname === '/settings'
-                ? 'text-brand-600 bg-brand-50'
-                : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            <Settings className="w-[18px] h-[18px]" />
-            <span className="hidden md:inline text-[13px] font-medium">설정</span>
-          </Link>
-
-          <div className="w-px h-5 bg-gray-200 mx-1.5 hidden md:block" />
+          {isLoggedIn && <div className="w-px h-5 bg-gray-200 mx-1.5 hidden md:block" />}
 
           <button
             onClick={() => isLoggedIn ? toggleLogin() : navigate('/auth')}
