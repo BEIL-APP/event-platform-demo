@@ -118,6 +118,13 @@ export default function AdminLeadsPage() {
     setShowLottery(true);
   };
 
+  const handleMemoChange = (id: string, memo: string) => {
+    const lead = leads.find((l) => l.id === id);
+    if (!lead) return;
+    saveLead({ ...lead, memo });
+    setLeads(getLeads());
+  };
+
   const countBySource = (src: Lead['source']) => leads.filter((l) => l.source === src).length;
 
   return (
@@ -309,6 +316,7 @@ export default function AdminLeadsPage() {
                     <th className="text-left px-4 py-4">상태</th>
                     <th className="text-left px-4 py-4">부스</th>
                     <th className="text-left px-4 py-4 whitespace-nowrap">수집일</th>
+                    <th className="text-left px-4 py-4">메모</th>
                     <th className="px-6 py-4" />
                   </tr>
                 </thead>
@@ -351,6 +359,15 @@ export default function AdminLeadsPage() {
                         <p className="text-[11px] font-bold text-gray-400 uppercase">
                           {new Date(lead.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </p>
+                      </td>
+                      <td className="px-4 py-4 min-w-[180px]">
+                        <input
+                          type="text"
+                          defaultValue={lead.memo}
+                          onBlur={(e) => handleMemoChange(lead.id, e.target.value)}
+                          placeholder="메모 입력..."
+                          className="w-full h-8 text-xs text-gray-600 bg-transparent border-b border-transparent hover:border-gray-200 focus:border-brand-400 outline-none transition-all placeholder:text-gray-300 px-1"
+                        />
                       </td>
                       <td className="px-6 py-4 text-right">
                         <button

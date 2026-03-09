@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import {
   Search, ChevronDown, Send, ArrowLeft,
   Clock, CheckCircle, PauseCircle, X, MessageSquare, ShieldOff, Shield,
-  Settings, Plus, Pencil, Trash2, UserPlus, LayoutGrid,
+  Settings, Plus, Pencil, Trash2, LayoutGrid,
 } from 'lucide-react';
 import { AdminLayout } from '../../components/AdminLayout';
 import { useThreads } from '../../hooks/useThreads';
@@ -10,7 +10,6 @@ import { useToast } from '../../contexts/ToastContext';
 import {
   getBooths, blockThread, saveNotification,
   getReplyTemplates, saveReplyTemplate, deleteReplyTemplate,
-  saveLead,
 } from '../../utils/localStorage';
 import type { Thread, ReplyTemplate } from '../../types';
 
@@ -478,27 +477,6 @@ export default function AdminInboxPage() {
 
               {/* Status actions */}
               <div className="flex items-center gap-2 shrink-0">
-                <button
-                  onClick={() => {
-                    if (!selectedThread) return;
-                    saveLead({
-                      id: `lead-inbox-${Date.now()}`,
-                      boothId: selectedThread.boothId,
-                      source: 'inquiry',
-                      name: selectedThread.visitorName,
-                      email: selectedThread.visitorEmail,
-                      memo: selectedThread.messages[0]?.text.slice(0, 100) ?? '',
-                      consent: selectedThread.consentGiven ?? false,
-                      status: 'NEW',
-                      createdAt: new Date().toISOString(),
-                    });
-                    showToast('리드로 전환했어요! 리드 목록에서 확인하세요.', 'success');
-                  }}
-                  title="리드로 전환"
-                  className="w-10 h-10 rounded-xl text-gray-400 hover:bg-emerald-50 hover:text-emerald-600 border border-transparent hover:border-emerald-100 transition-all duration-200 flex items-center justify-center"
-                >
-                  <UserPlus className="w-5 h-5" />
-                </button>
                 <button
                   onClick={handleToggleBlock}
                   title={selectedThread.blocked ? '차단 해제' : '스팸 차단'}

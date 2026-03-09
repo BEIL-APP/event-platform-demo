@@ -44,6 +44,7 @@ import {
   getGuestId,
   checkRateLimit,
   incrementRateLimit,
+  getUserEmail,
 } from '../../utils/localStorage';
 import type { BoothPolicy, Attachment, SurveyResponse } from '../../types';
 
@@ -174,7 +175,7 @@ export default function BoothPage() {
       return;
     }
     createInquiry(boothId, inquiryText.trim(), isLoggedIn, {
-      email: isLoggedIn ? undefined : inquiryEmail,
+      email: isLoggedIn ? (getUserEmail() || undefined) : inquiryEmail,
       consent: inquiryConsent,
       consentMarketing: inquiryConsentMarketing,
     });
@@ -281,7 +282,7 @@ export default function BoothPage() {
   };
 
   const inquiryFormValid = isLoggedIn
-    ? inquiryText.trim().length > 0
+    ? inquiryText.trim().length > 0 && inquiryConsent
     : inquiryText.trim().length > 0 && inquiryEmail.includes('@') && inquiryAbuseCheck && inquiryConsent;
 
   const mockAiSummary = booth ? {
@@ -865,32 +866,34 @@ export default function BoothPage() {
                 <p className="text-xs text-red-700">하루 3건까지 문의할 수 있어요.</p>
               </div>
             )}
-            {!isLoggedIn && (
-              <div className="space-y-3 mb-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5">이메일 주소</label>
-                  <input type="email" value={inquiryEmail} onChange={(e) => setInquiryEmail(e.target.value)}
-                    placeholder="답변을 받을 이메일"
-                    className="w-full h-10 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400" />
-                </div>
-                <label className="flex items-start gap-2 cursor-pointer">
-                  <input type="checkbox" checked={inquiryAbuseCheck} onChange={(e) => setInquiryAbuseCheck(e.target.checked)} className="mt-0.5 w-4 h-4 rounded accent-brand-600" />
-                  <span className="text-xs text-gray-500">(필수) 부적절한 문의(스팸, 광고 등)는 이용이 제한될 수 있음을 확인했습니다</span>
-                </label>
-                <label className="flex items-start gap-2 cursor-pointer">
-                  <input type="checkbox" checked={inquiryConsent} onChange={(e) => setInquiryConsent(e.target.checked)} className="mt-0.5 w-4 h-4 rounded accent-brand-600" />
-                  <span className="text-xs text-gray-500">(필수) 운영자에게 이메일 제공에 동의합니다<span className="text-gray-400 block">동의 시 운영자가 리드로 저장합니다</span></span>
-                </label>
-                <label className="flex items-start gap-2 cursor-pointer">
-                  <input type="checkbox" checked={ipTrackingConsent} onChange={(e) => setIpTrackingConsent(e.target.checked)} className="mt-0.5 w-4 h-4 rounded accent-brand-600" />
-                  <span className="text-xs text-gray-500">(선택) 비로그인 상태에서 방문 추적에 동의합니다<span className="text-gray-400 block">동의 시 재방문 시 이전 문의를 이어볼 수 있어요</span></span>
-                </label>
-                <label className="flex items-start gap-2 cursor-pointer">
-                  <input type="checkbox" checked={inquiryConsentMarketing} onChange={(e) => setInquiryConsentMarketing(e.target.checked)} className="mt-0.5 w-4 h-4 rounded accent-brand-600" />
-                  <span className="text-xs text-gray-500">(선택) 마케팅 정보 수신에 동의합니다<span className="text-gray-400 block">언제든 철회할 수 있어요</span></span>
-                </label>
-              </div>
-            )}
+            <div className="space-y-3 mb-3">
+              {!isLoggedIn && (
+                <>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1.5">이메일 주소</label>
+                    <input type="email" value={inquiryEmail} onChange={(e) => setInquiryEmail(e.target.value)}
+                      placeholder="답변을 받을 이메일"
+                      className="w-full h-10 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400" />
+                  </div>
+                  <label className="flex items-start gap-2 cursor-pointer">
+                    <input type="checkbox" checked={inquiryAbuseCheck} onChange={(e) => setInquiryAbuseCheck(e.target.checked)} className="mt-0.5 w-4 h-4 rounded accent-brand-600" />
+                    <span className="text-xs text-gray-500">(필수) 부적절한 문의(스팸, 광고 등)는 이용이 제한될 수 있음을 확인했습니다</span>
+                  </label>
+                  <label className="flex items-start gap-2 cursor-pointer">
+                    <input type="checkbox" checked={ipTrackingConsent} onChange={(e) => setIpTrackingConsent(e.target.checked)} className="mt-0.5 w-4 h-4 rounded accent-brand-600" />
+                    <span className="text-xs text-gray-500">(선택) 비로그인 상태에서 방문 추적에 동의합니다<span className="text-gray-400 block">동의 시 재방문 시 이전 문의를 이어볼 수 있어요</span></span>
+                  </label>
+                </>
+              )}
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input type="checkbox" checked={inquiryConsent} onChange={(e) => setInquiryConsent(e.target.checked)} className="mt-0.5 w-4 h-4 rounded accent-brand-600" />
+                <span className="text-xs text-gray-500">(필수) 운영자에게 {isLoggedIn ? '정보 제공' : '이메일 제공'}에 동의합니다<span className="text-gray-400 block">동의 시 운영자가 리드로 저장합니다</span></span>
+              </label>
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input type="checkbox" checked={inquiryConsentMarketing} onChange={(e) => setInquiryConsentMarketing(e.target.checked)} className="mt-0.5 w-4 h-4 rounded accent-brand-600" />
+                <span className="text-xs text-gray-500">(선택) 마케팅 정보 수신에 동의합니다<span className="text-gray-400 block">언제든 철회할 수 있어요</span></span>
+              </label>
+            </div>
             <button onClick={handleSendInquiry} disabled={!inquiryFormValid}
               className="w-full bg-brand-600 text-white text-sm font-medium rounded-lg h-10 hover:bg-brand-500 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
               문의 보내기
