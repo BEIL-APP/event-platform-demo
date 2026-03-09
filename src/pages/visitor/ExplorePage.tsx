@@ -1,10 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Search,
   SlidersHorizontal,
   Heart,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   MapPin,
   X,
@@ -44,6 +46,12 @@ export default function ExplorePage() {
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [onlyActive, setOnlyActive] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<string>('all');
+  const categoryScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollCategories = (dir: 'left' | 'right') => {
+    if (!categoryScrollRef.current) return;
+    categoryScrollRef.current.scrollBy({ left: dir === 'left' ? -200 : 200, behavior: 'smooth' });
+  };
 
   const MOCK_EVENTS = [
     { id: 'all', name: '전체 행사' },
@@ -176,9 +184,15 @@ export default function ExplorePage() {
 
       {/* Filters */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-5 pb-2">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          {/* Category chips */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+        {/* Category chips — full-width scrollable row */}
+        <div className="relative flex items-center">
+          <button
+            onClick={() => scrollCategories('left')}
+            className="flex shrink-0 w-8 h-8 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all mr-1"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <div ref={categoryScrollRef} className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-hide w-full">
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -193,9 +207,16 @@ export default function ExplorePage() {
               </button>
             ))}
           </div>
+          <button
+            onClick={() => scrollCategories('right')}
+            className="flex shrink-0 w-8 h-8 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all ml-1"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
 
-          {/* Sort + filter toggles */}
-          <div className="flex items-center gap-2 shrink-0">
+        {/* Sort + filter toggles */}
+        <div className="flex items-center gap-2 mt-3 ml-auto w-fit">
             <button
               onClick={() => setOnlyActive(!onlyActive)}
               className={`text-[13px] font-medium px-3 h-9 rounded-lg border transition-all duration-150 flex items-center gap-1.5 ${
@@ -236,7 +257,6 @@ export default function ExplorePage() {
                 </>
               )}
             </div>
-          </div>
         </div>
 
         {/* Result count */}
