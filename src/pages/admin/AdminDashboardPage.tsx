@@ -48,10 +48,11 @@ function getPeriodRange(period: Period, customFrom: string, customTo: string): {
   return { from: null, to: null };
 }
 
-function inRange(dateStr: string, from: Date | null, to: Date | null): boolean {
-  if (!from || !to) return true;
+function inRange(dateStr: string, from: Date | null, to: Date | null, days: number[]): boolean {
   const d = new Date(dateStr);
-  return d >= from && d <= to;
+  if (from && to && (d < from || d > to)) return false;
+  if (days.length > 0 && !days.includes(d.getDay())) return false;
+  return true;
 }
 
 export default function AdminDashboardPage() {
@@ -64,8 +65,15 @@ export default function AdminDashboardPage() {
   const [customFrom, setCustomFrom] = useState('');
   const [customTo, setCustomTo] = useState('');
   const [showCustom, setShowCustom] = useState(false);
+  const [selectedDays, setSelectedDays] = useState<number[]>([]);
 
   const { from, to } = getPeriodRange(period, customFrom, customTo);
+
+  const toggleDay = (day: number) => {
+    setSelectedDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+    );
+  };
 
   // All raw data (unfiltered) — for KPI cards
   const allVisitsRaw = getVisits();
@@ -79,14 +87,14 @@ export default function AdminDashboardPage() {
   const totalFavorites = allFavoritesRaw.length;
   const totalInquiries = threads.length;
 
-  // Period-filtered data — for charts / tables below the filter
-  const filteredVisits = allVisitsRaw.filter((v) => inRange(v.visitedAt, from, to));
-  const filteredFavorites = allFavoritesRaw.filter((f) => inRange(f.createdAt, from, to));
-  const filteredLeads = allLeadsRaw.filter((l) => inRange(l.createdAt, from, to));
-  const filteredSurveys = allSurveysRaw.filter((s) => inRange(s.createdAt, from, to));
+  // Period + day-of-week filtered data — for charts / tables below the filter
+  const filteredVisits = allVisitsRaw.filter((v) => inRange(v.visitedAt, from, to, selectedDays));
+  const filteredFavorites = allFavoritesRaw.filter((f) => inRange(f.createdAt, from, to, selectedDays));
+  const filteredLeads = allLeadsRaw.filter((l) => inRange(l.createdAt, from, to, selectedDays));
+  const filteredSurveys = allSurveysRaw.filter((s) => inRange(s.createdAt, from, to, selectedDays));
   const filteredThreads = threads.filter((t) => {
     const firstMsgAt = t.messages[0]?.at;
-    return firstMsgAt ? inRange(firstMsgAt, from, to) : inRange(t.lastUpdated, from, to);
+    return firstMsgAt ? inRange(firstMsgAt, from, to, selectedDays) : inRange(t.lastUpdated, from, to, selectedDays);
   });
 
   // 이벤트별 항목 제외 — 총계만
@@ -262,6 +270,40 @@ export default function AdminDashboardPage() {
               )}
             </div>
           )}
+
+          {/* Day-of-week filter */}
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="text-[12px] font-medium text-gray-400 shrink-0">요일</span>
+            {[['일', 0], ['월', 1], ['화', 2], ['수', 3], ['목', 4], ['금', 5], ['토', 6]].map(([label, day]) => {
+              const isSelected = selectedDays.includes(day as number);
+              const isWeekend = day === 0 || day === 6;
+              return (
+                <button
+                  key={day}
+                  onClick={() => toggleDay(day as number)}
+                  className={`w-8 h-8 rounded-lg text-[13px] font-bold transition-all duration-150 ${
+                    isSelected
+                      ? isWeekend
+                        ? 'bg-red-500 text-white shadow-sm'
+                        : 'bg-brand-600 text-white shadow-sm'
+                      : isWeekend
+                        ? 'bg-white border border-gray-200 text-red-400 hover:border-red-200 hover:bg-red-50'
+                        : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+            {selectedDays.length > 0 && (
+              <button
+                onClick={() => setSelectedDays([])}
+                className="text-[12px] font-medium text-gray-400 hover:text-gray-600 transition-colors ml-1"
+              >
+                초기화
+              </button>
+            )}
+          </div>
         </div>
 
         {/* KPI Cards */}
