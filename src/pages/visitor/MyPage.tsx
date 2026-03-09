@@ -463,9 +463,9 @@ export default function MyPage() {
 
   const handleDeleteMyData = () => {
     deleteMyData();
-    showToast('내 데이터가 삭제됐어요. 새 세션으로 시작할게요.', 'success');
+    showToast('데이터가 초기화됐어요.', 'success');
     setShowDeleteConfirm(false);
-    navigate('/scan/booth-001');
+    if (isLoggedIn) navigate('/scan/booth-001');
   };
 
   const formatDate = (iso: string) => {
@@ -628,14 +628,16 @@ export default function MyPage() {
               className="flex items-center gap-2 text-sm font-bold text-red-500 hover:text-red-600 transition-all duration-150 group"
             >
               <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
-              내 데이터 삭제 요청
+              {isLoggedIn ? '내 데이터 삭제 요청' : '이 기기의 데이터 초기화'}
             </button>
           ) : (
             <div className="bg-red-50 border border-red-100 rounded-xl p-5 shadow-sm animate-scale-in">
               <div className="flex items-start gap-3 mb-4">
                 <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
                 <p className="text-sm text-red-700 font-bold leading-relaxed">
-                  방문 기록, 관심 부스, 문의 내역, 알림 등 이 기기에 저장된 모든 데이터가 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없어요.
+                  {isLoggedIn
+                    ? '방문 기록, 관심 부스, 문의 내역, 알림 등 이 기기에 저장된 모든 데이터가 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없어요.'
+                    : '이 기기에 저장된 방문 기록, 관심 부스, 문의 내역 등이 모두 초기화됩니다. 이 작업은 되돌릴 수 없어요.'}
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-2">
@@ -643,7 +645,7 @@ export default function MyPage() {
                   onClick={handleDeleteMyData}
                   className="flex-1 text-sm font-bold text-white bg-red-500 rounded-xl h-11 hover:bg-red-600 transition-all duration-150 shadow-md shadow-red-100"
                 >
-                  데이터 전체 삭제
+                  {isLoggedIn ? '데이터 전체 삭제' : '기기 데이터 초기화'}
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
