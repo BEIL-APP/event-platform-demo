@@ -870,18 +870,18 @@ export default function AdminBoothDetailPage() {
           </p>
         </div>
 
-        {/* ─── 부스 정보 편집 (B-2) ─── */}
+        {/* ─── 기본 정보 (B-2) ─── */}
         <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6">
           <div className="flex items-center gap-2 mb-4">
             <Edit3 className="w-4 h-4 text-gray-500" />
-            <h2 className="text-sm font-semibold text-gray-900">부스 정보 편집</h2>
+            <h2 className="text-sm font-semibold text-gray-900">기본 정보</h2>
           </div>
 
           {/* Basic info */}
           <div className="space-y-4 mb-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1.5">부스명</label>
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">부스 이름</label>
                 <input
                   type="text"
                   value={editName}
@@ -900,7 +900,7 @@ export default function AdminBoothDetailPage() {
               </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1.5">태그라인</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1.5">한 줄 소개</label>
               <input
                 type="text"
                 value={editTagline}
@@ -910,12 +910,12 @@ export default function AdminBoothDetailPage() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1.5">소개 문구</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1.5">상세 소개</label>
               <textarea
                 value={editDescription}
                 onChange={(e) => setEditDescription(e.target.value)}
                 rows={3}
-                placeholder="부스 상세 설명"
+                placeholder="부스를 찾아온 관람객에게 소개할 내용을 작성해주세요."
                 className="w-full text-sm bg-white border border-gray-200 rounded-lg px-3 py-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all resize-none placeholder:text-gray-400"
               />
             </div>
@@ -925,7 +925,8 @@ export default function AdminBoothDetailPage() {
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-2">
               <ImagePlus className="w-3.5 h-3.5 text-gray-500" />
-              <p className="text-xs font-medium text-gray-600">이미지 URL</p>
+              <p className="text-xs font-medium text-gray-600">대표 이미지 URL</p>
+              <span className="text-xs text-gray-400">· 목록 카드 및 상단 슬라이드에 표시됩니다</span>
             </div>
             <div className="space-y-2 mb-2">
               {editImages.map((img, i) => (
@@ -1051,16 +1052,19 @@ export default function AdminBoothDetailPage() {
                 : 'bg-brand-600 text-white hover:bg-brand-500'
             }`}
           >
-            {contentSaved ? '저장됐어요 ✓' : '부스 정보 저장'}
+            {contentSaved ? '저장됐어요 ✓' : '기본 정보 저장'}
           </button>
         </div>
 
-        {/* ─── 행사 참여 관리 ─── */}
+        {/* ─── 행사 참여 ─── */}
         <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-gray-500" />
-              <h2 className="text-sm font-semibold text-gray-900">행사 참여 관리</h2>
+              <div>
+                <h2 className="text-sm font-semibold text-gray-900">행사 참여</h2>
+                <p className="text-xs text-gray-400 mt-0.5">참여할 행사를 선택하거나 새로 등록하세요</p>
+              </div>
             </div>
             {editParticipations.length < 5 && (
               <button
@@ -1102,38 +1106,41 @@ export default function AdminBoothDetailPage() {
                         onClick={() => { const next = [...editParticipations]; next[idx] = { ...next[idx], mode: 'existing' }; setEditParticipations(next); }}
                         className={`text-xs px-3 h-9 rounded-md font-medium transition-all ${p.mode === 'existing' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                       >
-                        기존 행사
+                        기존 행사 선택
                       </button>
                       <button
                         onClick={() => { const next = [...editParticipations]; next[idx] = { ...next[idx], mode: 'new', eventId: '' }; setEditParticipations(next); }}
                         className={`text-xs px-3 h-9 rounded-md font-medium transition-all ${p.mode === 'new' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                       >
-                        새 행사
+                        새 행사 등록
                       </button>
                     </div>
                     {p.mode === 'existing' ? (
-                      <select
-                        value={p.eventId}
-                        onChange={(e) => {
-                          const next = [...editParticipations];
-                          const selEv = allEvents.find((ev) => ev.id === e.target.value);
-                          next[idx] = {
-                            ...next[idx],
-                            eventId: e.target.value,
-                            startAt: next[idx].startAt || selEv?.startDate || '',
-                            endAt: next[idx].endAt || selEv?.endDate || '',
-                          };
-                          setEditParticipations(next);
-                        }}
-                        className="w-full h-9 text-xs bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all"
-                      >
-                        <option value="">행사 선택</option>
-                        {allEvents.map((ev) => (
-                          <option key={ev.id} value={ev.id}>
-                            {ev.name} ({ev.startDate} ~ {ev.endDate})
-                          </option>
-                        ))}
-                      </select>
+                      <div>
+                        <label className="block text-[11px] font-medium text-gray-500 mb-1">행사 선택</label>
+                        <select
+                          value={p.eventId}
+                          onChange={(e) => {
+                            const next = [...editParticipations];
+                            const selEv = allEvents.find((ev) => ev.id === e.target.value);
+                            next[idx] = {
+                              ...next[idx],
+                              eventId: e.target.value,
+                              startAt: next[idx].startAt || selEv?.startDate || '',
+                              endAt: next[idx].endAt || selEv?.endDate || '',
+                            };
+                            setEditParticipations(next);
+                          }}
+                          className="w-full h-9 text-xs bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all"
+                        >
+                          <option value="">행사를 선택하세요</option>
+                          {allEvents.map((ev) => (
+                            <option key={ev.id} value={ev.id}>
+                              {ev.name} ({ev.startDate} ~ {ev.endDate}, {ev.location})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     ) : (
                       <div className="space-y-2">
                         <input
