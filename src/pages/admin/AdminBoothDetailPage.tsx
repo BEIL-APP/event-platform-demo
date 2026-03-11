@@ -439,8 +439,9 @@ export default function AdminBoothDetailPage() {
 
         {activeTab === 'setting' && (
           <>
+        <div className="flex flex-col">
         {/* ─── 행사 종료 후 정책 ─── */}
-        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
+        <div className="order-3 bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <Settings2 className="w-4 h-4 text-gray-500" />
             <div>
@@ -494,7 +495,7 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* ─── 링크 관리 (A-5) ─── */}
-        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
+        <div className="order-4 bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <Link2 className="w-4 h-4 text-gray-500" />
             <h2 className="text-sm font-semibold text-gray-900">외부 링크 관리</h2>
@@ -595,7 +596,7 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* ─── 파일 첨부 (브로셔) ─── */}
-        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
+        <div className="order-5 bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Paperclip className="w-4 h-4 text-gray-500" />
@@ -666,7 +667,7 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* ─── 정보 수집 폼 관리 (B-12) ─── */}
-        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
+        <div className="order-6 bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Settings2 className="w-4 h-4 text-gray-500" />
@@ -771,7 +772,7 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* Export */}
-        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
+        <div className="order-7 bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <h2 className="text-sm font-semibold text-gray-900 mb-4">데이터 내보내기</h2>
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-3">
             <button
@@ -795,7 +796,7 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* ─── 기본 정보 (B-2) ─── */}
-        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6">
+        <div className="order-1 bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <Edit3 className="w-4 h-4 text-gray-500" />
             <h2 className="text-sm font-semibold text-gray-900">기본 정보</h2>
@@ -981,7 +982,7 @@ export default function AdminBoothDetailPage() {
         </div>
 
         {/* ─── 행사 참여 ─── */}
-        <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
+        <div className="order-2 bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-gray-500" />
@@ -1188,6 +1189,7 @@ export default function AdminBoothDetailPage() {
           >
             {participationsSaved ? '저장됐어요 ✓' : '행사 참여 저장'}
           </button>
+        </div>
         </div>
           </>
         )}
