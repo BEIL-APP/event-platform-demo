@@ -110,7 +110,7 @@ export interface SurveyResponse {
     interests?: string[];
     purpose?: string;
     wantsContact?: boolean;
-  };
+  } & Record<string, string | string[] | boolean | undefined>;
   createdAt: string;
 }
 

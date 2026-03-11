@@ -670,7 +670,12 @@ export default function AdminBoothNewPage() {
                       value={field.type}
                       onChange={(e) => {
                         const next = [...surveyFields];
-                        next[i] = { ...next[i], type: e.target.value as 'text' | 'select' | 'checkbox' };
+                        const nextType = e.target.value as 'text' | 'select' | 'checkbox';
+                        next[i] = {
+                          ...next[i],
+                          type: nextType,
+                          options: nextType === 'text' ? undefined : next[i].options?.length ? next[i].options : [''],
+                        };
                         setSurveyFields(next);
                       }}
                       className="h-9 text-xs bg-white border border-gray-200 rounded-lg px-2 outline-none focus:ring-2 focus:ring-brand-200 text-gray-600"
@@ -699,20 +704,50 @@ export default function AdminBoothNewPage() {
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
-                  {(field.type === 'select' || field.type === 'checkbox') && field.options && (
+                  {(field.type === 'select' || field.type === 'checkbox') && (
                     <div className="mt-2">
-                      <p className="text-xs text-gray-500 mb-1.5">옵션 (쉼표로 구분)</p>
-                      <input
-                        type="text"
-                        value={field.options.join(', ')}
-                        onChange={(e) => {
-                          const next = [...surveyFields];
-                          next[i] = { ...next[i], options: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) };
-                          setSurveyFields(next);
-                        }}
-                        className="w-full text-xs bg-white border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400"
-                        placeholder="옵션1, 옵션2, 옵션3"
-                      />
+                      <p className="text-xs text-gray-500 mb-2">선택 옵션</p>
+                      <div className="space-y-2">
+                        {(field.options ?? []).map((option, optionIndex) => (
+                          <div key={`${field.id}-option-${optionIndex}`} className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={option}
+                              onChange={(e) => {
+                                const next = [...surveyFields];
+                                const nextOptions = [...(next[i].options ?? [])];
+                                nextOptions[optionIndex] = e.target.value;
+                                next[i] = { ...next[i], options: nextOptions };
+                                setSurveyFields(next);
+                              }}
+                              className="flex-1 text-xs bg-white border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400"
+                              placeholder={`옵션 ${optionIndex + 1}`}
+                            />
+                            <button
+                              onClick={() => {
+                                const next = [...surveyFields];
+                                const nextOptions = (next[i].options ?? []).filter((_, idx) => idx !== optionIndex);
+                                next[i] = { ...next[i], options: nextOptions.length ? nextOptions : [''] };
+                                setSurveyFields(next);
+                              }}
+                              className="p-1.5 text-gray-300 hover:text-red-400 rounded-md hover:bg-red-50 transition-all duration-150"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                        <button
+                          onClick={() => {
+                            const next = [...surveyFields];
+                            next[i] = { ...next[i], options: [...(next[i].options ?? []), ''] };
+                            setSurveyFields(next);
+                          }}
+                          className="flex items-center gap-1.5 text-xs text-brand-600 hover:text-brand-700 font-medium transition-all duration-150"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          옵션 추가
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>

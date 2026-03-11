@@ -48,12 +48,17 @@ import {
 } from '../../utils/localStorage';
 import type { BoothPolicy, Attachment, SurveyResponse } from '../../types';
 
-const INTEREST_CHIPS = ['구매검토', '파트너십', 'B2B 납품', '정보수집', '기업복지', 'ESG', '스타트업', '대기업'];
-const PURPOSE_OPTIONS = [
-  { value: '구매검토', label: '구매 / 계약 검토' },
-  { value: '정보수집', label: '제품 정보 수집' },
-  { value: '파트너십', label: '파트너십 / 협력' },
-  { value: '견적', label: '견적 요청' },
+type SurveyField = {
+  id: string;
+  label: string;
+  type: 'text' | 'select' | 'checkbox';
+  options?: string[];
+  required: boolean;
+};
+
+const DEFAULT_SURVEY_FIELDS: SurveyField[] = [
+  { id: 'interests', label: '관심 분야', type: 'checkbox', options: ['구매검토', '파트너십', 'B2B 납품', '정보수집'], required: false },
+  { id: 'purpose', label: '방문 목적', type: 'select', options: ['구매/계약 검토', '제품 정보 수집', '파트너십/협력', '견적 요청'], required: false },
 ];
 
 function isPolicyActive(policy: BoothPolicy): boolean {
@@ -106,8 +111,8 @@ export default function BoothPage() {
   const [emailInfoSent, setEmailInfoSent] = useState(false);
 
   const [showSurvey, setShowSurvey] = useState(false);
-  const [surveyInterests, setSurveyInterests] = useState<string[]>([]);
-  const [surveyPurpose, setSurveyPurpose] = useState('');
+  const [surveyFields, setSurveyFields] = useState<SurveyField[]>(DEFAULT_SURVEY_FIELDS);
+  const [surveyAnswers, setSurveyAnswers] = useState<Record<string, string | string[]>>({});
   const [surveyWantsContact, setSurveyWantsContact] = useState(false);
   const [surveySent, setSurveySent] = useState(false);
 
@@ -131,6 +136,13 @@ export default function BoothPage() {
       setFav(checkFav(boothId));
       setPolicy(getBoothPolicy(boothId));
       setAttachments(getBoothAttachments(boothId));
+      try {
+        const raw = localStorage.getItem(`bep_survey_fields_${boothId}`);
+        const nextFields = raw ? JSON.parse(raw) as SurveyField[] : DEFAULT_SURVEY_FIELDS;
+        setSurveyFields(nextFields.length > 0 ? nextFields : DEFAULT_SURVEY_FIELDS);
+      } catch {
+        setSurveyFields(DEFAULT_SURVEY_FIELDS);
+      }
       const surveys = getBoothSurveys(boothId);
       const guestId = getGuestId();
       setSurveyDone(surveys.some((s) => s.visitorId === guestId));
@@ -250,25 +262,38 @@ export default function BoothPage() {
 
   const handleSendSurvey = () => {
     if (!boothId) return;
+    const missingRequired = surveyFields.some((field) => {
+      if (!field.required) return false;
+      const value = surveyAnswers[field.id];
+      if (field.type === 'checkbox') return !Array.isArray(value) || value.length === 0;
+      return typeof value !== 'string' || !value.trim();
+    });
+    if (missingRequired) {
+      showToast('필수 설문 항목을 입력해주세요.', 'error');
+      return;
+    }
     const guestId = getGuestId();
     const response: SurveyResponse = {
       id: `survey-${Date.now()}`,
       boothId,
       visitorId: guestId,
       answers: {
-        interests: surveyInterests,
-        purpose: surveyPurpose || undefined,
+        ...surveyAnswers,
+        interests: Array.isArray(surveyAnswers.interests) ? surveyAnswers.interests : undefined,
+        purpose: typeof surveyAnswers.purpose === 'string' ? surveyAnswers.purpose || undefined : undefined,
         wantsContact: surveyWantsContact,
       },
       createdAt: new Date().toISOString(),
     };
     saveSurvey(response);
+    const leadInterests = Array.isArray(surveyAnswers.interests) ? surveyAnswers.interests : [];
+    const leadPurpose = typeof surveyAnswers.purpose === 'string' ? surveyAnswers.purpose : '';
     if (surveyWantsContact) {
       saveLead({
         id: `lead-survey-${Date.now()}`,
         boothId,
         source: 'survey',
-        memo: `관심분야: ${surveyInterests.join(', ')} | 목적: ${surveyPurpose}`,
+        memo: `관심분야: ${leadInterests.join(', ')} | 목적: ${leadPurpose}`,
         consent: surveyWantsContact,
         createdAt: new Date().toISOString(),
       });
@@ -281,6 +306,22 @@ export default function BoothPage() {
   const handleCloseSurvey = () => {
     setShowSurvey(false);
     setSurveySent(false);
+  };
+
+  const getSurveyAnswer = (fieldId: string) => surveyAnswers[fieldId];
+
+  const setSurveyTextAnswer = (fieldId: string, value: string) => {
+    setSurveyAnswers((prev) => ({ ...prev, [fieldId]: value }));
+  };
+
+  const toggleSurveyCheckboxAnswer = (fieldId: string, value: string) => {
+    setSurveyAnswers((prev) => {
+      const current = Array.isArray(prev[fieldId]) ? prev[fieldId] : [];
+      const next = current.includes(value)
+        ? current.filter((item) => item !== value)
+        : [...current, value];
+      return { ...prev, [fieldId]: next };
+    });
   };
 
   const inquiryFormValid = isLoggedIn
@@ -950,29 +991,62 @@ export default function BoothPage() {
         ) : (
           <div className="space-y-5">
             <div>
-              <p className="text-[13px] font-semibold text-gray-900 mb-2.5">관심 분야를 선택해주세요</p>
-              <div className="flex flex-wrap gap-2">
-                {INTEREST_CHIPS.map((chip) => (
-                  <button key={chip}
-                    onClick={() => setSurveyInterests((prev) => prev.includes(chip) ? prev.filter((c) => c !== chip) : [...prev, chip])}
-                    className={`text-xs font-medium rounded-lg px-3 py-1.5 border transition-all duration-150 ${
-                      surveyInterests.includes(chip) ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
-                    }`}>
-                    {chip}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="text-[13px] font-semibold text-gray-900 mb-2.5">방문 목적</p>
-              <div className="space-y-2">
-                {PURPOSE_OPTIONS.map((opt) => (
-                  <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer">
-                    <input type="radio" name="purpose" value={opt.value} checked={surveyPurpose === opt.value}
-                      onChange={() => setSurveyPurpose(opt.value)} className="w-4 h-4 accent-brand-600" />
-                    <span className="text-sm text-gray-700">{opt.label}</span>
-                  </label>
-                ))}
+              <div className="space-y-5">
+                {surveyFields.map((field) => {
+                  const answer = getSurveyAnswer(field.id);
+                  return (
+                    <div key={field.id}>
+                      <p className="text-[13px] font-semibold text-gray-900 mb-2.5">
+                        {field.label}
+                        {field.required && <span className="text-red-400 ml-1">*</span>}
+                      </p>
+                      {field.type === 'text' && (
+                        <input
+                          type="text"
+                          value={typeof answer === 'string' ? answer : ''}
+                          onChange={(e) => setSurveyTextAnswer(field.id, e.target.value)}
+                          placeholder={`${field.label}을 입력해주세요`}
+                          className="w-full h-10 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400"
+                        />
+                      )}
+                      {field.type === 'select' && (
+                        <div className="space-y-2">
+                          {(field.options ?? []).filter(Boolean).map((option) => (
+                            <label key={option} className="flex items-center gap-2.5 cursor-pointer">
+                              <input
+                                type="radio"
+                                name={field.id}
+                                value={option}
+                                checked={answer === option}
+                                onChange={() => setSurveyTextAnswer(field.id, option)}
+                                className="w-4 h-4 accent-brand-600"
+                              />
+                              <span className="text-sm text-gray-700">{option}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                      {field.type === 'checkbox' && (
+                        <div className="flex flex-wrap gap-2">
+                          {(field.options ?? []).filter(Boolean).map((option) => {
+                            const checked = Array.isArray(answer) && answer.includes(option);
+                            return (
+                              <button
+                                key={option}
+                                onClick={() => toggleSurveyCheckboxAnswer(field.id, option)}
+                                className={`text-xs font-medium rounded-lg px-3 py-1.5 border transition-all duration-150 ${
+                                  checked ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                                }`}
+                              >
+                                {option}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
             <div className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg">

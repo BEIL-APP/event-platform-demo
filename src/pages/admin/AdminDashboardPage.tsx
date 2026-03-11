@@ -112,23 +112,6 @@ export default function AdminDashboardPage() {
   }
   const topInterestName = Object.entries(allInterests).sort((a, b) => b[1] - a[1])[0]?.[0];
 
-  // Survey aggregates — unfiltered
-  const globalInterests: Record<string, number> = {};
-  const globalPurposes: Record<string, number> = {};
-  let globalWantsContact = 0;
-  for (const s of allSurveysRaw) {
-    (s.answers.interests ?? []).forEach((tag) => {
-      globalInterests[tag] = (globalInterests[tag] ?? 0) + 1;
-    });
-    if (s.answers.purpose) {
-      globalPurposes[s.answers.purpose] = (globalPurposes[s.answers.purpose] ?? 0) + 1;
-    }
-    if (s.answers.wantsContact) globalWantsContact++;
-  }
-  const topGlobalInterests = Object.entries(globalInterests).sort((a, b) => b[1] - a[1]).slice(0, 8);
-  const topGlobalPurposes = Object.entries(globalPurposes).sort((a, b) => b[1] - a[1]);
-  const maxGlobalInterest = topGlobalInterests[0]?.[1] ?? 1;
-
   const leadsBySource = {
     bizcard: allLeadsRaw.filter((l) => l.source === 'bizcard').length,
     inquiry: allLeadsRaw.filter((l) => l.source === 'inquiry').length,
@@ -453,73 +436,6 @@ export default function AdminDashboardPage() {
             <p className="text-[11px] text-gray-400 mt-4 text-right">단위: 방문 수 / 시간대 (0~23시)</p>
           </div>
         </div>
-
-        {/* Survey Aggregate */}
-        {allSurveysRaw.length > 0 && (
-          <div className="bg-white border border-gray-200/60 rounded-xl p-5 sm:p-6 mb-6 shadow-sm">
-            <div className="flex items-center gap-2 mb-6">
-              <ClipboardList className="w-5 h-5 text-gray-400" />
-              <h2 className="text-sm font-semibold text-gray-900">설문 집계</h2>
-              <span className="text-[11px] font-semibold text-gray-500 bg-gray-100 rounded-md px-2 h-5 flex items-center ml-auto">
-                총 {allSurveysRaw.length}건
-              </span>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {topGlobalInterests.length > 0 && (
-                <div>
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">주요 관심 분야</p>
-                  <div className="space-y-4">
-                    {topGlobalInterests.map(([tag, count]) => (
-                      <div key={tag}>
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-sm font-medium text-gray-700">{tag}</span>
-                          <span className="text-xs font-bold text-gray-500">{count}명</span>
-                        </div>
-                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-brand-500 rounded-full transition-all duration-700"
-                            style={{ width: `${(count / maxGlobalInterest) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="space-y-6">
-                {topGlobalPurposes.length > 0 && (
-                  <div>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">방문 목적 분포</p>
-                    <div className="space-y-2.5">
-                      {topGlobalPurposes.map(([purpose, count]) => (
-                        <div key={purpose} className="flex items-center justify-between text-sm">
-                          <span className="text-gray-700 font-medium">{purpose}</span>
-                          <div className="flex items-center gap-3">
-                            <div className="h-1.5 bg-brand-200 rounded-full overflow-hidden w-24">
-                              <div className="h-full bg-brand-500" style={{ width: `${(count / allSurveysRaw.length) * 100}%` }} />
-                            </div>
-                            <span className="font-bold text-gray-600 w-8 text-right">{count}건</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                <div className="bg-emerald-50 border border-emerald-100/50 rounded-xl p-5">
-                  <p className="text-xs font-semibold text-emerald-600 mb-1">연락 희망 응답자</p>
-                  <p className="text-2xl font-bold text-emerald-700">
-                    {globalWantsContact}명
-                    <span className="text-sm font-medium text-emerald-500 ml-2">
-                      ({allSurveysRaw.length > 0 ? Math.round((globalWantsContact / allSurveysRaw.length) * 100) : 0}%)
-                    </span>
-                  </p>
-                  <p className="text-[11px] text-emerald-600/60 mt-1 font-medium italic">잠재 리드로 연결될 가능성이 높습니다</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Recent Leads */}
         <div className="bg-white border border-gray-200/60 rounded-xl p-5 sm:p-6 mb-6 shadow-sm">
