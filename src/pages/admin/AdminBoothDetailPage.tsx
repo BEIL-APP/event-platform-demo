@@ -703,9 +703,9 @@ export default function AdminBoothDetailPage() {
                     }}
                     className="h-9 text-xs bg-white border border-gray-200 rounded-lg px-2 outline-none focus:ring-2 focus:ring-brand-200 text-gray-600"
                   >
-                    <option value="text">텍스트</option>
-                    <option value="select">선택</option>
-                    <option value="checkbox">체크박스</option>
+                    <option value="text">직접 입력</option>
+                    <option value="select">단일 선택</option>
+                    <option value="checkbox">다중 선택</option>
                   </select>
                   <label className="flex items-center gap-1 text-xs text-gray-500 shrink-0">
                     <input
