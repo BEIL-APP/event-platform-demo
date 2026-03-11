@@ -244,7 +244,20 @@ export default function AdminBoothDetailPage() {
   };
 
   const handleSavePolicy = () => {
-    const updated = { ...policy, boothId: boothId ?? '' };
+    const now = new Date();
+    const activeParticipation = boothParticipations.find((participation) => {
+      const start = new Date(`${participation.startAt}T00:00:00`);
+      const end = new Date(`${participation.endAt}T23:59:59`);
+      return start <= now && now <= end;
+    });
+    const fallbackParticipation = activeParticipation ?? [...boothParticipations]
+      .sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime())[0];
+    const updated = {
+      ...policy,
+      boothId: boothId ?? '',
+      startAt: fallbackParticipation ? `${fallbackParticipation.startAt}T09:00` : policy.startAt,
+      endAt: fallbackParticipation ? `${fallbackParticipation.endAt}T18:00` : policy.endAt,
+    };
     saveBoothPolicy(updated);
     setPolicy(updated);
     setPolicySaved(true);
@@ -302,8 +315,19 @@ export default function AdminBoothDetailPage() {
     );
   }
 
-  const isPolicyExpired = new Date(policy.endAt) < new Date();
-  const isPolicyActive = new Date(policy.startAt) <= new Date() && !isPolicyExpired;
+  const now = new Date();
+  const activeParticipation = boothParticipations.find((participation) => {
+    const start = new Date(`${participation.startAt}T00:00:00`);
+    const end = new Date(`${participation.endAt}T23:59:59`);
+    return start <= now && now <= end;
+  });
+  const upcomingParticipation = [...boothParticipations]
+    .filter((participation) => new Date(`${participation.startAt}T00:00:00`) > now)
+    .sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime())[0];
+  const latestEndedParticipation = [...boothParticipations]
+    .filter((participation) => new Date(`${participation.endAt}T23:59:59`) < now)
+    .sort((a, b) => new Date(b.endAt).getTime() - new Date(a.endAt).getTime())[0];
+  const hasEndedParticipation = Boolean(latestEndedParticipation) && !activeParticipation && !upcomingParticipation;
 
   return (
     <AdminLayout>
@@ -320,12 +344,12 @@ export default function AdminBoothDetailPage() {
                 <span className="h-6 px-2 rounded-md text-xs font-medium inline-flex items-center bg-gray-100 text-gray-600">
                   {booth.category}
                 </span>
-                {isPolicyExpired && (
+                {hasEndedParticipation && (
                   <span className="h-6 px-2 rounded-md text-xs font-medium inline-flex items-center bg-gray-100 text-gray-600">
                     운영 종료
                   </span>
                 )}
-                {isPolicyActive && (
+                {activeParticipation && (
                   <span className="h-6 px-2 rounded-md text-xs font-medium inline-flex items-center bg-emerald-50 text-emerald-700">
                     운영 중
                   </span>
@@ -415,35 +439,15 @@ export default function AdminBoothDetailPage() {
 
         {activeTab === 'setting' && (
           <>
-        {/* ─── 운영 기간 설정 ─── */}
+        {/* ─── 행사 종료 후 정책 ─── */}
         <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
-            <Calendar className="w-4 h-4 text-gray-500" />
-            <h2 className="text-sm font-semibold text-gray-900">운영 기간 설정</h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <Settings2 className="w-4 h-4 text-gray-500" />
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1.5">운영 시작</label>
-              <input
-                type="datetime-local"
-                value={policy.startAt}
-                onChange={(e) => setPolicy((p) => ({ ...p, startAt: e.target.value }))}
-                className="w-full h-9 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1.5">운영 종료</label>
-              <input
-                type="datetime-local"
-                value={policy.endAt}
-                onChange={(e) => setPolicy((p) => ({ ...p, endAt: e.target.value }))}
-                className="w-full h-9 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all"
-              />
+              <h2 className="text-sm font-semibold text-gray-900">행사 종료 후 정책</h2>
+              <p className="text-xs text-gray-400 mt-0.5">운영 날짜는 행사 참여에서 관리하고, 여기서는 종료 후 동작만 설정합니다</p>
             </div>
           </div>
-
-          <p className="text-xs font-medium text-gray-600 mb-3">종료 후 정책</p>
           <div className="space-y-3 mb-6">
             <div className="flex items-center justify-between p-3 sm:p-3.5 bg-gray-50 rounded-lg">
               <div>
