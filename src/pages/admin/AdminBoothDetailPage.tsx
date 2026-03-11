@@ -95,7 +95,9 @@ export default function AdminBoothDetailPage() {
   const [editDescImages, setEditDescImages] = useState<string[]>([]);
   const [editFaq, setEditFaq] = useState<Array<{ question: string; answer: string }>>([]);
   // editNextEvents removed — managed via participation editing
-  const [contentSaved, setContentSaved] = useState(false);
+  const [basicInfoSaved, setBasicInfoSaved] = useState(false);
+  const [imagesSaved, setImagesSaved] = useState(false);
+  const [faqSaved, setFaqSaved] = useState(false);
 
   // Attachments state
   const [attachments, setAttachments] = useState<Attachment[]>([]);
@@ -198,7 +200,7 @@ export default function AdminBoothDetailPage() {
     setCustomLinks((prev) => prev.filter((_, idx) => idx !== i));
   };
 
-  const handleSaveContent = () => {
+  const handleSaveBasicInfo = () => {
     if (!booth) return;
     const updated = {
       ...booth,
@@ -206,14 +208,36 @@ export default function AdminBoothDetailPage() {
       tagline: editTagline.trim(),
       category: editCategory.trim() || booth.category,
       description: editDescription.trim(),
+    };
+    saveBooth(updated);
+    setBasicInfoSaved(true);
+    setTimeout(() => setBasicInfoSaved(false), 2000);
+    showToast('기본 정보가 저장됐어요!', 'success');
+  };
+
+  const handleSaveImages = () => {
+    if (!booth) return;
+    const updated = {
+      ...booth,
       images: editImages.filter((img) => img.trim()),
       descriptionImages: editDescImages.filter((img) => img.trim()),
+    };
+    saveBooth(updated);
+    setImagesSaved(true);
+    setTimeout(() => setImagesSaved(false), 2000);
+    showToast('이미지가 저장됐어요!', 'success');
+  };
+
+  const handleSaveFaq = () => {
+    if (!booth) return;
+    const updated = {
+      ...booth,
       faq: editFaq.filter((f) => f.question.trim()),
     };
     saveBooth(updated);
-    setContentSaved(true);
-    setTimeout(() => setContentSaved(false), 2000);
-    showToast('부스 정보가 저장됐어요!', 'success');
+    setFaqSaved(true);
+    setTimeout(() => setFaqSaved(false), 2000);
+    showToast('FAQ가 저장됐어요!', 'success');
   };
 
   const handleDownloadQR = () => {
@@ -407,7 +431,7 @@ export default function AdminBoothDetailPage() {
         {/* QR Code Card */}
         <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-gray-900">QR 코드</h2>
+            <h2 className="text-sm font-semibold text-gray-900">QR 코드 관리</h2>
             <button
               onClick={handleDownloadQR}
               className="flex items-center gap-1.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 h-9 px-3 text-xs font-medium rounded-lg transition-all duration-150"
@@ -445,7 +469,7 @@ export default function AdminBoothDetailPage() {
           <div className="flex items-center gap-2 mb-4">
             <Settings2 className="w-4 h-4 text-gray-500" />
             <div>
-              <h2 className="text-sm font-semibold text-gray-900">행사 종료 후 정책</h2>
+              <h2 className="text-sm font-semibold text-gray-900">행사 종료 후 정책 관리</h2>
               <p className="text-xs text-gray-400 mt-0.5">운영 날짜는 행사 참여에서 관리하고, 여기서는 종료 후 동작만 설정합니다</p>
             </div>
           </div>
@@ -600,7 +624,7 @@ export default function AdminBoothDetailPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Paperclip className="w-4 h-4 text-gray-500" />
-              <h2 className="text-sm font-semibold text-gray-900">브로셔 & 첨부 파일</h2>
+              <h2 className="text-sm font-semibold text-gray-900">브로셔 & 첨부 파일 관리</h2>
             </div>
             <button
               onClick={() => fileRef.current?.click()}
@@ -799,7 +823,7 @@ export default function AdminBoothDetailPage() {
         <div className="order-1 bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <Edit3 className="w-4 h-4 text-gray-500" />
-            <h2 className="text-sm font-semibold text-gray-900">기본 정보</h2>
+            <h2 className="text-sm font-semibold text-gray-900">기본 정보 관리</h2>
           </div>
 
           {/* Basic info */}
@@ -844,6 +868,24 @@ export default function AdminBoothDetailPage() {
                 className="w-full text-sm bg-white border border-gray-200 rounded-lg px-3 py-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all resize-none placeholder:text-gray-400"
               />
             </div>
+          </div>
+
+          <button
+            onClick={handleSaveBasicInfo}
+            className={`w-full sm:w-auto sm:px-6 h-10 text-sm font-medium rounded-lg flex items-center justify-center transition-all duration-150 ${
+              basicInfoSaved
+                ? 'bg-emerald-600 text-white'
+                : 'bg-brand-600 text-white hover:bg-brand-500'
+            }`}
+          >
+            {basicInfoSaved ? '저장됐어요 ✓' : '기본 정보 저장'}
+          </button>
+        </div>
+
+        <div className="order-1 bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <ImagePlus className="w-4 h-4 text-gray-500" />
+            <h2 className="text-sm font-semibold text-gray-900">이미지 관리</h2>
           </div>
 
           {/* Images */}
@@ -926,6 +968,24 @@ export default function AdminBoothDetailPage() {
             </button>
           </div>
 
+          <button
+            onClick={handleSaveImages}
+            className={`w-full sm:w-auto sm:px-6 h-10 text-sm font-medium rounded-lg flex items-center justify-center transition-all duration-150 ${
+              imagesSaved
+                ? 'bg-emerald-600 text-white'
+                : 'bg-brand-600 text-white hover:bg-brand-500'
+            }`}
+          >
+            {imagesSaved ? '저장됐어요 ✓' : '이미지 저장'}
+          </button>
+        </div>
+
+        <div className="order-1 bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <HelpCircle className="w-4 h-4 text-gray-500" />
+            <h2 className="text-sm font-semibold text-gray-900">FAQ 관리</h2>
+          </div>
+
           {/* FAQ */}
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-2">
@@ -970,14 +1030,14 @@ export default function AdminBoothDetailPage() {
           </div>
 
           <button
-            onClick={handleSaveContent}
+            onClick={handleSaveFaq}
             className={`w-full sm:w-auto sm:px-6 h-10 text-sm font-medium rounded-lg flex items-center justify-center transition-all duration-150 ${
-              contentSaved
+              faqSaved
                 ? 'bg-emerald-600 text-white'
                 : 'bg-brand-600 text-white hover:bg-brand-500'
             }`}
           >
-            {contentSaved ? '저장됐어요 ✓' : '기본 정보 저장'}
+            {faqSaved ? '저장됐어요 ✓' : 'FAQ 저장'}
           </button>
         </div>
 
@@ -987,7 +1047,7 @@ export default function AdminBoothDetailPage() {
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-gray-500" />
               <div>
-                <h2 className="text-sm font-semibold text-gray-900">행사 참여</h2>
+                <h2 className="text-sm font-semibold text-gray-900">행사 참여 관리</h2>
                 <p className="text-xs text-gray-400 mt-0.5">참여할 행사를 선택하거나 새로 등록하세요</p>
               </div>
             </div>
