@@ -216,7 +216,7 @@ export default function AdminBoothNewPage() {
 
     addBooth(booth);
     showToast('부스가 생성됐어요!', 'success');
-    navigate(`/admin/booths/${booth.id}`);
+    navigate(`/admin/booths/${booth.id}/stats`);
   };
 
   return (

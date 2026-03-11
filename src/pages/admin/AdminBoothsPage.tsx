@@ -42,7 +42,7 @@ export default function AdminBoothsPage() {
               return (
                 <Link
                   key={booth.id}
-                  to={`/admin/booths/${booth.id}`}
+                  to={`/admin/booths/${booth.id}/stats`}
                   className="bg-white rounded-xl border border-gray-200/60 p-5 sm:p-6 hover:border-brand-300 hover:shadow-card-hover transition-all duration-200 group overflow-hidden shadow-sm"
                 >
                   <div className="flex items-start gap-4">

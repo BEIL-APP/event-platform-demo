@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, Link, useNavigate, Navigate } from 'react-router-dom';
 import {
   ArrowLeft, Download, ExternalLink, FileDown,
   Upload, Trash2, Calendar, ToggleLeft, ToggleRight, Paperclip,
@@ -8,6 +8,8 @@ import {
 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { AdminLayout } from '../../components/AdminLayout';
+import { AdminBoothStatsTab } from '../../components/admin/AdminBoothStatsTab';
+import { AdminBoothTeamTab } from '../../components/admin/AdminBoothTeamTab';
 import { useBooth } from '../../hooks/useBooths';
 import { useThreads } from '../../hooks/useThreads';
 import { useToast } from '../../contexts/ToastContext';
@@ -31,14 +33,24 @@ import {
 import type { BoothPolicy, Attachment, BoothEvent, BoothEventParticipation } from '../../types';
 
 export default function AdminBoothDetailPage() {
-  const { boothId } = useParams<{ boothId: string }>();
+  const { boothId, '*': boothSection } = useParams<{ boothId: string; '*': string }>();
   const navigate = useNavigate();
-  const location = useLocation();
   const { booth } = useBooth(boothId ?? '');
   const { threads } = useThreads();
   const { showToast } = useToast();
   const qrRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const activeTab = boothSection === 'setting' || boothSection === 'stats' || boothSection === 'team'
+    ? boothSection
+    : null;
+
+  if (!boothSection) {
+    return <Navigate to={`/admin/booths/${boothId}/stats`} replace />;
+  }
+
+  if (!activeTab) {
+    return <Navigate to={`/admin/booths/${boothId}/stats`} replace />;
+  }
 
   const handleDeleteBooth = () => {
     if (!booth) return;
@@ -354,11 +366,14 @@ export default function AdminBoothDetailPage() {
         {/* Tab nav */}
         <div className="flex border-b border-gray-200 mb-6 gap-1">
           {[
-            { label: '설정', to: `/admin/booths/${boothId}` },
             { label: '통계', to: `/admin/booths/${boothId}/stats` },
+            { label: '설정', to: `/admin/booths/${boothId}/setting` },
             { label: '팀', to: `/admin/booths/${boothId}/team` },
           ].map((tab) => {
-            const isActive = location.pathname === tab.to;
+            const isActive =
+              (tab.label === '통계' && activeTab === 'stats') ||
+              (tab.label === '설정' && activeTab === 'setting') ||
+              (tab.label === '팀' && activeTab === 'team');
             return (
               <Link
                 key={tab.to}
@@ -375,6 +390,8 @@ export default function AdminBoothDetailPage() {
           })}
         </div>
 
+        {activeTab === 'setting' && (
+          <>
         {/* QR Code Card */}
         <div className="bg-white border border-gray-200/60 rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
@@ -1232,6 +1249,10 @@ export default function AdminBoothDetailPage() {
             {participationsSaved ? '저장됐어요 ✓' : '행사 참여 저장'}
           </button>
         </div>
+          </>
+        )}
+        {activeTab === 'stats' && boothId && <AdminBoothStatsTab boothId={boothId} />}
+        {activeTab === 'team' && boothId && <AdminBoothTeamTab boothId={boothId} />}
       </div>
     </AdminLayout>
   );
