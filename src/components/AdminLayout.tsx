@@ -17,7 +17,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const navItems = [
   { to: '/admin/dashboard', icon: BarChart3, label: '대시보드' },
-  { to: '/admin/booths', icon: LayoutGrid, label: '내 부스' },
+  { to: '/admin/booths', icon: LayoutGrid, label: '내 부스 관리' },
   { to: '/admin/inbox', icon: Inbox, label: '문의 인박스' },
   { to: '/admin/leads', icon: Users, label: '리드 목록' },
 ];
