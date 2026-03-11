@@ -107,6 +107,7 @@ export default function AdminBoothDetailPage() {
       ];
     } catch { return []; }
   });
+  const [surveyIntro, setSurveyIntro] = useState(() => localStorage.getItem(`bep_survey_intro_${boothId}`) ?? '설문에 참여해주시면 부스 운영자가 더 맞는 정보와 후속 안내를 드릴 수 있어요.');
   const [surveyFieldsSaved, setSurveyFieldsSaved] = useState(false);
 
   const [boothParticipations, setBoothParticipations] = useState<BoothEventParticipation[]>([]);
@@ -680,6 +681,17 @@ export default function AdminBoothDetailPage() {
 
           <p className="text-xs text-gray-500 mb-4">관람객이 부스 페이지에서 작성하는 설문 항목을 편집하세요.</p>
 
+          <div className="mb-4">
+            <label className="block text-[13px] font-medium text-gray-700 mb-1.5">설문 안내 문구</label>
+            <textarea
+              value={surveyIntro}
+              onChange={(e) => setSurveyIntro(e.target.value)}
+              placeholder="설문 카드 아래에 보여줄 안내 문구를 입력하세요."
+              rows={3}
+              className="w-full min-h-[72px] text-sm text-gray-700 bg-white border border-gray-200 rounded-lg px-3 py-3 resize-none outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400"
+            />
+          </div>
+
           <div className="space-y-4 mb-4">
             {surveyFields.map((field, i) => (
               <div key={field.id} className="bg-gray-50 border border-gray-200/60 rounded-lg p-3 sm:p-4">
@@ -793,6 +805,7 @@ export default function AdminBoothDetailPage() {
             <button
               onClick={() => {
                 localStorage.setItem(`bep_survey_fields_${boothId}`, JSON.stringify(surveyFields));
+                localStorage.setItem(`bep_survey_intro_${boothId}`, surveyIntro.trim() || '설문에 참여해주시면 부스 운영자가 더 맞는 정보와 후속 안내를 드릴 수 있어요.');
                 setSurveyFieldsSaved(true);
                 setTimeout(() => setSurveyFieldsSaved(false), 2000);
                 showToast('설문 항목이 저장됐어요!', 'success');

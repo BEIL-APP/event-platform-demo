@@ -60,6 +60,7 @@ const DEFAULT_SURVEY_FIELDS: SurveyField[] = [
   { id: 'interests', label: '관심 분야', type: 'checkbox', options: ['구매검토', '파트너십', 'B2B 납품', '정보수집'], required: false },
   { id: 'purpose', label: '방문 목적', type: 'select', options: ['구매/계약 검토', '제품 정보 수집', '파트너십/협력', '견적 요청'], required: false },
 ];
+const DEFAULT_SURVEY_INTRO = '설문에 참여해주시면 부스 운영자가 더 맞는 정보와 후속 안내를 드릴 수 있어요.';
 
 function isPolicyActive(policy: BoothPolicy): boolean {
   const now = new Date();
@@ -112,6 +113,7 @@ export default function BoothPage() {
 
   const [showSurvey, setShowSurvey] = useState(false);
   const [surveyFields, setSurveyFields] = useState<SurveyField[]>(DEFAULT_SURVEY_FIELDS);
+  const [surveyIntro, setSurveyIntro] = useState(DEFAULT_SURVEY_INTRO);
   const [surveyAnswers, setSurveyAnswers] = useState<Record<string, string | string[]>>({});
   const [surveyWantsContact, setSurveyWantsContact] = useState(false);
   const [surveySent, setSurveySent] = useState(false);
@@ -143,6 +145,7 @@ export default function BoothPage() {
       } catch {
         setSurveyFields(DEFAULT_SURVEY_FIELDS);
       }
+      setSurveyIntro(localStorage.getItem(`bep_survey_intro_${boothId}`) ?? DEFAULT_SURVEY_INTRO);
       const surveys = getBoothSurveys(boothId);
       const guestId = getGuestId();
       setSurveyDone(surveys.some((s) => s.visitorId === guestId));
@@ -762,7 +765,7 @@ export default function BoothPage() {
                 <span className="text-sm font-bold text-gray-900">1분 설문 참여</span>
               </div>
               <p className="text-xs font-medium text-gray-500 mb-4 leading-relaxed">
-                관심 분야와 방문 목적을 알려주시면 더 좋은 정보를 드릴 수 있어요
+                {surveyIntro}
               </p>
               <button
                 onClick={() => setShowSurvey(true)}

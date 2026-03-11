@@ -535,7 +535,7 @@ export default function AdminDashboardPage() {
                             )}
                           </div>
                           <Link
-                            to={`/admin/booths/${booth.id}`}
+                            to={`/admin/booths/${booth.id}/stats`}
                             className="text-sm font-semibold text-gray-900 hover:text-brand-600 transition-colors"
                           >
                             {booth.name}

@@ -69,6 +69,7 @@ const DEFAULT_SURVEY_FIELDS = [
   { id: 'interests', label: '관심 분야', type: 'checkbox' as const, options: ['구매검토', '파트너십', 'B2B 납품', '정보수집'], required: false },
   { id: 'purpose', label: '방문 목적', type: 'select' as const, options: ['구매/계약 검토', '제품 정보 수집', '파트너십/협력', '견적 요청'], required: false },
 ];
+const DEFAULT_SURVEY_INTRO = '설문에 참여해주시면 부스 운영자가 더 맞는 정보와 후속 안내를 드릴 수 있어요.';
 
 function FieldLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
   return (
@@ -142,6 +143,7 @@ export default function AdminBoothNewPage() {
     { question: '', answer: '' },
   ]);
   const [surveyFields, setSurveyFields] = useState<Array<{ id: string; label: string; type: 'text' | 'select' | 'checkbox'; options?: string[]; required: boolean }>>(DEFAULT_SURVEY_FIELDS);
+  const [surveyIntro, setSurveyIntro] = useState(DEFAULT_SURVEY_INTRO);
   const [existingEvents] = useState<BoothEvent[]>(() => getEvents());
   const [participations, setParticipations] = useState<EventParticipationForm[]>([
     { id: `ep-${Date.now()}`, mode: 'existing', eventId: '', newEventName: '', newEventStartDate: '', newEventEndDate: '', newEventLocation: '', startAt: '', endAt: '', boothLocation: '' },
@@ -222,6 +224,7 @@ export default function AdminBoothNewPage() {
 
     addBooth(booth);
     localStorage.setItem(`bep_survey_fields_${boothId}`, JSON.stringify(surveyFields));
+    localStorage.setItem(`bep_survey_intro_${boothId}`, surveyIntro.trim() || DEFAULT_SURVEY_INTRO);
     showToast('부스가 생성됐어요!', 'success');
     navigate(`/admin/booths/${booth.id}/stats`);
   };
@@ -651,6 +654,17 @@ export default function AdminBoothNewPage() {
             </div>
 
             <p className="text-xs text-gray-500 mb-4">관람객이 부스 페이지에서 작성할 설문 항목을 미리 구성하세요.</p>
+
+            <div className="mb-4">
+              <FieldLabel>설문 안내 문구</FieldLabel>
+              <textarea
+                value={surveyIntro}
+                onChange={(e) => setSurveyIntro(e.target.value)}
+                placeholder="설문 카드 아래에 보여줄 안내 문구를 입력하세요."
+                rows={3}
+                className="w-full min-h-[72px] text-sm text-gray-700 bg-white border border-gray-200 rounded-lg px-3 py-3 resize-none outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400"
+              />
+            </div>
 
             <div className="space-y-4 mb-4">
               {surveyFields.map((field, i) => (
