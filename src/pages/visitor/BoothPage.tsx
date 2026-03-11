@@ -473,8 +473,9 @@ export default function BoothPage() {
                   </span>
                 )}
               </div>
-              <div className="flex items-center justify-between gap-3 mb-1 md:mb-2">
-                <h1 className="text-white text-xl md:text-3xl font-bold min-w-0 flex-1">{booth.name}</h1>
+              <h1 className="text-white text-xl md:text-3xl font-bold mb-1 md:mb-2">{booth.name}</h1>
+              <div className="flex items-end justify-between gap-3">
+                <p className="text-white/75 text-sm md:text-base leading-relaxed flex-1">{booth.tagline}</p>
                 <button
                   onClick={() => setShowEmailInfo(true)}
                   className="inline-flex shrink-0 items-center gap-1.5 h-8 md:h-9 px-3 md:px-3.5 rounded-full bg-white/14 backdrop-blur-md border border-white/20 text-white text-xs md:text-[13px] font-semibold shadow-[0_8px_24px_rgba(0,0,0,0.18)] hover:bg-white/22 transition-all duration-200"
@@ -483,7 +484,6 @@ export default function BoothPage() {
                   소식 받기
                 </button>
               </div>
-              <p className="text-white/75 text-sm md:text-base leading-relaxed">{booth.tagline}</p>
             </div>
           </div>
         </div>
