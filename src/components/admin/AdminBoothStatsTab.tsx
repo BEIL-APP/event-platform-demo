@@ -1,17 +1,19 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  BarChart2,
-  Heart,
-  MessageSquare,
+  BarChart3,
+  TrendingUp,
   Users,
   QrCode,
-  Navigation,
-  TrendingUp,
-  Clock,
+  Download,
+  ArrowRight,
   UserCheck,
   ClipboardList,
-  Download,
+  CreditCard,
+  Clock,
+  Lightbulb,
+  MessageSquare,
+  PhoneCall,
 } from 'lucide-react';
 import { useThreads } from '../../hooks/useThreads';
 import { useToast } from '../../contexts/ToastContext';
@@ -25,20 +27,20 @@ import {
 } from '../../utils/localStorage';
 import type { Visit, Favorite, Lead, Thread } from '../../types';
 
+const ALL_HOURS = Array.from({ length: 24 }, (_, index) => index);
+
 function formatDate(iso: string): string {
-  const d = new Date(iso);
-  return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  const date = new Date(iso);
+  return `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 }
 
-function leadSourceLabel(source: Lead['source']): string {
-  const map: Record<Lead['source'], string> = {
-    bizcard: '명함 스캔',
-    inquiry: '문의',
-    email_info: '이메일 자료',
-    survey: '설문',
-    manual: '직접 입력',
+function threadStatusColor(status: Thread['status']): string {
+  const map: Record<Thread['status'], string> = {
+    '미처리': 'bg-red-100 text-red-700',
+    '처리': 'bg-green-100 text-green-700',
+    '보류': 'bg-yellow-100 text-yellow-700',
   };
-  return map[source] ?? source;
+  return map[status] ?? 'bg-gray-100 text-gray-600';
 }
 
 function leadStatusLabel(status: string): string {
@@ -63,120 +65,59 @@ function leadStatusColor(status: string): string {
   return map[status] ?? 'bg-gray-100 text-gray-600';
 }
 
-function threadStatusColor(status: Thread['status']): string {
-  const map: Record<Thread['status'], string> = {
-    '미처리': 'bg-red-100 text-red-700',
-    '처리': 'bg-green-100 text-green-700',
-    '보류': 'bg-yellow-100 text-yellow-700',
-  };
-  return map[status] ?? 'bg-gray-100 text-gray-600';
-}
-
-interface KpiCardProps {
-  icon: React.ReactNode;
-  label: string;
-  value: number | string;
-  sub?: string;
-}
-
-function KpiCard({ icon, label, value, sub }: KpiCardProps) {
-  return (
-    <div className="bg-white border border-gray-200/60 rounded-xl shadow-sm p-4 flex items-start gap-3">
-      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center text-brand-600">
-        {icon}
-      </div>
-      <div className="min-w-0">
-        <p className="text-xs text-gray-500 truncate">{label}</p>
-        <p className="text-xl font-bold text-gray-900">{value}</p>
-        {sub && <p className="text-xs text-gray-400 mt-0.5 truncate">{sub}</p>}
-      </div>
-    </div>
-  );
-}
-
-function HourlyBar({ hour, count, max }: { hour: number; count: number; max: number }) {
-  const pct = max > 0 ? Math.round((count / max) * 100) : 0;
-  return (
-    <div className="flex items-end gap-1" title={`${hour}시: ${count}건`}>
-      <div className="flex flex-col items-center gap-0.5 w-full">
-        <div
-          className="w-full bg-brand-500 rounded-t transition-all"
-          style={{ height: `${Math.max(pct * 0.8, count > 0 ? 4 : 1)}px` }}
-        />
-        <span className="text-[9px] text-gray-400">{hour}</span>
-      </div>
-    </div>
-  );
-}
-
 export function AdminBoothStatsTab({ boothId }: { boothId: string }) {
   const { threads: allThreads } = useThreads();
   const { showToast } = useToast();
 
-  const visits = useMemo<Visit[]>(() => getVisits().filter((v) => v.boothId === boothId), [boothId]);
-  const favorites = useMemo<Favorite[]>(() => getFavorites().filter((f) => f.boothId === boothId), [boothId]);
+  const visits = useMemo<Visit[]>(() => getVisits().filter((visit) => visit.boothId === boothId), [boothId]);
+  const favorites = useMemo<Favorite[]>(() => getFavorites().filter((favorite) => favorite.boothId === boothId), [boothId]);
   const leads = useMemo<Lead[]>(() => getBoothLeads(boothId), [boothId]);
-  const threads = useMemo<Thread[]>(() => allThreads.filter((t) => t.boothId === boothId), [allThreads, boothId]);
+  const threads = useMemo<Thread[]>(() => allThreads.filter((thread) => thread.boothId === boothId), [allThreads, boothId]);
   const surveyAgg = useMemo(() => getSurveyAggregate(boothId), [boothId]);
-  const analyticsAll = useMemo(() => getAnalytics().filter((a) => a.boothId === boothId), [boothId]);
-
-  const totalVisits = visits.length;
-  const qrVisits = visits.filter((v) => v.source === 'qr').length;
-  const directVisits = visits.filter((v) => v.source === 'direct').length;
-  const noSourceVisits = visits.filter((v) => !v.source).length;
-
-  const hourlyCounts = useMemo(() => {
-    const counts = Array<number>(24).fill(0);
-    for (const v of visits) {
-      counts[new Date(v.visitedAt).getHours()] += 1;
-    }
-    return counts;
-  }, [visits]);
-  const maxHourly = Math.max(...hourlyCounts, 1);
-
-  const leadSources: Lead['source'][] = ['bizcard', 'inquiry', 'email_info', 'survey', 'manual'];
-  const leadSourceCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    for (const source of leadSources) counts[source] = 0;
-    for (const lead of leads) counts[lead.source] = (counts[lead.source] ?? 0) + 1;
-    return counts;
-  }, [leads]);
-
-  const pipelineStatuses = ['NEW', 'CONTACTED', 'MEETING', 'WON', 'LOST'] as const;
-  const pipelineCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    for (const status of pipelineStatuses) counts[status] = 0;
-    for (const lead of leads) {
-      const status = lead.status ?? 'NEW';
-      counts[status] = (counts[status] ?? 0) + 1;
-    }
-    return counts;
-  }, [leads]);
+  const analyticsAll = useMemo(() => getAnalytics().filter((analytics) => analytics.boothId === boothId), [boothId]);
 
   const analyticsTotal = analyticsAll.find((analytics) => !analytics.eventId);
-  const totalScans = analyticsTotal?.scans ?? totalVisits;
-  const totalFavs = analyticsTotal?.favorites ?? favorites.length;
+  const qrVisits = visits.filter((visit) => visit.source === 'qr').length;
+  const directVisits = visits.filter((visit) => visit.source === 'direct' || !visit.source).length;
+  const totalFavorites = analyticsTotal?.favorites ?? favorites.length;
   const totalInquiries = analyticsTotal?.inquiries ?? threads.length;
+  const totalVisits = analyticsTotal?.scans ?? visits.length;
 
-  const topInterests = useMemo(
-    () => Object.entries(surveyAgg.interests).sort((a, b) => b[1] - a[1]).slice(0, 8),
-    [surveyAgg],
-  );
-  const topPurposes = useMemo(
-    () => Object.entries(surveyAgg.purposes).sort((a, b) => b[1] - a[1]).slice(0, 6),
-    [surveyAgg],
-  );
+  const leadsBySource = {
+    bizcard: leads.filter((lead) => lead.source === 'bizcard').length,
+    inquiry: leads.filter((lead) => lead.source === 'inquiry').length,
+    email_info: leads.filter((lead) => lead.source === 'email_info').length,
+    survey: leads.filter((lead) => lead.source === 'survey').length,
+  };
+
+  const hourlyCounts = ALL_HOURS.map((hour) => visits.filter((visit) => new Date(visit.visitedAt).getHours() === hour).length);
+  const maxHourly = Math.max(...hourlyCounts, 1);
+  const peakHour = hourlyCounts.indexOf(Math.max(...hourlyCounts, 0));
+
+  const topInterests = Object.entries(surveyAgg.interests).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const topPurposes = Object.entries(surveyAgg.purposes).sort((a, b) => b[1] - a[1]);
+  const topInterestName = topInterests[0]?.[0];
   const maxInterest = topInterests[0]?.[1] ?? 1;
-  const maxPurpose = topPurposes[0]?.[1] ?? 1;
 
-  const recentThreads = useMemo(
-    () => [...threads].sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()).slice(0, 5),
-    [threads],
-  );
-  const recentLeads = useMemo(
-    () => [...leads].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5),
-    [leads],
-  );
+  const pendingInquiries = threads.filter((thread) => thread.status === '미처리').length;
+  const newLeads = leads.filter((lead) => !lead.status || lead.status === 'NEW').length;
+  const recentThreads = [...threads].sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()).slice(0, 5);
+  const recentLeads = [...leads].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5);
+
+  const insights = [
+    pendingInquiries > 0
+      ? { icon: MessageSquare, color: 'text-brand-600 bg-brand-50', text: `미처리 문의 ${pendingInquiries}건이 있어요`, action: '인박스 확인', to: '/admin/inbox' }
+      : null,
+    newLeads > 0
+      ? { icon: PhoneCall, color: 'text-amber-600 bg-amber-50', text: `신규 리드 ${newLeads}건 - 팔로업이 필요해요`, action: '리드 목록', to: '/admin/leads' }
+      : null,
+    topInterestName
+      ? { icon: Lightbulb, color: 'text-emerald-600 bg-emerald-50', text: `관심 분야 1위 "${topInterestName}" - 관련 자료를 부스에 추가해 보세요`, action: '설정 보기', to: `/admin/booths/${boothId}/setting` }
+      : null,
+    totalVisits > 0
+      ? { icon: Clock, color: 'text-sky-600 bg-sky-50', text: `방문 피크 시간대 ${peakHour}시 - 이 시간에 인력을 집중 배치하세요`, action: null, to: null }
+      : null,
+  ].filter(Boolean) as Array<{ icon: typeof MessageSquare; color: string; text: string; action: string | null; to: string | null }>;
 
   const handleExportThreads = () => {
     if (threads.length === 0) {
@@ -188,247 +129,298 @@ export function AdminBoothStatsTab({ boothId }: { boothId: string }) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-end">
+    <div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <div>
+          <h2 className="text-lg font-bold text-gray-900 tracking-tight">부스 통계</h2>
+          <p className="text-sm text-gray-500 font-medium">대시보드와 같은 기준으로 이 부스 성과를 보여줍니다</p>
+        </div>
         <button
           onClick={handleExportThreads}
-          className="flex items-center justify-center gap-1.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 h-9 px-4 text-[13px] font-medium rounded-lg transition-all duration-150"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 h-10 rounded-lg px-4 text-[13px] font-medium hover:bg-gray-50 hover:border-gray-300 transition-all duration-150"
         >
-          <Download className="w-4 h-4" />
+          <Download className="w-4 h-4 text-gray-400" />
           문의 CSV 내보내기
         </button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <KpiCard icon={<BarChart2 size={18} />} label="총 방문 수" value={totalScans} sub={`QR ${qrVisits} / 직접 ${directVisits + noSourceVisits}`} />
-        <KpiCard icon={<Heart size={18} />} label="관심 저장" value={totalFavs} />
-        <KpiCard icon={<MessageSquare size={18} />} label="총 문의 수" value={totalInquiries} />
-        <KpiCard icon={<Users size={18} />} label="총 리드 수" value={leads.length} />
-      </div>
-
-      <div className="bg-white border border-gray-200/60 rounded-xl shadow-sm p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <QrCode size={15} className="text-brand-600" />
-          <h2 className="text-sm font-semibold text-gray-900">방문 유형 분석</h2>
-        </div>
-        <div className="flex gap-4 flex-wrap">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-brand-500" />
-            <span className="text-sm text-gray-700">QR 스캔</span>
-            <span className="text-sm font-bold text-gray-900">{qrVisits}건</span>
-            {totalVisits > 0 && <span className="text-xs text-gray-400">({Math.round((qrVisits / totalVisits) * 100)}%)</span>}
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-indigo-300" />
-            <span className="text-sm text-gray-700">직접 방문</span>
-            <span className="text-sm font-bold text-gray-900">{directVisits + noSourceVisits}건</span>
-            {totalVisits > 0 && <span className="text-xs text-gray-400">({Math.round(((directVisits + noSourceVisits) / totalVisits) * 100)}%)</span>}
-          </div>
-        </div>
-        {totalVisits > 0 && (
-          <div className="mt-3 h-2 rounded-full bg-gray-100 overflow-hidden">
-            <div className="h-full bg-brand-500 rounded-full transition-all" style={{ width: `${Math.round((qrVisits / totalVisits) * 100)}%` }} />
-          </div>
-        )}
-      </div>
-
-      <div className="bg-white border border-gray-200/60 rounded-xl shadow-sm p-4">
-        <div className="flex items-center gap-2 mb-4">
-          <Clock size={15} className="text-brand-600" />
-          <h2 className="text-sm font-semibold text-gray-900">시간대별 방문 수</h2>
-          <span className="ml-auto text-xs text-gray-400">0 - 23시</span>
-        </div>
-        {totalVisits === 0 ? (
-          <p className="text-center text-sm text-gray-400 py-8">아직 방문 기록이 없어요.</p>
-        ) : (
-          <div className="flex items-end gap-0.5 h-24">
-            {hourlyCounts.map((count, hour) => (
-              <div key={hour} className="flex-1 flex flex-col items-center justify-end h-full">
-                <HourlyBar hour={hour} count={count} max={maxHourly} />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="bg-white border border-gray-200/60 rounded-xl shadow-sm p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <Navigation size={15} className="text-brand-600" />
-          <h2 className="text-sm font-semibold text-gray-900">리드 소스별 분포</h2>
-        </div>
-        {leads.length === 0 ? (
-          <p className="text-center text-sm text-gray-400 py-6">아직 리드가 없어요.</p>
-        ) : (
-          <div className="space-y-2">
-            {leadSources.map((source) => {
-              const count = leadSourceCounts[source] ?? 0;
-              const percent = leads.length > 0 ? Math.round((count / leads.length) * 100) : 0;
-              return (
-                <div key={source} className="flex items-center gap-3">
-                  <span className="w-20 text-xs text-gray-600 flex-shrink-0">{leadSourceLabel(source)}</span>
-                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-brand-400 rounded-full transition-all" style={{ width: `${percent}%` }} />
-                  </div>
-                  <span className="w-10 text-right text-xs font-medium text-gray-700">{count}건</span>
-                  <span className="w-8 text-right text-xs text-gray-400">{percent}%</span>
+      {insights.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          {insights.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <div key={index} className="bg-white border border-gray-200/60 rounded-xl p-4 flex items-start gap-4 hover:shadow-card-hover transition-all duration-200">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${item.color}`}>
+                  <Icon className="w-5 h-5" />
                 </div>
-              );
-            })}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-800 leading-relaxed">{item.text}</p>
+                  {item.action && item.to && (
+                    <Link to={item.to} className="mt-2 text-xs font-semibold text-brand-600 hover:text-brand-700 inline-flex items-center gap-1 transition-colors">
+                      {item.action} <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {[
+          { label: 'QR 방문 수', value: qrVisits.toLocaleString(), icon: <QrCode className="w-5 h-5" />, sub: 'QR 코드 스캔 기준' },
+          { label: '직접 방문 수', value: directVisits.toLocaleString(), icon: <UserCheck className="w-5 h-5" />, sub: 'URL 직접 접근 기준' },
+          { label: '관심 저장', value: totalFavorites.toLocaleString(), icon: <Users className="w-5 h-5" />, sub: '하트 누른 횟수' },
+          { label: '총 문의', value: totalInquiries.toLocaleString(), icon: <TrendingUp className="w-5 h-5" />, sub: '스레드 생성 기준' },
+        ].map((kpi) => (
+          <div key={kpi.label} className="bg-white border border-gray-200/60 rounded-xl p-5 sm:p-6 hover:shadow-card-hover transition-all duration-200">
+            <div className="text-gray-400 mb-4">{kpi.icon}</div>
+            <p className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">{kpi.value}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-500 mt-1">{kpi.label}</p>
+            <p className="text-[11px] text-gray-400 mt-2">{kpi.sub}</p>
           </div>
-        )}
+        ))}
       </div>
 
-      <div className="bg-white border border-gray-200/60 rounded-xl shadow-sm p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <TrendingUp size={15} className="text-brand-600" />
-          <h2 className="text-sm font-semibold text-gray-900">리드 파이프라인</h2>
-        </div>
-        {leads.length === 0 ? (
-          <p className="text-center text-sm text-gray-400 py-6">아직 리드가 없어요.</p>
-        ) : (
-          <div className="flex flex-wrap gap-3">
-            {pipelineStatuses.map((status) => (
-              <div key={status} className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
-                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${leadStatusColor(status)}`}>
-                  {leadStatusLabel(status)}
-                </span>
-                <span className="text-sm font-bold text-gray-900">{pipelineCounts[status] ?? 0}</span>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        {[
+          { label: '명함 스캔 리드', value: leadsBySource.bizcard, icon: <CreditCard className="w-5 h-5" /> },
+          { label: '문의 동의 리드', value: leadsBySource.inquiry, icon: <UserCheck className="w-5 h-5" /> },
+          { label: '이메일 수신 신청', value: leadsBySource.email_info, icon: <TrendingUp className="w-5 h-5" /> },
+          { label: '설문 응답 수', value: surveyAgg.total, icon: <ClipboardList className="w-5 h-5" /> },
+        ].map((item) => (
+          <div key={item.label} className="bg-white border border-gray-200/60 rounded-xl p-4 hover:shadow-card-hover transition-all duration-200">
+            <div className="text-gray-400 mb-3">{item.icon}</div>
+            <p className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">{item.value}</p>
+            <p className="text-xs font-medium text-gray-500 mt-1">{item.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6">
+        <div className="bg-white border border-gray-200/60 rounded-xl p-5 sm:p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-6">
+            <BarChart3 className="w-5 h-5 text-gray-400" />
+            <h2 className="text-sm font-semibold text-gray-900">방문 개요</h2>
+          </div>
+          <div className="space-y-4">
+            {[
+              { label: '전체 방문', value: totalVisits, color: 'bg-brand-500', ratio: 100 },
+              { label: 'QR 방문', value: qrVisits, color: 'bg-brand-400', ratio: totalVisits > 0 ? (qrVisits / totalVisits) * 100 : 0 },
+              { label: '직접 방문', value: directVisits, color: 'bg-slate-400', ratio: totalVisits > 0 ? (directVisits / totalVisits) * 100 : 0 },
+            ].map((item) => (
+              <div key={item.label}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-sm font-medium text-gray-700">{item.label}</span>
+                  <span className="text-xs font-bold text-gray-500">{item.value.toLocaleString()}건</span>
+                </div>
+                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className={`h-full ${item.color} rounded-full transition-all duration-700`} style={{ width: `${item.ratio}%` }} />
+                </div>
               </div>
             ))}
           </div>
-        )}
+        </div>
+
+        <div className="bg-white border border-gray-200/60 rounded-xl p-5 sm:p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-6">
+            <Clock className="w-5 h-5 text-gray-400" />
+            <h2 className="text-sm font-semibold text-gray-900">시간대별 방문</h2>
+            <span className="bg-gray-100 text-gray-500 rounded-md h-6 px-2 text-[11px] font-semibold flex items-center ml-auto">
+              전체 기간
+            </span>
+          </div>
+
+          {visits.length === 0 ? (
+            <div className="h-32 flex items-center justify-center">
+              <p className="text-sm text-gray-400">방문 기록이 없어요</p>
+            </div>
+          ) : (
+            <div className="flex items-end gap-1 h-32">
+              {ALL_HOURS.map((hour) => {
+                const value = hourlyCounts[hour];
+                const isPeak = value > 0 && value === maxHourly;
+                return (
+                  <div key={hour} className="flex-1 flex flex-col items-center gap-1">
+                    {value > 0 ? (
+                      <div
+                        className={`w-full rounded-t-sm transition-all cursor-help ${isPeak ? 'bg-brand-600' : 'bg-brand-400 hover:bg-brand-500'}`}
+                        style={{ height: `${(value / maxHourly) * 100}%` }}
+                        title={`${hour}시 : ${value}건`}
+                      />
+                    ) : (
+                      <div className="w-full" style={{ height: '2px' }} />
+                    )}
+                    {hour % 3 === 0 && <span className="text-[10px] font-medium text-gray-400">{hour}</span>}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          <p className="text-[11px] text-gray-400 mt-4 text-right">단위: 방문 수 / 시간대 (0~23시)</p>
+        </div>
       </div>
 
-      <div className="bg-white border border-gray-200/60 rounded-xl shadow-sm p-4">
-        <div className="flex items-center gap-2 mb-1">
-          <ClipboardList size={15} className="text-brand-600" />
-          <h2 className="text-sm font-semibold text-gray-900">설문 집계</h2>
-          <span className="ml-auto text-xs text-gray-400">총 {surveyAgg.total}건</span>
-        </div>
-        {surveyAgg.total === 0 ? (
-          <p className="text-center text-sm text-gray-400 py-6">아직 설문 응답이 없어요.</p>
-        ) : (
-          <div className="space-y-5 mt-3">
+      {surveyAgg.total > 0 && (
+        <div className="bg-white border border-gray-200/60 rounded-xl p-5 sm:p-6 mb-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-6">
+            <ClipboardList className="w-5 h-5 text-gray-400" />
+            <h2 className="text-sm font-semibold text-gray-900">설문 집계</h2>
+            <span className="text-[11px] font-semibold text-gray-500 bg-gray-100 rounded-md px-2 h-5 flex items-center ml-auto">
+              총 {surveyAgg.total}건
+            </span>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {topInterests.length > 0 && (
               <div>
-                <p className="text-xs font-medium text-gray-500 mb-2">관심 분야 (복수 선택)</p>
-                <div className="space-y-1.5">
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">주요 관심 분야</p>
+                <div className="space-y-4">
                   {topInterests.map(([tag, count]) => (
-                    <div key={tag} className="flex items-center gap-2">
-                      <span className="w-24 text-xs text-gray-700 truncate flex-shrink-0">{tag}</span>
-                      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-brand-500 rounded-full" style={{ width: `${Math.round((count / maxInterest) * 100)}%` }} />
+                    <div key={tag}>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-sm font-medium text-gray-700">{tag}</span>
+                        <span className="text-xs font-bold text-gray-500">{count}명</span>
                       </div>
-                      <span className="w-8 text-right text-xs font-medium text-gray-700">{count}</span>
+                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-brand-500 rounded-full transition-all duration-700" style={{ width: `${(count / maxInterest) * 100}%` }} />
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {topPurposes.length > 0 && (
-              <div>
-                <p className="text-xs font-medium text-gray-500 mb-2">방문 목적</p>
-                <div className="space-y-1.5">
-                  {topPurposes.map(([purpose, count]) => (
-                    <div key={purpose} className="flex items-center gap-2">
-                      <span className="w-24 text-xs text-gray-700 truncate flex-shrink-0">{purpose}</span>
-                      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-indigo-400 rounded-full" style={{ width: `${Math.round((count / maxPurpose) * 100)}%` }} />
+            <div className="space-y-6">
+              {topPurposes.length > 0 && (
+                <div>
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">방문 목적 분포</p>
+                  <div className="space-y-2.5">
+                    {topPurposes.map(([purpose, count]) => (
+                      <div key={purpose} className="flex items-center justify-between text-sm">
+                        <span className="text-gray-700 font-medium">{purpose}</span>
+                        <div className="flex items-center gap-3">
+                          <div className="h-1.5 bg-brand-200 rounded-full overflow-hidden w-24">
+                            <div className="h-full bg-brand-500" style={{ width: `${(count / surveyAgg.total) * 100}%` }} />
+                          </div>
+                          <span className="font-bold text-gray-600 w-8 text-right">{count}건</span>
+                        </div>
                       </div>
-                      <span className="w-8 text-right text-xs font-medium text-gray-700">{count}</span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
+              )}
+              <div className="bg-emerald-50 border border-emerald-100/50 rounded-xl p-5">
+                <p className="text-xs font-semibold text-emerald-600 mb-1">연락 희망 응답자</p>
+                <p className="text-2xl font-bold text-emerald-700">
+                  {surveyAgg.wantsContact}명
+                  <span className="text-sm font-medium text-emerald-500 ml-2">
+                    ({surveyAgg.total > 0 ? Math.round((surveyAgg.wantsContact / surveyAgg.total) * 100) : 0}%)
+                  </span>
+                </p>
+                <p className="text-[11px] text-emerald-600/60 mt-1 font-medium italic">잠재 리드로 연결될 가능성이 높습니다</p>
               </div>
-            )}
-
-            <div className="flex items-center gap-3 pt-1 border-t border-gray-100">
-              <UserCheck size={14} className="text-green-500 flex-shrink-0" />
-              <span className="text-xs text-gray-700">연락 희망</span>
-              <span className="text-sm font-bold text-gray-900">{surveyAgg.wantsContact}명</span>
-              {surveyAgg.total > 0 && <span className="text-xs text-gray-400">({Math.round((surveyAgg.wantsContact / surveyAgg.total) * 100)}%)</span>}
             </div>
           </div>
-        )}
-      </div>
-
-      <div className="bg-white border border-gray-200/60 rounded-xl shadow-sm p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <MessageSquare size={15} className="text-brand-600" />
-            <h2 className="text-sm font-semibold text-gray-900">최근 문의</h2>
-          </div>
-          <Link to="/admin/inbox" className="text-xs text-brand-600 hover:underline">
-            전체 보기
-          </Link>
         </div>
-        {recentThreads.length === 0 ? (
-          <p className="text-center text-sm text-gray-400 py-6">아직 문의가 없어요.</p>
-        ) : (
-          <ul className="divide-y divide-gray-100">
-            {recentThreads.map((thread) => {
-              const lastMessage = thread.messages[thread.messages.length - 1];
-              const displayName = thread.visitorName ?? thread.visitorEmail ?? (thread.visitorId === 'user' ? '로그인 사용자' : '익명');
-              return (
-                <li key={thread.id} className="py-3 flex items-start gap-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-medium text-gray-800">{displayName}</span>
-                      <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${threadStatusColor(thread.status)}`}>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+        <div className="bg-white border border-gray-200/60 rounded-xl p-5 sm:p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-gray-400" />
+              <h2 className="text-sm font-semibold text-gray-900">최근 문의</h2>
+            </div>
+            <Link to="/admin/inbox" className="text-xs font-semibold text-gray-500 hover:text-brand-600 flex items-center gap-1 transition-colors">
+              전체 보기 <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+
+          {recentThreads.length === 0 ? (
+            <div className="text-center py-10">
+              <p className="text-sm text-gray-400 font-medium">아직 문의가 없어요</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-100">
+              {recentThreads.map((thread) => {
+                const lastMessage = thread.messages[thread.messages.length - 1];
+                const displayName = thread.visitorName ?? thread.visitorEmail ?? (thread.visitorId === 'user' ? '로그인 사용자' : '익명');
+                return (
+                  <div key={thread.id} className="py-3.5 first:pt-0 last:pb-0">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="text-sm font-semibold text-gray-900 truncate">{displayName}</span>
+                      <span className={`text-[11px] font-bold rounded-md px-1.5 py-0.5 ${threadStatusColor(thread.status)}`}>
                         {thread.status}
                       </span>
-                      <span className="text-xs text-gray-400 ml-auto">{formatDate(thread.lastUpdated)}</span>
+                      <span className="text-xs text-gray-400 ml-auto shrink-0">{formatDate(thread.lastUpdated)}</span>
                     </div>
                     {lastMessage && (
-                      <p className="text-xs text-gray-500 mt-0.5 truncate">
+                      <p className="text-xs text-gray-500 truncate">
                         {lastMessage.from === 'booth' ? '[답변] ' : ''}
                         {lastMessage.text}
                       </p>
                     )}
                   </div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
-
-      <div className="bg-white border border-gray-200/60 rounded-xl shadow-sm p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Users size={15} className="text-brand-600" />
-            <h2 className="text-sm font-semibold text-gray-900">최근 리드</h2>
-          </div>
-          <Link to="/admin/leads" className="text-xs text-brand-600 hover:underline">
-            전체 보기
-          </Link>
+                );
+              })}
+            </div>
+          )}
         </div>
-        {recentLeads.length === 0 ? (
-          <p className="text-center text-sm text-gray-400 py-6">아직 리드가 없어요.</p>
-        ) : (
-          <ul className="divide-y divide-gray-100">
-            {recentLeads.map((lead) => (
-              <li key={lead.id} className="py-3 flex items-start gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs font-medium text-gray-800">{lead.name ?? lead.email ?? '이름 없음'}</span>
-                    {lead.company && <span className="text-xs text-gray-500">{lead.company}</span>}
-                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 ml-auto">
-                      {leadSourceLabel(lead.source)}
+
+        <div className="bg-white border border-gray-200/60 rounded-xl p-5 sm:p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <UserCheck className="w-5 h-5 text-gray-400" />
+              <h2 className="text-sm font-semibold text-gray-900">최근 리드</h2>
+            </div>
+            <Link to="/admin/leads" className="text-xs font-semibold text-gray-500 hover:text-brand-600 flex items-center gap-1 transition-colors">
+              전체 보기 <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+
+          {recentLeads.length === 0 ? (
+            <div className="text-center py-10">
+              <p className="text-sm text-gray-400 font-medium">아직 리드가 없어요</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-100">
+              {recentLeads.map((lead) => {
+                const sourceColors = {
+                  bizcard: 'bg-gray-100 text-gray-600',
+                  inquiry: 'bg-blue-50 text-blue-600',
+                  email_info: 'bg-emerald-50 text-emerald-600',
+                  survey: 'bg-amber-50 text-amber-600',
+                  manual: 'bg-purple-50 text-purple-600',
+                } as const;
+                const sourceLabels = {
+                  bizcard: '명함',
+                  inquiry: '문의',
+                  email_info: '이메일',
+                  survey: '설문',
+                  manual: '수동',
+                } as const;
+
+                return (
+                  <div key={lead.id} className="flex items-center gap-4 py-3.5 first:pt-0 last:pb-0">
+                    <span className={`text-[11px] font-bold rounded-md px-1.5 py-0.5 shrink-0 ${sourceColors[lead.source]}`}>
+                      {sourceLabels[lead.source]}
                     </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{lead.name ?? lead.email ?? '이름 없음'}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className={`text-[11px] font-bold rounded-md px-1.5 py-0.5 ${leadStatusColor(lead.status ?? 'NEW')}`}>
+                          {leadStatusLabel(lead.status ?? 'NEW')}
+                        </span>
+                        <span className="text-xs text-gray-400">{formatDate(lead.createdAt)}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${leadStatusColor(lead.status ?? 'NEW')}`}>
-                      {leadStatusLabel(lead.status ?? 'NEW')}
-                    </span>
-                    <span className="text-xs text-gray-400">{formatDate(lead.createdAt)}</span>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
