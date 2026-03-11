@@ -32,6 +32,19 @@ import {
 } from '../../utils/localStorage';
 import type { Visit, Favorite, Lead, Thread, BoothEventParticipation } from '../../types';
 
+type SurveyField = {
+  id: string;
+  label: string;
+  type: 'text' | 'select' | 'checkbox';
+  options?: string[];
+  required: boolean;
+};
+
+const DEFAULT_SURVEY_FIELDS: SurveyField[] = [
+  { id: 'interests', label: '관심 분야', type: 'checkbox', options: ['구매검토', '파트너십', 'B2B 납품', '정보수집'], required: false },
+  { id: 'purpose', label: '방문 목적', type: 'select', options: ['구매/계약 검토', '제품 정보 수집', '파트너십/협력', '견적 요청'], required: false },
+];
+
 const ALL_HOURS = Array.from({ length: 24 }, (_, index) => index);
 type Period = 'all' | 'week' | 'month' | 'custom';
 
@@ -119,6 +132,15 @@ export function AdminBoothStatsTab({ boothId }: { boothId: string }) {
   const allLeads = useMemo<Lead[]>(() => getBoothLeads(boothId), [boothId]);
   const allBoothThreads = useMemo<Thread[]>(() => allThreads.filter((thread) => thread.boothId === boothId), [allThreads, boothId]);
   const allSurveys = useMemo(() => getBoothSurveys(boothId), [boothId]);
+  const surveyFields = useMemo<SurveyField[]>(() => {
+    try {
+      const raw = localStorage.getItem(`bep_survey_fields_${boothId}`);
+      const parsed = raw ? JSON.parse(raw) as SurveyField[] : DEFAULT_SURVEY_FIELDS;
+      return parsed.length > 0 ? parsed : DEFAULT_SURVEY_FIELDS;
+    } catch {
+      return DEFAULT_SURVEY_FIELDS;
+    }
+  }, [boothId]);
   const analyticsAll = useMemo(() => getAnalytics().filter((analytics) => analytics.boothId === boothId), [boothId]);
   const participations = useMemo(() => getBoothParticipations(boothId), [boothId]);
   const events = useMemo(() => getEvents(), []);
@@ -198,27 +220,62 @@ export function AdminBoothStatsTab({ boothId }: { boothId: string }) {
   const maxHourly = Math.max(...hourlyCounts, 1);
   const peakHour = hourlyCounts.indexOf(Math.max(...hourlyCounts, 0));
 
-  const scopedSurveyAgg = useMemo(() => {
-    const interests: Record<string, number> = {};
-    const purposes: Record<string, number> = {};
-    let wantsContact = 0;
-
-    for (const survey of scopedSurveys) {
-      (survey.answers.interests ?? []).forEach((tag) => {
-        interests[tag] = (interests[tag] ?? 0) + 1;
-      });
-      if (survey.answers.purpose) {
-        purposes[survey.answers.purpose] = (purposes[survey.answers.purpose] ?? 0) + 1;
+  const surveySummary = useMemo(() => {
+    const fieldSummaries = surveyFields.map((field) => {
+      if (field.type === 'text') {
+        const responses = scopedSurveys
+          .map((survey) => {
+            const value = survey.answers[field.id];
+            if (typeof value !== 'string' || value.trim().length === 0) return null;
+            return {
+              value,
+              createdAt: survey.createdAt,
+            };
+          })
+          .filter((value): value is { value: string; createdAt: string } => Boolean(value))
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return {
+          ...field,
+          responses,
+        };
       }
-      if (survey.answers.wantsContact) wantsContact += 1;
-    }
 
-    return { total: scopedSurveys.length, interests, purposes, wantsContact };
-  }, [scopedSurveys]);
-  const topInterests = Object.entries(scopedSurveyAgg.interests).sort((a, b) => b[1] - a[1]).slice(0, 8);
-  const topPurposes = Object.entries(scopedSurveyAgg.purposes).sort((a, b) => b[1] - a[1]);
-  const topInterestName = topInterests[0]?.[0];
-  const maxInterest = topInterests[0]?.[1] ?? 1;
+      const counts: Record<string, number> = {};
+      for (const survey of scopedSurveys) {
+        const answer = survey.answers[field.id];
+        if (field.type === 'checkbox' && Array.isArray(answer)) {
+          answer.forEach((value) => {
+            if (!value) return;
+            counts[value] = (counts[value] ?? 0) + 1;
+          });
+        }
+        if (field.type === 'select' && typeof answer === 'string' && answer.trim()) {
+          counts[answer] = (counts[answer] ?? 0) + 1;
+        }
+      }
+      return {
+        ...field,
+        counts,
+        ranked: Object.entries(counts).sort((a, b) => b[1] - a[1]),
+      };
+    });
+
+    const wantsContact = scopedSurveys.filter((survey) => survey.answers.wantsContact).length;
+    const leadingChoiceField = fieldSummaries.find(
+      (field): field is SurveyField & { counts: Record<string, number>; ranked: Array<[string, number]> } =>
+        'ranked' in field && field.ranked.length > 0,
+    );
+
+    return {
+      total: scopedSurveys.length,
+      wantsContact,
+      fieldSummaries,
+      choiceFields: fieldSummaries.filter((field): field is SurveyField & { counts: Record<string, number>; ranked: Array<[string, number]> } => 'ranked' in field),
+      textFields: fieldSummaries.filter((field): field is SurveyField & { responses: Array<{ value: string; createdAt: string }> } => 'responses' in field),
+      leadingChoiceLabel: leadingChoiceField?.label,
+      leadingChoiceValue: leadingChoiceField && leadingChoiceField.ranked[0]?.[0],
+    };
+  }, [scopedSurveys, surveyFields]);
 
   const pendingInquiries = scopedThreads.filter((thread) => thread.status === '미처리').length;
   const newLeads = scopedLeads.filter((lead) => !lead.status || lead.status === 'NEW').length;
@@ -232,8 +289,8 @@ export function AdminBoothStatsTab({ boothId }: { boothId: string }) {
     newLeads > 0
       ? { icon: PhoneCall, color: 'text-amber-600 bg-amber-50', text: `신규 리드 ${newLeads}건 - 팔로업이 필요해요`, action: '리드 목록', to: '/admin/leads' }
       : null,
-    topInterestName
-      ? { icon: Lightbulb, color: 'text-emerald-600 bg-emerald-50', text: `관심 분야 1위 "${topInterestName}" - 관련 자료를 부스에 추가해 보세요`, action: '설정 보기', to: `/admin/booths/${boothId}/setting` }
+    surveySummary.leadingChoiceLabel && surveySummary.leadingChoiceValue
+      ? { icon: Lightbulb, color: 'text-emerald-600 bg-emerald-50', text: `"${surveySummary.leadingChoiceLabel}"에서 "${surveySummary.leadingChoiceValue}" 응답이 가장 많아요`, action: '설정 보기', to: `/admin/booths/${boothId}/setting` }
       : null,
     totalVisits > 0
       ? { icon: Clock, color: 'text-sky-600 bg-sky-50', text: `방문 피크 시간대 ${peakHour}시 - 이 시간에 인력을 집중 배치하세요`, action: null, to: null }
@@ -426,7 +483,7 @@ export function AdminBoothStatsTab({ boothId }: { boothId: string }) {
           { label: '명함 스캔 리드', value: leadsBySource.bizcard, icon: <CreditCard className="w-5 h-5" /> },
           { label: '문의 동의 리드', value: leadsBySource.inquiry, icon: <UserCheck className="w-5 h-5" /> },
           { label: '이메일 수신 신청', value: leadsBySource.email_info, icon: <TrendingUp className="w-5 h-5" /> },
-          { label: '설문 응답 수', value: scopedSurveyAgg.total, icon: <ClipboardList className="w-5 h-5" /> },
+          { label: '설문 응답 수', value: surveySummary.total, icon: <ClipboardList className="w-5 h-5" /> },
         ].map((item) => (
           <div key={item.label} className="bg-white border border-gray-200/60 rounded-xl p-4 hover:shadow-card-hover transition-all duration-200">
             <div className="text-gray-400 mb-3">{item.icon}</div>
@@ -500,64 +557,87 @@ export function AdminBoothStatsTab({ boothId }: { boothId: string }) {
         </div>
       </div>
 
-      {scopedSurveyAgg.total > 0 && (
+      {surveySummary.total > 0 && (
         <div className="bg-white border border-gray-200/60 rounded-xl p-5 sm:p-6 mb-6 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <ClipboardList className="w-5 h-5 text-gray-400" />
             <h2 className="text-sm font-semibold text-gray-900">설문 집계</h2>
             <span className="text-[11px] font-semibold text-gray-500 bg-gray-100 rounded-md px-2 h-5 flex items-center ml-auto">
-              총 {scopedSurveyAgg.total}건
+              총 {surveySummary.total}건
             </span>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {topInterests.length > 0 && (
-              <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">주요 관심 분야</p>
-                <div className="space-y-4">
-                  {topInterests.map(([tag, count]) => (
-                    <div key={tag}>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-sm font-medium text-gray-700">{tag}</span>
-                        <span className="text-xs font-bold text-gray-500">{count}명</span>
-                      </div>
-                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-brand-500 rounded-full transition-all duration-700" style={{ width: `${(count / maxInterest) * 100}%` }} />
-                      </div>
+          <div className="space-y-6">
+            {surveySummary.choiceFields.length > 0 && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {surveySummary.choiceFields.map((field) => {
+                  const maxCount = field.ranked[0]?.[1] ?? 1;
+                  return (
+                    <div key={field.id} className="bg-gray-50/70 border border-gray-100 rounded-xl p-5">
+                      <p className="text-sm font-semibold text-gray-900 mb-1">{field.label}</p>
+                      <p className="text-xs text-gray-400 mb-4">
+                        {field.type === 'checkbox' ? '다중 선택 응답 분포' : '단일 선택 응답 분포'}
+                      </p>
+                      {field.ranked.length === 0 ? (
+                        <p className="text-sm text-gray-400">아직 응답이 없어요</p>
+                      ) : (
+                        <div className="space-y-3">
+                          {field.ranked.map(([option, count]) => (
+                            <div key={option}>
+                              <div className="flex items-center justify-between mb-1.5">
+                                <span className="text-sm font-medium text-gray-700">{option}</span>
+                                <span className="text-xs font-bold text-gray-500">{count}건</span>
+                              </div>
+                              <div className="h-2 bg-white rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-brand-500 rounded-full transition-all duration-700"
+                                  style={{ width: `${(count / maxCount) * 100}%` }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
             )}
 
-            <div className="space-y-6">
-              {topPurposes.length > 0 && (
-                <div>
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">방문 목적 분포</p>
+            {surveySummary.textFields.map((field) => (
+              <div key={field.id} className="bg-gray-50/70 border border-gray-100 rounded-xl p-5">
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">{field.label}</p>
+                    <p className="text-xs text-gray-400 mt-1">직접 입력 응답 목록</p>
+                  </div>
+                  <span className="text-xs font-semibold text-gray-500 bg-white border border-gray-100 rounded-md px-2 py-1">
+                    {field.responses.length}건
+                  </span>
+                </div>
+                {field.responses.length === 0 ? (
+                  <p className="text-sm text-gray-400">아직 응답이 없어요</p>
+                ) : (
                   <div className="space-y-2.5">
-                    {topPurposes.map(([purpose, count]) => (
-                      <div key={purpose} className="flex items-center justify-between text-sm">
-                        <span className="text-gray-700 font-medium">{purpose}</span>
-                        <div className="flex items-center gap-3">
-                          <div className="h-1.5 bg-brand-200 rounded-full overflow-hidden w-24">
-                            <div className="h-full bg-brand-500" style={{ width: `${(count / scopedSurveyAgg.total) * 100}%` }} />
-                          </div>
-                          <span className="font-bold text-gray-600 w-8 text-right">{count}건</span>
-                        </div>
+                    {field.responses.slice(0, 8).map((response, index) => (
+                      <div key={`${field.id}-${index}`} className="rounded-lg bg-white border border-gray-100 px-4 py-3">
+                        <p className="text-[11px] font-medium text-gray-400 mb-1.5">{formatDate(response.createdAt)}</p>
+                        <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{response.value}</p>
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
-              <div className="bg-emerald-50 border border-emerald-100/50 rounded-xl p-5">
-                <p className="text-xs font-semibold text-emerald-600 mb-1">연락 희망 응답자</p>
-                <p className="text-2xl font-bold text-emerald-700">
-                  {scopedSurveyAgg.wantsContact}명
-                  <span className="text-sm font-medium text-emerald-500 ml-2">
-                    ({scopedSurveyAgg.total > 0 ? Math.round((scopedSurveyAgg.wantsContact / scopedSurveyAgg.total) * 100) : 0}%)
-                  </span>
-                </p>
-                <p className="text-[11px] text-emerald-600/60 mt-1 font-medium italic">잠재 리드로 연결될 가능성이 높습니다</p>
+                )}
               </div>
+            ))}
+
+            <div className="bg-emerald-50 border border-emerald-100/50 rounded-xl p-5">
+              <p className="text-xs font-semibold text-emerald-600 mb-1">연락 희망 응답자</p>
+              <p className="text-2xl font-bold text-emerald-700">
+                {surveySummary.wantsContact}명
+                <span className="text-sm font-medium text-emerald-500 ml-2">
+                  ({surveySummary.total > 0 ? Math.round((surveySummary.wantsContact / surveySummary.total) * 100) : 0}%)
+                </span>
+              </p>
+              <p className="text-[11px] text-emerald-600/60 mt-1 font-medium italic">잠재 리드로 연결될 가능성이 높습니다</p>
             </div>
           </div>
         </div>
