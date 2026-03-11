@@ -29,13 +29,13 @@ export function Modal({ open, onClose, title, children, size = 'sm' }: ModalProp
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 sm:p-6"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6"
       onClick={onClose}
     >
       <div className="absolute inset-0 bg-black/40 animate-fade-in" />
 
       <div
-        className={`relative bg-white rounded-xl shadow-modal w-full ${maxW} sm:mx-auto overflow-hidden animate-scale-in`}
+        className={`relative bg-white shadow-modal w-full max-h-[85vh] flex flex-col rounded-t-2xl rounded-b-none animate-slide-up sm:rounded-xl sm:max-h-none sm:${maxW} sm:mx-auto sm:overflow-hidden sm:animate-scale-in`}
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
@@ -49,7 +49,7 @@ export function Modal({ open, onClose, title, children, size = 'sm' }: ModalProp
             </button>
           </div>
         )}
-        <div className="p-6">{children}</div>
+        <div className="p-6 overflow-y-auto">{children}</div>
       </div>
     </div>
   );
