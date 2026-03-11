@@ -719,18 +719,36 @@ export default function BoothPage() {
               </div>
             )}
 
-            {/* 프로모션 소식 받기 — mobile only, order: 6 */}
+            {/* 프로모션 소식 받기 — mobile only, order: 7 */}
             <button
               onClick={() => setShowEmailInfo(true)}
-              className="order-6 md:hidden w-full flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-bold border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200 shadow-sm"
+              className="order-7 md:hidden w-full flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-bold border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200 shadow-sm"
             >
               <Mail className="w-4.5 h-4.5 text-gray-400" />
               프로모션 소식 받기
             </button>
 
-            {/* 링크 — mobile order: 7 */}
+            {/* 1분 설문 — mobile order: 6 */}
+            <div className="order-6 md:order-none bg-white border border-gray-200/60 rounded-xl p-6 shadow-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <ClipboardList className="w-5 h-5 text-brand-600" />
+                <span className="text-sm font-bold text-gray-900">1분 설문 참여</span>
+              </div>
+              <p className="text-xs font-medium text-gray-500 mb-4 leading-relaxed">
+                {surveyIntro}
+              </p>
+              <button
+                onClick={() => setShowSurvey(true)}
+                disabled={surveyDone}
+                className="w-full bg-brand-600 text-white text-sm font-bold rounded-xl h-11 hover:bg-brand-500 transition-all duration-200 shadow-lg shadow-brand-100 disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed"
+              >
+                {surveyDone ? '설문 완료 ✓' : '설문 참여하기'}
+              </button>
+            </div>
+
+            {/* 링크 — mobile order: 8 */}
             {(booth.links.instagram || booth.links.store || booth.links.site) && (
-              <div className="order-7 md:order-none bg-white border border-gray-200/60 rounded-xl p-6 shadow-sm">
+              <div className="order-8 md:order-none bg-white border border-gray-200/60 rounded-xl p-6 shadow-sm">
                 <h2 className="text-sm font-semibold text-gray-900 mb-4">공식 채널</h2>
                 <div className="grid grid-cols-1 gap-2">
                   {booth.links.instagram && (
@@ -757,24 +775,6 @@ export default function BoothPage() {
                 </div>
               </div>
             )}
-
-            {/* 1분 설문 — mobile order: 8 */}
-            <div className="order-8 md:order-none bg-white border border-gray-200/60 rounded-xl p-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-2">
-                <ClipboardList className="w-5 h-5 text-brand-600" />
-                <span className="text-sm font-bold text-gray-900">1분 설문 참여</span>
-              </div>
-              <p className="text-xs font-medium text-gray-500 mb-4 leading-relaxed">
-                {surveyIntro}
-              </p>
-              <button
-                onClick={() => setShowSurvey(true)}
-                disabled={surveyDone}
-                className="w-full bg-brand-600 text-white text-sm font-bold rounded-xl h-11 hover:bg-brand-500 transition-all duration-200 shadow-lg shadow-brand-100 disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed"
-              >
-                {surveyDone ? '설문 완료 ✓' : '설문 참여하기'}
-              </button>
-            </div>
 
           </div>
 
