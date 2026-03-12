@@ -26,6 +26,7 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Gift,
 } from 'lucide-react';
 import { VisitorHeader } from '../../components/VisitorHeader';
 import { Modal } from '../../components/Modal';
@@ -114,6 +115,7 @@ export default function BoothPage() {
   const [showSurvey, setShowSurvey] = useState(false);
   const [surveyFields, setSurveyFields] = useState<SurveyField[]>(DEFAULT_SURVEY_FIELDS);
   const [surveyIntro, setSurveyIntro] = useState(DEFAULT_SURVEY_INTRO);
+  const [surveyReward, setSurveyReward] = useState<{ enabled: boolean; name: string; count: number; description: string } | null>(null);
   const [surveyAnswers, setSurveyAnswers] = useState<Record<string, string | string[]>>({});
   const [surveyWantsContact, setSurveyWantsContact] = useState(false);
   const [surveyContactEmail, setSurveyContactEmail] = useState('');
@@ -158,6 +160,11 @@ export default function BoothPage() {
         setSurveyFields(DEFAULT_SURVEY_FIELDS);
       }
       setSurveyIntro(localStorage.getItem(`bep_survey_intro_${boothId}`) ?? DEFAULT_SURVEY_INTRO);
+      try {
+        const rewardRaw = localStorage.getItem(`bep_survey_reward_${boothId}`);
+        const parsed = rewardRaw ? JSON.parse(rewardRaw) : null;
+        setSurveyReward(parsed?.enabled ? parsed : null);
+      } catch { setSurveyReward(null); }
       const surveys = getBoothSurveys(boothId);
       const guestId = getGuestId();
       setSurveyDone(surveys.some((s) => s.visitorId === guestId));
@@ -766,6 +773,18 @@ export default function BoothPage() {
               <p className="text-xs font-medium text-gray-500 mb-4 leading-relaxed">
                 {surveyIntro}
               </p>
+              {surveyReward && surveyReward.name && !surveyDone && (
+                <div className="flex items-start gap-2.5 mb-4 p-3 bg-amber-50 border border-amber-100 rounded-xl">
+                  <Gift className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-xs font-bold text-amber-700">🎁 {surveyReward.name}</p>
+                    <p className="text-[11px] text-amber-600 mt-0.5">
+                      설문 참여 시 추첨을 통해 드려요!
+                      {surveyReward.description && ` · ${surveyReward.description}`}
+                    </p>
+                  </div>
+                </div>
+              )}
               <button
                 onClick={() => setShowSurvey(true)}
                 disabled={surveyDone}
@@ -1129,6 +1148,12 @@ export default function BoothPage() {
                 </div>
                 <p className="font-medium text-gray-900 mb-1">설문 완료!</p>
                 <p className="text-sm text-gray-500 mb-5">소중한 의견 감사해요.</p>
+                {surveyReward && surveyReward.name && (
+                  <div className="flex items-center gap-2 justify-center mb-5 px-4 py-2.5 bg-amber-50 border border-amber-100 rounded-xl">
+                    <Gift className="w-4 h-4 text-amber-500 shrink-0" />
+                    <p className="text-xs font-medium text-amber-700">추첨 대상에 등록됐어요! 🎉</p>
+                  </div>
+                )}
                 <button onClick={handleCloseSurvey} className="w-full bg-brand-600 text-white text-sm font-medium rounded-lg h-10 hover:bg-brand-500 transition-all duration-150">확인</button>
               </div>
             ) : isDesktop ? (
