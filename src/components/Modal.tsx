@@ -5,11 +5,12 @@ interface ModalProps {
   open: boolean;
   onClose: () => void;
   title?: string;
+  headerRight?: React.ReactNode;
   children: React.ReactNode;
   size?: 'sm' | 'md';
 }
 
-export function Modal({ open, onClose, title, children, size = 'sm' }: ModalProps) {
+export function Modal({ open, onClose, title, headerRight, children, size = 'sm' }: ModalProps) {
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => {
@@ -39,11 +40,12 @@ export function Modal({ open, onClose, title, children, size = 'sm' }: ModalProp
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-            <h3 className="text-[15px] font-semibold text-gray-900">{title}</h3>
+          <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100">
+            <h3 className="text-[15px] font-semibold text-gray-900 shrink-0">{title}</h3>
+            {headerRight && <div className="flex-1 min-w-0 flex justify-end">{headerRight}</div>}
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors p-1 -mr-1 rounded-lg hover:bg-gray-100"
+              className="text-gray-400 hover:text-gray-600 transition-colors p-1 -mr-1 rounded-lg hover:bg-gray-100 shrink-0"
             >
               <X className="w-4 h-4" />
             </button>

@@ -120,6 +120,7 @@ export default function BoothPage() {
   const [surveyConsent, setSurveyConsent] = useState(false);
   const [surveyConsentMarketing, setSurveyConsentMarketing] = useState(false);
   const [surveySent, setSurveySent] = useState(false);
+  const [surveyPage, setSurveyPage] = useState(0);
 
   const [policy, setPolicy] = useState<BoothPolicy | undefined>();
   const [attachments, setAttachments] = useState<Attachment[]>([]);
@@ -127,6 +128,14 @@ export default function BoothPage() {
   const tracked = useRef(false);
   const [ipTrackingConsent, setIpTrackingConsent] = useState(false);
   const [showAiSummary, setShowAiSummary] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   useEffect(() => {
     if (!boothId || tracked.current) return;
@@ -328,6 +337,7 @@ export default function BoothPage() {
     setSurveyConsent(false);
     setSurveyConsentMarketing(false);
     setSurveyContactEmail('');
+    setSurveyPage(0);
   };
 
   const getSurveyAnswer = (fieldId: string) => surveyAnswers[fieldId];
@@ -1011,98 +1021,74 @@ export default function BoothPage() {
       </Modal>
 
       {/* ═══ Survey Modal ═══ */}
-      <Modal open={showSurvey} onClose={handleCloseSurvey} title="설문" size="md">
-        {surveySent ? (
-          <div className="text-center py-4">
-            <div className="w-14 h-14 bg-emerald-50 rounded-xl flex items-center justify-center mx-auto mb-3">
-              <CheckCircle className="w-7 h-7 text-emerald-600" />
+      {(() => {
+        const surveyTotalPages = surveyFields.length + 1;
+        const isLastPage = surveyPage === surveyTotalPages - 1;
+        const currentField = surveyPage < surveyFields.length ? surveyFields[surveyPage] : null;
+
+        const renderSurveyField = (field: SurveyField) => {
+          const answer = getSurveyAnswer(field.id);
+          return (
+            <div key={field.id}>
+              <p className="text-[13px] font-semibold text-gray-900 mb-2.5">
+                {field.label}
+                {field.required && <span className="text-red-400 ml-1">*</span>}
+              </p>
+              {field.type === 'text' && (
+                <input
+                  type="text"
+                  value={typeof answer === 'string' ? answer : ''}
+                  onChange={(e) => setSurveyTextAnswer(field.id, e.target.value)}
+                  placeholder={`${field.label}을 입력해주세요`}
+                  className="w-full h-10 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400"
+                />
+              )}
+              {field.type === 'select' && (
+                <div className="space-y-2">
+                  {(field.options ?? []).filter(Boolean).map((option) => (
+                    <label key={option} className="flex items-center gap-2.5 cursor-pointer">
+                      <input type="radio" name={field.id} value={option} checked={answer === option}
+                        onChange={() => setSurveyTextAnswer(field.id, option)} className="w-4 h-4 accent-brand-600" />
+                      <span className="text-sm text-gray-700">{option}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
+              {field.type === 'checkbox' && (
+                <div className="flex flex-wrap gap-2">
+                  {(field.options ?? []).filter(Boolean).map((option) => {
+                    const checked = Array.isArray(answer) && answer.includes(option);
+                    return (
+                      <button key={option} onClick={() => toggleSurveyCheckboxAnswer(field.id, option)}
+                        className={`text-xs font-medium rounded-lg px-3 py-1.5 border transition-all duration-150 ${
+                          checked ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                        }`}>{option}</button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-            <p className="font-medium text-gray-900 mb-1">설문 완료!</p>
-            <p className="text-sm text-gray-500 mb-5">소중한 의견 감사해요.</p>
-            <button onClick={handleCloseSurvey} className="w-full bg-brand-600 text-white text-sm font-medium rounded-lg h-10 hover:bg-brand-500 transition-all duration-150">확인</button>
-          </div>
-        ) : (
-          <div className="space-y-5">
-            <div>
-              <div className="space-y-5">
-                {surveyFields.map((field) => {
-                  const answer = getSurveyAnswer(field.id);
-                  return (
-                    <div key={field.id}>
-                      <p className="text-[13px] font-semibold text-gray-900 mb-2.5">
-                        {field.label}
-                        {field.required && <span className="text-red-400 ml-1">*</span>}
-                      </p>
-                      {field.type === 'text' && (
-                        <input
-                          type="text"
-                          value={typeof answer === 'string' ? answer : ''}
-                          onChange={(e) => setSurveyTextAnswer(field.id, e.target.value)}
-                          placeholder={`${field.label}을 입력해주세요`}
-                          className="w-full h-10 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400"
-                        />
-                      )}
-                      {field.type === 'select' && (
-                        <div className="space-y-2">
-                          {(field.options ?? []).filter(Boolean).map((option) => (
-                            <label key={option} className="flex items-center gap-2.5 cursor-pointer">
-                              <input
-                                type="radio"
-                                name={field.id}
-                                value={option}
-                                checked={answer === option}
-                                onChange={() => setSurveyTextAnswer(field.id, option)}
-                                className="w-4 h-4 accent-brand-600"
-                              />
-                              <span className="text-sm text-gray-700">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                      )}
-                      {field.type === 'checkbox' && (
-                        <div className="flex flex-wrap gap-2">
-                          {(field.options ?? []).filter(Boolean).map((option) => {
-                            const checked = Array.isArray(answer) && answer.includes(option);
-                            return (
-                              <button
-                                key={option}
-                                onClick={() => toggleSurveyCheckboxAnswer(field.id, option)}
-                                className={`text-xs font-medium rounded-lg px-3 py-1.5 border transition-all duration-150 ${
-                                  checked ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
-                                }`}
-                              >
-                                {option}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+          );
+        };
+
+        const contactConsentBlock = (
+          <>
             <div className="border border-gray-200 rounded-lg overflow-hidden">
               <div className="flex items-center justify-between p-4 bg-gray-50">
                 <div>
                   <p className="text-sm font-medium text-gray-800">연락 받기를 원해요</p>
                   <p className="text-xs text-gray-400 mt-0.5">운영자가 리드로 저장합니다</p>
                 </div>
-                <button
-                  onClick={() => setSurveyWantsContact((v) => !v)}
+                <button onClick={() => setSurveyWantsContact((v) => !v)}
                   className={`relative w-11 h-6 rounded-full transition-all duration-150 ${surveyWantsContact ? 'bg-brand-600' : 'bg-gray-200'}`}>
                   <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${surveyWantsContact ? 'left-6' : 'left-1'}`} />
                 </button>
               </div>
               {surveyWantsContact && !isLoggedIn && (
                 <div className="px-4 pb-4 pt-3 border-t border-gray-200 bg-white">
-                  <input
-                    type="email"
-                    value={surveyContactEmail}
-                    onChange={(e) => setSurveyContactEmail(e.target.value)}
+                  <input type="email" value={surveyContactEmail} onChange={(e) => setSurveyContactEmail(e.target.value)}
                     placeholder="연락받을 이메일 주소"
-                    className="w-full h-10 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400"
-                  />
+                    className="w-full h-10 text-sm bg-white border border-gray-200 rounded-lg px-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-400" />
                 </div>
               )}
             </div>
@@ -1116,14 +1102,71 @@ export default function BoothPage() {
                 <span className="text-xs text-gray-500">(선택) 마케팅 정보 수신에 동의합니다<span className="text-gray-400 block">언제든 철회할 수 있어요</span></span>
               </label>
             </div>
-            <button onClick={handleSendSurvey}
-              disabled={!surveyConsent}
-              className="w-full bg-brand-600 text-white text-sm font-medium rounded-lg h-10 hover:bg-brand-500 transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed">
-              제출하기
+          </>
+        );
+
+        const desktopHeaderRight = isDesktop && !surveySent ? (
+          <div className="flex items-center gap-1">
+            <button onClick={() => setSurveyPage((p) => Math.max(0, p - 1))} disabled={surveyPage === 0}
+              className="flex items-center justify-center w-7 h-7 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+            <span className="text-xs font-bold text-gray-500 tabular-nums">{surveyPage + 1}/{surveyTotalPages}</span>
+            <button onClick={() => setSurveyPage((p) => Math.min(surveyTotalPages - 1, p + 1))} disabled={isLastPage}
+              className="flex items-center justify-center w-7 h-7 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
-        )}
-      </Modal>
+        ) : undefined;
+
+        return (
+          <Modal open={showSurvey} onClose={handleCloseSurvey} title="설문" size="md" headerRight={desktopHeaderRight}>
+            {surveySent ? (
+              <div className="text-center py-4">
+                <div className="w-14 h-14 bg-emerald-50 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle className="w-7 h-7 text-emerald-600" />
+                </div>
+                <p className="font-medium text-gray-900 mb-1">설문 완료!</p>
+                <p className="text-sm text-gray-500 mb-5">소중한 의견 감사해요.</p>
+                <button onClick={handleCloseSurvey} className="w-full bg-brand-600 text-white text-sm font-medium rounded-lg h-10 hover:bg-brand-500 transition-all duration-150">확인</button>
+              </div>
+            ) : isDesktop ? (
+              /* ── Desktop: 페이지네이션 (1문항/페이지) ── */
+              <div className="space-y-5">
+                {currentField && (
+                  <div className="min-h-[120px]">{renderSurveyField(currentField)}</div>
+                )}
+
+                {isLastPage && <div className="space-y-5">{contactConsentBlock}</div>}
+
+                {isLastPage ? (
+                  <button onClick={handleSendSurvey} disabled={!surveyConsent}
+                    className="w-full bg-brand-600 text-white text-sm font-medium rounded-lg h-10 hover:bg-brand-500 transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed">
+                    제출하기
+                  </button>
+                ) : (
+                  <button onClick={() => setSurveyPage((p) => Math.min(surveyTotalPages - 1, p + 1))}
+                    className="w-full bg-brand-600 text-white text-sm font-medium rounded-lg h-10 hover:bg-brand-500 transition-all duration-150">
+                    다음
+                  </button>
+                )}
+              </div>
+            ) : (
+              /* ── Mobile: 전체 스크롤 ── */
+              <div className="space-y-5">
+                <div className="space-y-5">
+                  {surveyFields.map((field) => renderSurveyField(field))}
+                </div>
+                {contactConsentBlock}
+                <button onClick={handleSendSurvey} disabled={!surveyConsent}
+                  className="w-full bg-brand-600 text-white text-sm font-medium rounded-lg h-10 hover:bg-brand-500 transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed">
+                  제출하기
+                </button>
+              </div>
+            )}
+          </Modal>
+        );
+      })()}
     </div>
   );
 }
