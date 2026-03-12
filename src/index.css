@@ -44,4 +44,18 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+  .scrollbar-thin-amber {
+    scrollbar-width: thin;
+    scrollbar-color: #fde68a transparent;
+  }
+  .scrollbar-thin-amber::-webkit-scrollbar {
+    width: 4px;
+  }
+  .scrollbar-thin-amber::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin-amber::-webkit-scrollbar-thumb {
+    background-color: #fde68a;
+    border-radius: 9999px;
+  }
 }

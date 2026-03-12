@@ -581,10 +581,20 @@ export default function AdminInboxPage() {
               </div>
               <textarea
                 value={selectedThread.memo}
-                onChange={(e) => updateMemo(selectedThread.id, e.target.value)}
+                onChange={(e) => {
+                  updateMemo(selectedThread.id, e.target.value);
+                  e.target.style.height = 'auto';
+                  e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
+                }}
+                ref={(el) => {
+                  if (el) {
+                    el.style.height = 'auto';
+                    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+                  }
+                }}
                 placeholder="내부용 메모를 남겨 공유하세요 (관람객 비공개)"
                 rows={1}
-                className="w-full text-xs font-bold text-amber-800 bg-transparent resize-none outline-none placeholder:text-amber-300"
+                className="w-full text-xs font-bold text-amber-800 bg-transparent resize-none outline-none placeholder:text-amber-300 max-h-[120px] overflow-y-auto scrollbar-thin-amber"
               />
             </div>
 
