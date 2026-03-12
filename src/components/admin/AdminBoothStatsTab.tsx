@@ -19,6 +19,9 @@ import {
   Calendar,
   ChevronDown,
   MapPin,
+  Gift,
+  Dice5,
+  X,
 } from 'lucide-react';
 import { useThreads } from '../../hooks/useThreads';
 import { useToast } from '../../contexts/ToastContext';
@@ -129,6 +132,22 @@ export function AdminBoothStatsTab({ boothId }: { boothId: string }) {
   const [showCustom, setShowCustom] = useState(false);
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [surveyPage, setSurveyPage] = useState(0);
+  const [showLotteryModal, setShowLotteryModal] = useState(false);
+  const [lotteryWinners, setLotteryWinners] = useState<Array<{ visitorId: string; createdAt: string }>>([]);
+
+  const surveyReward = useMemo<{ enabled: boolean; name: string; count: number; description: string }>(() => {
+    try {
+      const raw = localStorage.getItem(`bep_survey_reward_${boothId}`);
+      return raw ? JSON.parse(raw) : { enabled: false, name: '', count: 1, description: '' };
+    } catch { return { enabled: false, name: '', count: 1, description: '' }; }
+  }, [boothId]);
+
+  const savedWinners = useMemo<string[]>(() => {
+    try {
+      const raw = localStorage.getItem(`bep_survey_winners_${boothId}`);
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  }, [boothId]);
 
   const visits = useMemo<Visit[]>(() => getVisits().filter((visit) => visit.boothId === boothId), [boothId]);
   const favorites = useMemo<Favorite[]>(() => getFavorites().filter((favorite) => favorite.boothId === boothId), [boothId]);
@@ -693,6 +712,50 @@ export function AdminBoothStatsTab({ boothId }: { boothId: string }) {
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
+
+            {/* Reward lottery section */}
+            {surveyReward.enabled && surveyReward.name && (
+              <div className="mt-5 pt-4 border-t border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Gift className="w-4 h-4 text-amber-500" />
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">{surveyReward.name}</p>
+                      <p className="text-xs text-gray-400">당첨자 {surveyReward.count}명 · 응답자 {surveySummary.total}명</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const pool = scopedSurveys.filter((s) => !savedWinners.includes(s.visitorId));
+                      const shuffled = [...pool].sort(() => Math.random() - 0.5);
+                      const winners = shuffled.slice(0, surveyReward.count).map((s) => ({
+                        visitorId: s.visitorId,
+                        createdAt: s.createdAt,
+                      }));
+                      setLotteryWinners(winners);
+                      setShowLotteryModal(true);
+                    }}
+                    disabled={surveySummary.total === 0}
+                    className="flex items-center gap-1.5 h-9 px-4 text-xs font-bold bg-amber-500 text-white rounded-lg hover:bg-amber-400 transition-all shadow-sm disabled:opacity-40 disabled:pointer-events-none"
+                  >
+                    <Dice5 className="w-3.5 h-3.5" />
+                    추첨하기
+                  </button>
+                </div>
+                {savedWinners.length > 0 && (
+                  <div className="mt-3 p-3 bg-amber-50 rounded-lg">
+                    <p className="text-[11px] font-bold text-amber-600 uppercase mb-1.5">확정된 당첨자 ({savedWinners.length}명)</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {savedWinners.map((id) => (
+                        <span key={id} className="text-[11px] font-medium text-amber-700 bg-white border border-amber-200 rounded-md px-2 py-0.5">
+                          {id.slice(0, 12)}…
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         );
       })()}
@@ -810,6 +873,88 @@ export function AdminBoothStatsTab({ boothId }: { boothId: string }) {
           선택한 행사 기준 통계가 CSV로 내보내집니다.
         </p>
       </div>
+
+      {/* Lottery modal */}
+      {showLotteryModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-white rounded-xl w-full max-w-md shadow-2xl border border-gray-100 animate-scale-in">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <Gift className="w-5 h-5 text-amber-500" />
+                <h2 className="text-sm font-bold text-gray-900">설문 추첨 결과</h2>
+              </div>
+              <button onClick={() => setShowLotteryModal(false)} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <X className="w-4 h-4 text-gray-500" />
+              </button>
+            </div>
+
+            <div className="px-6 py-5">
+              <div className="bg-amber-50 rounded-xl p-4 mb-5">
+                <p className="text-xs font-bold text-amber-600 uppercase mb-1">상품</p>
+                <p className="text-base font-bold text-amber-800">{surveyReward.name}</p>
+                {surveyReward.description && (
+                  <p className="text-xs text-amber-600 mt-1">{surveyReward.description}</p>
+                )}
+              </div>
+
+              {lotteryWinners.length === 0 ? (
+                <div className="text-center py-6">
+                  <Dice5 className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+                  <p className="text-sm font-bold text-gray-400">이전 당첨자를 제외하면 추첨 가능한 응답자가 없어요</p>
+                </div>
+              ) : (
+                <div className="space-y-2.5 mb-5">
+                  <p className="text-[11px] font-bold text-gray-400 uppercase">당첨자 {lotteryWinners.length}명</p>
+                  {lotteryWinners.map((w, i) => (
+                    <div key={w.visitorId} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                      <span className="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold shrink-0">
+                        {i + 1}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">{w.visitorId}</p>
+                        <p className="text-[11px] text-gray-400">
+                          응답: {new Date(w.createdAt).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    const pool = scopedSurveys.filter((s) => !savedWinners.includes(s.visitorId));
+                    const shuffled = [...pool].sort(() => Math.random() - 0.5);
+                    const winners = shuffled.slice(0, surveyReward.count).map((s) => ({
+                      visitorId: s.visitorId,
+                      createdAt: s.createdAt,
+                    }));
+                    setLotteryWinners(winners);
+                  }}
+                  className="flex-1 h-11 text-sm font-bold bg-white border border-gray-200 text-gray-700 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50 transition-all"
+                >
+                  <Dice5 className="w-4 h-4" />
+                  다시 추첨
+                </button>
+                <button
+                  onClick={() => {
+                    if (lotteryWinners.length === 0) return;
+                    const newWinners = [...savedWinners, ...lotteryWinners.map((w) => w.visitorId)];
+                    localStorage.setItem(`bep_survey_winners_${boothId}`, JSON.stringify(newWinners));
+                    setShowLotteryModal(false);
+                    showToast(`${lotteryWinners.length}명의 당첨자가 확정됐어요!`, 'success');
+                  }}
+                  disabled={lotteryWinners.length === 0}
+                  className="flex-1 h-11 text-sm font-bold bg-amber-500 text-white rounded-xl flex items-center justify-center hover:bg-amber-400 transition-all shadow-lg shadow-amber-100 disabled:opacity-40"
+                >
+                  당첨 확정
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

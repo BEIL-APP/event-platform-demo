@@ -4,7 +4,7 @@ import {
   ArrowLeft, Download, ExternalLink,
   Upload, Trash2, Calendar, ToggleLeft, ToggleRight, Paperclip,
   Link2, Plus, Instagram, ShoppingBag, Globe,
-  Edit3, ImagePlus, HelpCircle, Settings2,
+  Edit3, ImagePlus, HelpCircle, Settings2, Gift,
 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { AdminLayout } from '../../components/AdminLayout';
@@ -110,6 +110,12 @@ export default function AdminBoothDetailPage() {
   });
   const [surveyIntro, setSurveyIntro] = useState(() => localStorage.getItem(`bep_survey_intro_${boothId}`) ?? '설문에 참여해주시면 부스 운영자가 더 맞는 정보와 후속 안내를 드릴 수 있어요.');
   const [surveyFieldsSaved, setSurveyFieldsSaved] = useState(false);
+  const [surveyReward, setSurveyReward] = useState<{ enabled: boolean; name: string; count: number; description: string }>(() => {
+    try {
+      const raw = localStorage.getItem(`bep_survey_reward_${boothId}`);
+      return raw ? JSON.parse(raw) : { enabled: false, name: '', count: 1, description: '' };
+    } catch { return { enabled: false, name: '', count: 1, description: '' }; }
+  });
 
   const [boothParticipations, setBoothParticipations] = useState<BoothEventParticipation[]>([]);
   const [allEvents, setAllEvents] = useState<BoothEvent[]>([]);
@@ -807,6 +813,7 @@ export default function AdminBoothDetailPage() {
               onClick={() => {
                 localStorage.setItem(`bep_survey_fields_${boothId}`, JSON.stringify(surveyFields));
                 localStorage.setItem(`bep_survey_intro_${boothId}`, surveyIntro.trim() || '설문에 참여해주시면 부스 운영자가 더 맞는 정보와 후속 안내를 드릴 수 있어요.');
+                localStorage.setItem(`bep_survey_reward_${boothId}`, JSON.stringify(surveyReward));
                 setSurveyFieldsSaved(true);
                 setTimeout(() => setSurveyFieldsSaved(false), 2000);
                 showToast('설문 항목이 저장됐어요!', 'success');
@@ -819,6 +826,66 @@ export default function AdminBoothDetailPage() {
             >
               {surveyFieldsSaved ? '저장됐어요 ✓' : '설문 저장'}
             </button>
+          </div>
+
+          {/* 선물 추첨 설정 */}
+          <div className="mt-6 pt-6 border-t border-gray-100">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Gift className="w-4 h-4 text-amber-500" />
+                <p className="text-sm font-semibold text-gray-900">선물 추첨</p>
+                <span className="text-[10px] font-bold text-gray-400 uppercase bg-gray-100 px-1.5 py-0.5 rounded">Optional</span>
+              </div>
+              <button
+                onClick={() => setSurveyReward((r) => ({ ...r, enabled: !r.enabled }))}
+                className="text-gray-400 hover:text-brand-600 transition-colors"
+              >
+                {surveyReward.enabled
+                  ? <ToggleRight className="w-7 h-7 text-brand-600" />
+                  : <ToggleLeft className="w-7 h-7" />
+                }
+              </button>
+            </div>
+            <p className="text-xs text-gray-400 mb-4">설문 완료 시 추첨을 통해 선물을 제공해 참여를 유도할 수 있어요.</p>
+
+            {surveyReward.enabled && (
+              <div className="space-y-3 bg-amber-50/50 border border-amber-100 rounded-xl p-4 animate-scale-in">
+                <div>
+                  <label className="block text-xs font-bold text-gray-600 mb-1.5">상품명 *</label>
+                  <input
+                    value={surveyReward.name}
+                    onChange={(e) => setSurveyReward((r) => ({ ...r, name: e.target.value }))}
+                    placeholder="예: 스타벅스 아메리카노 기프티콘"
+                    className="w-full h-10 bg-white border border-gray-200 rounded-lg px-3 text-sm outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-300"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-600 mb-1.5">당첨자 수</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={surveyReward.count}
+                      onChange={(e) => setSurveyReward((r) => ({ ...r, count: Math.max(1, parseInt(e.target.value) || 1) }))}
+                      className="w-full h-10 bg-white border border-gray-200 rounded-lg px-3 text-sm outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-600 mb-1.5">설명 (선택)</label>
+                    <input
+                      value={surveyReward.description}
+                      onChange={(e) => setSurveyReward((r) => ({ ...r, description: e.target.value }))}
+                      placeholder="추가 안내 사항"
+                      className="w-full h-10 bg-white border border-gray-200 rounded-lg px-3 text-sm outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-all placeholder:text-gray-300"
+                    />
+                  </div>
+                </div>
+                <p className="text-[11px] text-amber-600 font-medium">
+                  💡 설문 완료 후 추첨 대상에 자동 등록되며, 통계 탭에서 추첨할 수 있어요.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
