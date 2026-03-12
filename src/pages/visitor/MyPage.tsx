@@ -190,6 +190,8 @@ function CollectionsTab({ favoriteBooths }: { favoriteBooths: Array<{ booth: Boo
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState('');
   const [addingToId, setAddingToId] = useState<string | null>(null);
+  const [shareCol, setShareCol] = useState<Collection | null>(null);
+  const [shareColCopied, setShareColCopied] = useState(false);
   const { showToast } = useToast();
 
   const allBooths = getBooths();
@@ -229,18 +231,31 @@ function CollectionsTab({ favoriteBooths }: { favoriteBooths: Array<{ booth: Boo
     setCollections(getCollections());
   };
 
-  const handleShareCollection = async (col: Collection) => {
-    const names = col.boothIds.map((id) => boothMap[id]?.name ?? id).join(', ');
-    const shareText = `[${col.name}] ${names}`;
-    if (navigator.share) {
-      try { await navigator.share({ title: col.name, text: shareText }); } catch { /* cancelled */ }
-    } else {
-      try {
-        await navigator.clipboard.writeText(shareText);
-        showToast('컬렉션 목록이 복사됐어요', 'success');
-      } catch {
-        showToast('복사에 실패했어요', 'error');
-      }
+  const handleShareCollection = (col: Collection) => {
+    setShareCol(col);
+    setShareColCopied(false);
+  };
+
+  const shareColBooths = shareCol ? shareCol.boothIds.map((id) => boothMap[id]).filter(Boolean) as Booth[] : [];
+  const shareColText = shareCol
+    ? `[${shareCol.name}]\n${shareColBooths.map((b) => `• ${b.name} — ${window.location.origin}/scan/${b.id}`).join('\n')}`
+    : '';
+
+  const handleCopyColShare = async () => {
+    try {
+      await navigator.clipboard.writeText(shareColText);
+      setShareColCopied(true);
+      setTimeout(() => setShareColCopied(false), 2000);
+    } catch {
+      showToast('복사에 실패했어요', 'error');
+    }
+  };
+
+  const handleNativeShareCol = async () => {
+    if (!shareCol) return;
+    const shareData = { title: shareCol.name, text: shareColText };
+    if (navigator.share && navigator.canShare?.(shareData)) {
+      try { await navigator.share(shareData); setShareCol(null); } catch { /* cancelled */ }
     }
   };
 
@@ -322,8 +337,9 @@ function CollectionsTab({ favoriteBooths }: { favoriteBooths: Array<{ booth: Boo
                   <div className="flex gap-1 shrink-0">
                     <button
                       onClick={() => handleShareCollection(col)}
-                      className="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-all duration-150"
-                      title="컬렉션 공유"
+                      disabled={col.boothIds.length === 0}
+                      className="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:text-gray-400 disabled:hover:bg-transparent"
+                      title={col.boothIds.length === 0 ? '부스를 추가하면 공유할 수 있어요' : '컬렉션 공유'}
                     >
                       <Share2 className="w-4 h-4" />
                     </button>
@@ -411,6 +427,90 @@ function CollectionsTab({ favoriteBooths }: { favoriteBooths: Array<{ booth: Boo
           })}
         </div>
       )}
+
+      {/* ═══ Collection Share Modal ═══ */}
+      <Modal open={!!shareCol} onClose={() => setShareCol(null)} title="컬렉션 공유">
+        {shareCol && (
+          <div className="space-y-4">
+            {/* Collection header */}
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+              <div className="w-9 h-9 bg-brand-50 rounded-lg flex items-center justify-center shrink-0">
+                <Folder className="w-4.5 h-4.5 text-brand-600" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-gray-900 truncate">{shareCol.name}</p>
+                <p className="text-[11px] text-gray-400 font-bold">부스 {shareColBooths.length}개</p>
+              </div>
+            </div>
+
+            {/* Booth list */}
+            <div className="space-y-1.5 max-h-48 overflow-y-auto">
+              {shareColBooths.map((b) => (
+                <div key={b.id} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-50/70">
+                  <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                    {b.images[0] ? (
+                      <img src={b.images[0]} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-xs">🏪</div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-gray-800 truncate">{b.name}</p>
+                    <p className="text-[10px] text-gray-400 font-medium truncate">{b.category}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Copy all */}
+            <button
+              onClick={handleCopyColShare}
+              className={`w-full flex items-center justify-center gap-2 h-10 rounded-lg text-sm font-medium transition-all ${
+                shareColCopied
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              {shareColCopied ? <><CheckCircle className="w-4 h-4" /> 복사됨</> : <><Copy className="w-4 h-4" /> 부스 목록 + 링크 복사</>}
+            </button>
+
+            {/* Social share */}
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                onClick={() => showToast('카카오톡 공유는 준비 중이에요', 'info')}
+                className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#FEE500]/10 hover:bg-[#FEE500]/20 transition-colors"
+              >
+                <div className="w-10 h-10 rounded-full bg-[#FEE500] flex items-center justify-center">
+                  <span className="text-[#3C1E1E] text-sm font-bold">K</span>
+                </div>
+                <span className="text-xs text-gray-700 font-medium">카카오톡</span>
+              </button>
+              <button
+                onClick={() => {
+                  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareColText)}`, '_blank');
+                }}
+                className="flex flex-col items-center gap-2 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
+              >
+                <div className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center">
+                  <span className="text-white text-sm font-bold">𝕏</span>
+                </div>
+                <span className="text-xs text-gray-700 font-medium">X (트위터)</span>
+              </button>
+              {typeof navigator !== 'undefined' && 'share' in navigator && (
+                <button
+                  onClick={handleNativeShareCol}
+                  className="flex flex-col items-center gap-2 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-full bg-brand-600 flex items-center justify-center">
+                    <Share2 className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-xs text-gray-700 font-medium">더보기</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }
