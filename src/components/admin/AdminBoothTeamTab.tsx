@@ -9,10 +9,11 @@ import {
   Mail,
   Shield,
   Plus,
+  Calendar,
 } from 'lucide-react';
 import { useToast } from '../../contexts/ToastContext';
-import { getAllStaff, getBoothStaff, saveStaff, deleteStaff } from '../../utils/localStorage';
-import type { StaffMember } from '../../types';
+import { getAllStaff, getBoothStaff, saveStaff, deleteStaff, getBoothParticipations, getEvents } from '../../utils/localStorage';
+import type { StaffMember, BoothEventParticipation, BoothEvent } from '../../types';
 
 function RoleBadge({ role }: { role: StaffMember['role'] }) {
   if (role === 'owner') {
@@ -53,11 +54,26 @@ export function AdminBoothTeamTab({ boothId }: { boothId: string }) {
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [newRole, setNewRole] = useState<'staff' | 'owner'>('staff');
+  const [newEventId, setNewEventId] = useState<string>('');
+  const [assignEventId, setAssignEventId] = useState<string>('');
+  const [participations, setParticipations] = useState<BoothEventParticipation[]>([]);
+  const [events, setEvents] = useState<BoothEvent[]>([]);
 
   useEffect(() => {
     setMembers(getBoothStaff(boothId));
     setAllMembers(getAllStaff());
+    setParticipations(getBoothParticipations(boothId));
+    setEvents(getEvents());
   }, [boothId]);
+
+  const eventOptions = participations
+    .map((p) => ({ participation: p, event: events.find((e) => e.id === p.eventId) }))
+    .filter((item): item is { participation: BoothEventParticipation; event: BoothEvent } => Boolean(item.event));
+
+  const getEventName = (eventId?: string) => {
+    if (!eventId) return '전체 행사 공통';
+    return events.find((e) => e.id === eventId)?.name ?? eventId;
+  };
 
   const reload = () => {
     setMembers(getBoothStaff(boothId));
@@ -102,6 +118,7 @@ export function AdminBoothTeamTab({ boothId }: { boothId: string }) {
     saveStaff({
       id: `staff-${Date.now()}-${boothId}`,
       boothId,
+      eventId: newEventId || undefined,
       name: newName.trim(),
       email: newEmail.trim(),
       role: newRole,
@@ -112,6 +129,7 @@ export function AdminBoothTeamTab({ boothId }: { boothId: string }) {
     setNewName('');
     setNewEmail('');
     setNewRole('staff');
+    setNewEventId('');
     setShowAddForm(false);
     showToast('팀원을 추가하고 이 부스에 배치했어요', 'success');
   };
@@ -120,6 +138,7 @@ export function AdminBoothTeamTab({ boothId }: { boothId: string }) {
     saveStaff({
       id: `staff-${Date.now()}-${boothId}`,
       boothId,
+      eventId: assignEventId || undefined,
       name: person.name,
       email: person.email,
       role: person.role,
@@ -128,7 +147,14 @@ export function AdminBoothTeamTab({ boothId }: { boothId: string }) {
     });
     reload();
     setShowAssignPicker(false);
+    setAssignEventId('');
     showToast(`${person.name}을(를) 이 부스에 배치했어요`, 'success');
+  };
+
+  const handleEventChange = (member: StaffMember, eventId: string) => {
+    saveStaff({ ...member, eventId: eventId || undefined });
+    reload();
+    showToast('담당 행사가 변경됐어요', 'info');
   };
 
   const handleRoleChange = (member: StaffMember, role: 'owner' | 'staff') => {
@@ -201,6 +227,23 @@ export function AdminBoothTeamTab({ boothId }: { boothId: string }) {
               </select>
             </div>
           </div>
+          {eventOptions.length > 0 && (
+            <div className="mb-4">
+              <label className="block text-[13px] font-medium text-gray-700 mb-1.5">
+                <Calendar className="w-3.5 h-3.5 inline mr-1" />담당 행사
+              </label>
+              <select
+                value={newEventId}
+                onChange={(e) => setNewEventId(e.target.value)}
+                className="w-full sm:w-64 h-10 bg-white border border-gray-200 rounded-lg px-3 text-sm text-gray-700 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400"
+              >
+                <option value="">전체 행사 공통</option>
+                {eventOptions.map(({ event }) => (
+                  <option key={event.id} value={event.id}>{event.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
           <p className="text-xs text-gray-400 mb-4">추가 시 이 부스에 자동 배치됩니다</p>
           <div className="flex gap-2">
             <button
@@ -225,6 +268,23 @@ export function AdminBoothTeamTab({ boothId }: { boothId: string }) {
         <div className="bg-white border-2 border-gray-200 rounded-xl p-5 shadow-lg animate-scale-in">
           <p className="text-sm font-bold text-gray-900 mb-1">기존 팀원 배치</p>
           <p className="text-xs text-gray-400 mb-4">아직 이 부스에 배치되지 않은 팀원을 선택하세요</p>
+          {eventOptions.length > 0 && (
+            <div className="mb-4">
+              <label className="block text-[13px] font-medium text-gray-700 mb-1.5">
+                <Calendar className="w-3.5 h-3.5 inline mr-1" />담당 행사
+              </label>
+              <select
+                value={assignEventId}
+                onChange={(e) => setAssignEventId(e.target.value)}
+                className="w-full sm:w-64 h-10 bg-white border border-gray-200 rounded-lg px-3 text-sm text-gray-700 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400"
+              >
+                <option value="">전체 행사 공통</option>
+                {eventOptions.map(({ event }) => (
+                  <option key={event.id} value={event.id}>{event.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
           <div className="space-y-2 max-h-60 overflow-y-auto">
             {unassignedPeople.map((person) => (
               <div key={person.email} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
@@ -285,9 +345,26 @@ export function AdminBoothTeamTab({ boothId }: { boothId: string }) {
                   <div className="flex items-center gap-1.5 mt-1">
                     <RoleBadge role={m.role} />
                     <StatusBadge status={m.status} />
+                    {m.eventId && (
+                      <span className="inline-flex items-center gap-1 h-6 px-2 text-xs font-medium text-indigo-700 bg-indigo-50 rounded-md">
+                        <Calendar className="w-3 h-3" /> {getEventName(m.eventId)}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                  {eventOptions.length > 0 && (
+                    <select
+                      value={m.eventId ?? ''}
+                      onChange={(e) => handleEventChange(m, e.target.value)}
+                      className="text-xs border border-gray-200 rounded-lg px-2 py-1 outline-none text-gray-600 bg-white h-8 transition-all hidden sm:block"
+                    >
+                      <option value="">공통</option>
+                      {eventOptions.map(({ event }) => (
+                        <option key={event.id} value={event.id}>{event.name}</option>
+                      ))}
+                    </select>
+                  )}
                   <select
                     value={m.role}
                     onChange={(e) => handleRoleChange(m, e.target.value as 'owner' | 'staff')}
