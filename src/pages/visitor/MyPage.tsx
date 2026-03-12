@@ -71,7 +71,9 @@ function BoothCard({
             <Share2 className="w-4.5 h-4.5" />
           </button>
         )}
-        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500 group-hover:translate-x-0.5 transition-all" />
+        <Link to={`/scan/${booth.id}`} className="w-9 h-9 flex items-center justify-center text-gray-300 hover:text-gray-500 hover:translate-x-0.5 transition-all">
+          <ChevronRight className="w-4 h-4" />
+        </Link>
       </div>
     </div>
   );
