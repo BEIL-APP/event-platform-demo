@@ -192,33 +192,33 @@ export default function AdminLeadsPage() {
               수집된 잠재 고객 데이터를 관리하고 필터링하세요
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="grid grid-cols-2 sm:flex sm:items-center gap-2">
             <button
               onClick={() => { exportLeadsCSV(filtered); showToast('리드 CSV가 다운로드됐어요!', 'success'); }}
-              className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 h-10 px-4 text-[13px] font-bold rounded-xl transition-all duration-200 shadow-sm"
+              className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 h-10 px-4 text-[13px] font-bold rounded-xl transition-all duration-200 shadow-sm whitespace-nowrap"
             >
-              <FileDown className="w-4 h-4 text-gray-400" />
+              <FileDown className="w-4 h-4 text-gray-400 shrink-0" />
               CSV 내보내기
             </button>
             <button
               onClick={handleLottery}
-              className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 h-10 px-4 text-[13px] font-bold rounded-xl transition-all duration-200 shadow-sm"
+              className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 h-10 px-4 text-[13px] font-bold rounded-xl transition-all duration-200 shadow-sm whitespace-nowrap"
             >
-              <Dice5 className="w-4 h-4 text-gray-400" />
+              <Dice5 className="w-4 h-4 text-gray-400 shrink-0" />
               명함 추첨
             </button>
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 h-10 px-4 text-[13px] font-bold rounded-xl transition-all duration-200 shadow-sm"
+              className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 h-10 px-4 text-[13px] font-bold rounded-xl transition-all duration-200 shadow-sm whitespace-nowrap"
             >
-              <Plus className="w-4 h-4 text-gray-400" />
+              <Plus className="w-4 h-4 text-gray-400 shrink-0" />
               리드 추가
             </button>
             <Link
               to="/admin/leads/scan"
-              className="flex items-center justify-center gap-2 bg-brand-600 text-white hover:bg-brand-500 h-10 px-5 text-[13px] font-bold rounded-xl transition-all duration-200 shadow-lg shadow-brand-100"
+              className="flex items-center justify-center gap-2 bg-brand-600 text-white hover:bg-brand-500 h-10 px-5 text-[13px] font-bold rounded-xl transition-all duration-200 shadow-lg shadow-brand-100 whitespace-nowrap"
             >
-              <ScanLine className="w-4 h-4" />
+              <ScanLine className="w-4 h-4 shrink-0" />
               명함 스캔
             </Link>
           </div>
