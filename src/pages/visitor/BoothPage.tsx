@@ -728,11 +728,11 @@ export default function BoothPage() {
               </div>
             )}
 
-            {/* 1분 설문 — mobile order: 6 */}
+            {/* 설문 — mobile order: 6 */}
             <div className="order-6 md:order-none bg-white border border-gray-200/60 rounded-xl p-6 shadow-sm">
               <div className="flex items-center gap-2 mb-2">
                 <ClipboardList className="w-5 h-5 text-brand-600" />
-                <span className="text-sm font-bold text-gray-900">1분 설문 참여</span>
+                <span className="text-sm font-bold text-gray-900">설문 참여</span>
               </div>
               <p className="text-xs font-medium text-gray-500 mb-4 leading-relaxed">
                 {surveyIntro}
@@ -992,7 +992,7 @@ export default function BoothPage() {
       </Modal>
 
       {/* ═══ Survey Modal ═══ */}
-      <Modal open={showSurvey} onClose={handleCloseSurvey} title="1분 설문" size="md">
+      <Modal open={showSurvey} onClose={handleCloseSurvey} title="설문" size="md">
         {surveySent ? (
           <div className="text-center py-4">
             <div className="w-14 h-14 bg-emerald-50 rounded-xl flex items-center justify-center mx-auto mb-3">

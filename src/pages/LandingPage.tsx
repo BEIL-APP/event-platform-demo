@@ -90,7 +90,7 @@ const FEATURES = [
   },
   {
     icon: ClipboardList,
-    title: '1분 설문',
+    title: '설문',
     desc: '관람객의 관심사와 방문 목적을 빠르게 파악하세요',
   },
   {
