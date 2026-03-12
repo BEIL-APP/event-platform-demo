@@ -874,65 +874,133 @@ export function AdminBoothStatsTab({ boothId }: { boothId: string }) {
         </p>
       </div>
 
-      {/* Lottery modal */}
+      {/* Lottery modal (desktop: center modal, mobile: bottom sheet) */}
       {showLotteryModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-xl w-full max-w-md shadow-2xl border border-gray-100 animate-scale-in">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <div className="flex items-center gap-2">
-                <Gift className="w-5 h-5 text-amber-500" />
-                <h2 className="text-sm font-bold text-gray-900">설문 추첨 결과</h2>
-              </div>
-              <button onClick={() => setShowLotteryModal(false)} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
-                <X className="w-4 h-4 text-gray-500" />
-              </button>
-            </div>
+        <div className="fixed inset-0 z-50 animate-fade-in" onClick={() => setShowLotteryModal(false)}>
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
-            <div className="px-6 py-5">
-              <div className="bg-amber-50 rounded-xl p-4 mb-5">
-                <p className="text-xs font-bold text-amber-600 uppercase mb-1">상품</p>
-                <p className="text-base font-bold text-amber-800">{surveyReward.name}</p>
-                {surveyReward.description && (
-                  <p className="text-xs text-amber-600 mt-1">{surveyReward.description}</p>
+          {/* Desktop: centered modal */}
+          <div className="hidden md:flex items-center justify-center absolute inset-0 p-4">
+            <div className="bg-white rounded-xl w-full max-w-md shadow-2xl border border-gray-100 animate-scale-in" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <div className="flex items-center gap-2">
+                  <Gift className="w-5 h-5 text-amber-500" />
+                  <h2 className="text-sm font-bold text-gray-900">설문 추첨 결과</h2>
+                </div>
+                <button onClick={() => setShowLotteryModal(false)} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                  <X className="w-4 h-4 text-gray-500" />
+                </button>
+              </div>
+              <div className="px-6 py-5">
+                <div className="bg-amber-50 rounded-xl p-4 mb-5">
+                  <p className="text-xs font-bold text-amber-600 uppercase mb-1">상품</p>
+                  <p className="text-base font-bold text-amber-800">{surveyReward.name}</p>
+                  {surveyReward.description && (
+                    <p className="text-xs text-amber-600 mt-1">{surveyReward.description}</p>
+                  )}
+                </div>
+                {lotteryWinners.length === 0 ? (
+                  <div className="text-center py-6">
+                    <Dice5 className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+                    <p className="text-sm font-bold text-gray-400">이전 당첨자를 제외하면 추첨 가능한 응답자가 없어요</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2.5 mb-5">
+                    <p className="text-[11px] font-bold text-gray-400 uppercase">당첨자 {lotteryWinners.length}명</p>
+                    {lotteryWinners.map((w, i) => (
+                      <div key={w.visitorId} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                        <span className="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold shrink-0">{i + 1}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">{w.visitorId}</p>
+                          <p className="text-[11px] text-gray-400">응답: {new Date(w.createdAt).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      const pool = scopedSurveys.filter((s) => !savedWinners.includes(s.visitorId));
+                      const shuffled = [...pool].sort(() => Math.random() - 0.5);
+                      const winners = shuffled.slice(0, surveyReward.count).map((s) => ({ visitorId: s.visitorId, createdAt: s.createdAt }));
+                      setLotteryWinners(winners);
+                    }}
+                    className="flex-1 h-11 text-sm font-bold bg-white border border-gray-200 text-gray-700 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50 transition-all"
+                  >
+                    <Dice5 className="w-4 h-4" />
+                    다시 추첨
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (lotteryWinners.length === 0) return;
+                      const newWinners = [...savedWinners, ...lotteryWinners.map((w) => w.visitorId)];
+                      localStorage.setItem(`bep_survey_winners_${boothId}`, JSON.stringify(newWinners));
+                      setShowLotteryModal(false);
+                      showToast(`${lotteryWinners.length}명의 당첨자가 확정됐어요!`, 'success');
+                    }}
+                    disabled={lotteryWinners.length === 0}
+                    className="flex-1 h-11 text-sm font-bold bg-amber-500 text-white rounded-xl flex items-center justify-center hover:bg-amber-400 transition-all shadow-lg shadow-amber-100 disabled:opacity-40"
+                  >
+                    당첨 확정
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile: bottom sheet */}
+          <div className="md:hidden absolute inset-x-0 bottom-0" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white rounded-t-2xl shadow-2xl border-t border-gray-100 animate-slide-up-sheet max-h-[85vh] flex flex-col">
+              <div className="flex justify-center pt-3 pb-1">
+                <div className="w-10 h-1 bg-gray-200 rounded-full" />
+              </div>
+              <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
+                <div className="flex items-center gap-2">
+                  <Gift className="w-5 h-5 text-amber-500" />
+                  <h2 className="text-sm font-bold text-gray-900">설문 추첨 결과</h2>
+                </div>
+                <button onClick={() => setShowLotteryModal(false)} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                  <X className="w-4 h-4 text-gray-500" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto px-5 py-4">
+                <div className="bg-amber-50 rounded-xl p-4 mb-4">
+                  <p className="text-xs font-bold text-amber-600 uppercase mb-1">상품</p>
+                  <p className="text-base font-bold text-amber-800">{surveyReward.name}</p>
+                  {surveyReward.description && (
+                    <p className="text-xs text-amber-600 mt-1">{surveyReward.description}</p>
+                  )}
+                </div>
+                {lotteryWinners.length === 0 ? (
+                  <div className="text-center py-6">
+                    <Dice5 className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+                    <p className="text-sm font-bold text-gray-400">이전 당첨자를 제외하면 추첨 가능한 응답자가 없어요</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2 mb-4">
+                    <p className="text-[11px] font-bold text-gray-400 uppercase">당첨자 {lotteryWinners.length}명</p>
+                    {lotteryWinners.map((w, i) => (
+                      <div key={w.visitorId} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                        <span className="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold shrink-0">{i + 1}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">{w.visitorId}</p>
+                          <p className="text-[11px] text-gray-400">응답: {new Date(w.createdAt).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
-
-              {lotteryWinners.length === 0 ? (
-                <div className="text-center py-6">
-                  <Dice5 className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-                  <p className="text-sm font-bold text-gray-400">이전 당첨자를 제외하면 추첨 가능한 응답자가 없어요</p>
-                </div>
-              ) : (
-                <div className="space-y-2.5 mb-5">
-                  <p className="text-[11px] font-bold text-gray-400 uppercase">당첨자 {lotteryWinners.length}명</p>
-                  {lotteryWinners.map((w, i) => (
-                    <div key={w.visitorId} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                      <span className="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold shrink-0">
-                        {i + 1}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{w.visitorId}</p>
-                        <p className="text-[11px] text-gray-400">
-                          응답: {new Date(w.createdAt).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div className="flex gap-3">
+              <div className="flex gap-3 px-5 pb-6 pt-3 border-t border-gray-100">
                 <button
                   onClick={() => {
                     const pool = scopedSurveys.filter((s) => !savedWinners.includes(s.visitorId));
                     const shuffled = [...pool].sort(() => Math.random() - 0.5);
-                    const winners = shuffled.slice(0, surveyReward.count).map((s) => ({
-                      visitorId: s.visitorId,
-                      createdAt: s.createdAt,
-                    }));
+                    const winners = shuffled.slice(0, surveyReward.count).map((s) => ({ visitorId: s.visitorId, createdAt: s.createdAt }));
                     setLotteryWinners(winners);
                   }}
-                  className="flex-1 h-11 text-sm font-bold bg-white border border-gray-200 text-gray-700 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50 transition-all"
+                  className="flex-1 h-12 text-sm font-bold bg-white border border-gray-200 text-gray-700 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50 transition-all"
                 >
                   <Dice5 className="w-4 h-4" />
                   다시 추첨
@@ -946,7 +1014,7 @@ export function AdminBoothStatsTab({ boothId }: { boothId: string }) {
                     showToast(`${lotteryWinners.length}명의 당첨자가 확정됐어요!`, 'success');
                   }}
                   disabled={lotteryWinners.length === 0}
-                  className="flex-1 h-11 text-sm font-bold bg-amber-500 text-white rounded-xl flex items-center justify-center hover:bg-amber-400 transition-all shadow-lg shadow-amber-100 disabled:opacity-40"
+                  className="flex-1 h-12 text-sm font-bold bg-amber-500 text-white rounded-xl flex items-center justify-center hover:bg-amber-400 transition-all shadow-lg shadow-amber-100 disabled:opacity-40"
                 >
                   당첨 확정
                 </button>
