@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Users,
@@ -80,6 +80,27 @@ export default function AdminLeadsPage() {
   const [editingLead, setEditingLead] = useState<Lead | null>(null);
   const [editForm, setEditForm] = useState({ name: '', company: '', phone: '', email: '', boothId: '', memo: '' });
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [memoPopoverId, setMemoPopoverId] = useState<string | null>(null);
+  const [memoPopoverPos, setMemoPopoverPos] = useState<{ top?: number; bottom?: number; left: number; maxHeight: number }>({ left: 0, maxHeight: 300 });
+
+  const openMemoPopover = useCallback((leadId: string, e: React.MouseEvent) => {
+    if (memoPopoverId === leadId) { setMemoPopoverId(null); return; }
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const popoverW = 256;
+    const margin = 16;
+    let left = rect.left;
+    if (left + popoverW > window.innerWidth - margin) left = window.innerWidth - popoverW - margin;
+
+    const spaceBelow = window.innerHeight - rect.bottom - margin;
+    const spaceAbove = rect.top - margin;
+
+    if (spaceBelow >= 120) {
+      setMemoPopoverPos({ top: rect.bottom + 4, bottom: undefined, left, maxHeight: spaceBelow - 4 });
+    } else {
+      setMemoPopoverPos({ top: undefined, bottom: window.innerHeight - rect.top + 4, left, maxHeight: spaceAbove - 4 });
+    }
+    setMemoPopoverId(leadId);
+  }, [memoPopoverId]);
 
   const openEditModal = (lead: Lead) => {
     setEditingLead(lead);
@@ -451,9 +472,16 @@ export default function AdminLeadsPage() {
                           </p>
                         </td>
                         <td className="px-3 py-3">
-                          <p className="text-xs text-gray-500 truncate max-w-[140px]">
-                            {lead.memo || <span className="text-gray-300">-</span>}
-                          </p>
+                          {lead.memo ? (
+                            <button
+                              onClick={(e) => openMemoPopover(lead.id, e)}
+                              className="text-xs text-gray-500 truncate max-w-[140px] block text-left hover:text-brand-600 cursor-pointer transition-colors"
+                            >
+                              {lead.memo}
+                            </button>
+                          ) : (
+                            <span className="text-xs text-gray-300">-</span>
+                          )}
                         </td>
                         <td className="px-3 py-3 text-right">
                           <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all">
@@ -480,6 +508,29 @@ export default function AdminLeadsPage() {
           )}
         </div>
       </div>
+
+      {/* Memo popover (fixed, outside overflow containers) */}
+      {memoPopoverId && (() => {
+        const lead = filtered.find((l) => l.id === memoPopoverId);
+        if (!lead?.memo) return null;
+        const posStyle: React.CSSProperties = {
+          left: memoPopoverPos.left,
+          maxHeight: memoPopoverPos.maxHeight,
+          ...(memoPopoverPos.top != null ? { top: memoPopoverPos.top } : { bottom: memoPopoverPos.bottom }),
+        };
+        return (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setMemoPopoverId(null)} />
+            <div
+              className="fixed z-50 w-64 bg-white border border-gray-200 rounded-xl shadow-lg p-3 animate-scale-in overflow-y-auto"
+              style={posStyle}
+            >
+              <p className="text-[11px] font-bold text-gray-400 uppercase mb-1.5">메모</p>
+              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap break-words">{lead.memo}</p>
+            </div>
+          </>
+        );
+      })()}
 
       {/* Lottery modal */}
       {showLottery && (
