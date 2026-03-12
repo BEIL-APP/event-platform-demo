@@ -22,6 +22,7 @@ import {
   Gift,
   Dice5,
   X,
+  Sparkles,
 } from 'lucide-react';
 import { useThreads } from '../../hooks/useThreads';
 import { useToast } from '../../contexts/ToastContext';
@@ -298,6 +299,39 @@ export function AdminBoothStatsTab({ boothId }: { boothId: string }) {
       leadingChoiceValue: leadingChoiceField && leadingChoiceField.ranked[0]?.[0],
     };
   }, [scopedSurveys, surveyFields]);
+
+  const surveyAiSummary = useMemo(() => {
+    if (surveySummary.total === 0) return null;
+    const lines: string[] = [];
+    const total = surveySummary.total;
+
+    // Choice field insights — top 2 per field
+    for (const cf of surveySummary.choiceFields) {
+      if (cf.ranked.length === 0) continue;
+      const top = cf.ranked.slice(0, 2);
+      const parts = top.map(([label, count]) => `${Math.round((count / total) * 100)}%는 "${label}"`);
+      if (parts.length === 2) {
+        lines.push(`${cf.label} 기준, ${parts[0]}, ${parts[1]}을(를) 선택했어요.`);
+      } else if (parts.length === 1) {
+        lines.push(`${cf.label} 기준, ${parts[0]}을(를) 가장 많이 선택했어요.`);
+      }
+    }
+
+    // Contact intent
+    const contactPct = Math.round((surveySummary.wantsContact / total) * 100);
+    if (contactPct > 0) {
+      lines.push(`응답자의 ${contactPct}%가 추가 연락을 희망하고 있어요.`);
+    }
+
+    // Text field insight — count of responses
+    for (const tf of surveySummary.textFields) {
+      if (tf.responses.length > 0) {
+        lines.push(`"${tf.label}" 항목에 ${tf.responses.length}건의 주관식 의견이 수집됐어요.`);
+      }
+    }
+
+    return lines;
+  }, [surveySummary]);
 
   const pendingInquiries = scopedThreads.filter((thread) => thread.status === '미처리').length;
   const newLeads = scopedLeads.filter((lead) => !lead.status || lead.status === 'NEW').length;
@@ -602,6 +636,27 @@ export function AdminBoothStatsTab({ boothId }: { boothId: string }) {
                 전체 응답 보기 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
+
+            {/* AI Summary */}
+            {surveyAiSummary && surveyAiSummary.length > 0 && (
+              <div className="mb-6 bg-gradient-to-br from-brand-50 via-purple-50/40 to-amber-50/30 border border-brand-100/60 rounded-xl p-4 sm:p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center">
+                    <Sparkles className="w-3.5 h-3.5 text-white" />
+                  </div>
+                  <p className="text-xs font-bold text-gray-900">AI 요약</p>
+                  <span className="text-[9px] font-bold text-brand-500 uppercase bg-brand-50 border border-brand-100 px-1.5 py-0.5 rounded-full">Demo</span>
+                </div>
+                <div className="space-y-1.5">
+                  {surveyAiSummary.map((line, i) => (
+                    <p key={i} className="text-[13px] leading-relaxed text-gray-700">
+                      <span className="text-brand-500 mr-1">•</span>
+                      {line}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Paginated content */}
             {(() => {
