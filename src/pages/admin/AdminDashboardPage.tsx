@@ -505,8 +505,8 @@ export default function AdminDashboardPage() {
               <Download className="w-3.5 h-3.5 text-gray-400" /> CSV 다운로드
             </button>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[700px]">
+          <div className="overflow-x-auto hidden md:block">
+            <table className="w-full">
               <thead>
                 <tr className="bg-gray-50/50 text-[11px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100">
                   <th className="text-left px-6 py-3.5">부스</th>
@@ -557,6 +557,51 @@ export default function AdminDashboardPage() {
                 })}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile card list */}
+          <div className="md:hidden divide-y divide-gray-100">
+            {booths.map((booth) => {
+              const visits = allVisitsRaw.filter((v) => v.boothId === booth.id).length;
+              const favs = allFavoritesRaw.filter((f) => f.boothId === booth.id).length;
+              const inqs = threads.filter((t) => t.boothId === booth.id).length;
+              const convRate = visits > 0 ? ((inqs / visits) * 100).toFixed(1) : '0.0';
+              return (
+                <Link
+                  key={booth.id}
+                  to={`/admin/booths/${booth.id}/stats`}
+                  className="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50/50 transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shrink-0">
+                    {booth.images[0] && (
+                      <img src={booth.images[0]} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 truncate">{booth.name}</p>
+                    <span className="text-[11px] font-bold text-gray-400">{booth.category}</span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-3 text-center shrink-0">
+                    <div>
+                      <p className="text-xs font-bold text-gray-900">{visits}</p>
+                      <p className="text-[9px] font-bold text-gray-400">방문</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-gray-600">{favs}</p>
+                      <p className="text-[9px] font-bold text-gray-400">관심</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-gray-600">{inqs}</p>
+                      <p className="text-[9px] font-bold text-gray-400">문의</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-brand-600">{convRate}%</p>
+                      <p className="text-[9px] font-bold text-gray-400">전환</p>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>
