@@ -10,6 +10,7 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { AdminLayout } from '../../components/AdminLayout';
 import { AdminBoothStatsTab } from '../../components/admin/AdminBoothStatsTab';
 import { AdminBoothTeamTab } from '../../components/admin/AdminBoothTeamTab';
+import { AdminBoothSurveyDetail } from '../../components/admin/AdminBoothSurveyDetail';
 import { useBooth } from '../../hooks/useBooths';
 import { useToast } from '../../contexts/ToastContext';
 import {
@@ -35,7 +36,7 @@ export default function AdminBoothDetailPage() {
   const { showToast } = useToast();
   const qrRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const activeTab = boothSection === 'setting' || boothSection === 'stats' || boothSection === 'team'
+  const activeTab = boothSection === 'setting' || boothSection === 'stats' || boothSection === 'team' || boothSection === 'surveys'
     ? boothSection
     : null;
 
@@ -421,7 +422,7 @@ export default function AdminBoothDetailPage() {
             { label: '팀', to: `/admin/booths/${boothId}/team` },
           ].map((tab) => {
             const isActive =
-              (tab.label === '통계' && activeTab === 'stats') ||
+              (tab.label === '통계' && (activeTab === 'stats' || activeTab === 'surveys')) ||
               (tab.label === '설정' && activeTab === 'setting') ||
               (tab.label === '팀' && activeTab === 'team');
             return (
@@ -1272,6 +1273,7 @@ export default function AdminBoothDetailPage() {
         )}
         {activeTab === 'stats' && boothId && <AdminBoothStatsTab boothId={boothId} />}
         {activeTab === 'team' && boothId && <AdminBoothTeamTab boothId={boothId} />}
+        {activeTab === 'surveys' && boothId && <AdminBoothSurveyDetail boothId={boothId} />}
       </div>
     </AdminLayout>
   );

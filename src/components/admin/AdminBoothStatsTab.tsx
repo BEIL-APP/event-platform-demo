@@ -573,9 +573,15 @@ export function AdminBoothStatsTab({ boothId }: { boothId: string }) {
             <div className="flex items-center gap-2 mb-6">
               <ClipboardList className="w-5 h-5 text-gray-400" />
               <h2 className="text-sm font-semibold text-gray-900">설문 집계</h2>
-              <span className="text-[11px] font-semibold text-gray-500 bg-gray-100 rounded-md px-2 h-5 flex items-center ml-auto">
+              <span className="text-[11px] font-semibold text-gray-500 bg-gray-100 rounded-md px-2 h-5 flex items-center">
                 총 {surveySummary.total}건
               </span>
+              <Link
+                to={`/admin/booths/${boothId}/surveys`}
+                className="ml-auto text-xs font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1 transition-colors"
+              >
+                전체 응답 보기 <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
 
             {/* Paginated content */}
