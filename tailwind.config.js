@@ -59,12 +59,17 @@ export default {
           from: { transform: 'translateX(-100%)' },
           to: { transform: 'translateX(0)' },
         },
+        'slide-up-sheet': {
+          from: { transform: 'translateY(100%)' },
+          to: { transform: 'translateY(0)' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 150ms ease-out',
         'slide-up': 'slide-up 200ms ease-out',
         'scale-in': 'scale-in 150ms ease-out',
         'slide-in-left': 'slide-in-left 200ms ease-out',
+        'slide-up-sheet': 'slide-up-sheet 300ms ease-out',
       },
     },
   },

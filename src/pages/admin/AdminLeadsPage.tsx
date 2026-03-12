@@ -79,6 +79,7 @@ export default function AdminLeadsPage() {
   const [addForm, setAddForm] = useState({ name: '', company: '', phone: '', email: '', boothId: '', memo: '' });
   const [editingLead, setEditingLead] = useState<Lead | null>(null);
   const [editForm, setEditForm] = useState({ name: '', company: '', phone: '', email: '', boothId: '', memo: '' });
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
   const openEditModal = (lead: Lead) => {
     setEditingLead(lead);
@@ -356,7 +357,7 @@ export default function AdminLeadsPage() {
           </div>
         </div>
 
-        {/* Lead Table */}
+        {/* Lead Table (desktop) / Card List (mobile) */}
         <div className="bg-white rounded-xl border border-gray-200/60 overflow-hidden shadow-sm">
           {filtered.length === 0 ? (
             <div className="py-20 text-center">
@@ -367,87 +368,119 @@ export default function AdminLeadsPage() {
               <p className="text-sm text-gray-400 mt-1 font-medium">필터를 변경하거나 검색어를 확인해 보세요</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[900px]">
-                <thead>
-                  <tr className="bg-gray-50/50 text-[11px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">
-                    <th className="text-left px-6 py-4">고객 정보</th>
-                    <th className="text-left px-4 py-4">소속</th>
-                    <th className="text-left px-4 py-4">연락처</th>
-                    <th className="text-left px-4 py-4">수집 경로</th>
-                    <th className="text-left px-4 py-4">상태</th>
-                    <th className="text-left px-4 py-4">부스</th>
-                    <th className="text-left px-4 py-4 whitespace-nowrap">수집일</th>
-                    <th className="text-left px-4 py-4">메모</th>
-                    <th className="px-6 py-4" />
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {filtered.map((lead) => (
-                    <tr key={lead.id} className="hover:bg-gray-50/50 transition-colors group">
-                      <td className="px-6 py-4">
-                        <p className="text-sm font-bold text-gray-900">{lead.name ?? '-'}</p>
-                        <p className="text-xs text-gray-400 font-medium">{lead.email ?? '-'}</p>
-                      </td>
-                      <td className="px-4 py-4">
-                        <p className="text-sm text-gray-700 font-medium">{lead.company ?? '-'}</p>
-                      </td>
-                      <td className="px-4 py-4">
-                        <p className="text-xs text-gray-500 font-mono tracking-tighter">{lead.phone ?? '-'}</p>
-                      </td>
-                      <td className="px-4 py-4">
-                        <span className={`h-6 px-2 rounded-lg text-[10px] font-bold uppercase tracking-tight inline-flex items-center gap-1.5 whitespace-nowrap ${SOURCE_COLORS[lead.source]}`}>
-                          {SOURCE_ICONS[lead.source]}
-                          {SOURCE_LABELS[lead.source]}
+            <>
+              {/* Mobile card list */}
+              <div className="md:hidden divide-y divide-gray-100">
+                {filtered.map((lead) => (
+                  <button
+                    key={lead.id}
+                    onClick={() => setSelectedLead(lead)}
+                    className="w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 text-sm font-bold text-gray-500">
+                      {(lead.name ?? lead.email ?? '?')[0]}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <p className="text-sm font-bold text-gray-900 truncate">{lead.name ?? '이름 없음'}</p>
+                        <span className={`shrink-0 h-5 px-1.5 rounded text-[10px] font-bold inline-flex items-center ${STATUS_COLORS[lead.status ?? 'NEW']}`}>
+                          {STATUS_LABELS[lead.status ?? 'NEW']}
                         </span>
-                      </td>
-                      <td className="px-4 py-4">
-                        <select
-                          value={lead.status ?? 'NEW'}
-                          onChange={(e) => handleStatusChange(lead.id, e.target.value as LeadStatus)}
-                          className={`h-9 text-[11px] font-bold uppercase rounded-lg px-2 border-0 outline-none cursor-pointer shadow-sm transition-all hover:brightness-95 ${STATUS_COLORS[lead.status ?? 'NEW']}`}
-                        >
-                          {(Object.keys(STATUS_LABELS) as LeadStatus[]).map((s) => (
-                            <option key={s} value={s}>{STATUS_LABELS[s]}</option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="px-4 py-4">
-                        <p className="text-xs font-bold text-gray-500 truncate max-w-[120px]">
-                          {boothMap[lead.boothId] ?? lead.boothId}
-                        </p>
-                      </td>
-                      <td className="px-4 py-4">
-                        <p className="text-[11px] font-bold text-gray-400 uppercase">
-                          {new Date(lead.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </p>
-                      </td>
-                      <td className="px-4 py-4 min-w-[180px]">
-                        <p className="text-xs text-gray-500 truncate max-w-[180px]">
-                          {lead.memo || <span className="text-gray-300">-</span>}
-                        </p>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                          <button
-                            onClick={() => openEditModal(lead)}
-                            className="p-2 text-gray-300 hover:text-brand-500 hover:bg-brand-50 rounded-xl transition-all"
-                          >
-                            <Pencil className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(lead.id)}
-                            className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-400">
+                        {lead.company && <span className="truncate">{lead.company}</span>}
+                        {lead.company && <span>·</span>}
+                        <span className="shrink-0">{SOURCE_LABELS[lead.source]}</span>
+                      </div>
+                    </div>
+                    <ChevronDown className="w-4 h-4 text-gray-300 -rotate-90 shrink-0" />
+                  </button>
+                ))}
+              </div>
+
+              {/* Desktop table */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full min-w-[900px]">
+                  <thead>
+                    <tr className="bg-gray-50/50 text-[11px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                      <th className="text-left px-6 py-4">고객 정보</th>
+                      <th className="text-left px-4 py-4">소속</th>
+                      <th className="text-left px-4 py-4">연락처</th>
+                      <th className="text-left px-4 py-4">수집 경로</th>
+                      <th className="text-left px-4 py-4">상태</th>
+                      <th className="text-left px-4 py-4">부스</th>
+                      <th className="text-left px-4 py-4 whitespace-nowrap">수집일</th>
+                      <th className="text-left px-4 py-4">메모</th>
+                      <th className="px-6 py-4" />
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {filtered.map((lead) => (
+                      <tr key={lead.id} className="hover:bg-gray-50/50 transition-colors group">
+                        <td className="px-6 py-4">
+                          <p className="text-sm font-bold text-gray-900">{lead.name ?? '-'}</p>
+                          <p className="text-xs text-gray-400 font-medium">{lead.email ?? '-'}</p>
+                        </td>
+                        <td className="px-4 py-4">
+                          <p className="text-sm text-gray-700 font-medium">{lead.company ?? '-'}</p>
+                        </td>
+                        <td className="px-4 py-4">
+                          <p className="text-xs text-gray-500 font-mono tracking-tighter">{lead.phone ?? '-'}</p>
+                        </td>
+                        <td className="px-4 py-4">
+                          <span className={`h-6 px-2 rounded-lg text-[10px] font-bold uppercase tracking-tight inline-flex items-center gap-1.5 whitespace-nowrap ${SOURCE_COLORS[lead.source]}`}>
+                            {SOURCE_ICONS[lead.source]}
+                            {SOURCE_LABELS[lead.source]}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4">
+                          <select
+                            value={lead.status ?? 'NEW'}
+                            onChange={(e) => handleStatusChange(lead.id, e.target.value as LeadStatus)}
+                            className={`h-9 text-[11px] font-bold uppercase rounded-lg px-2 border-0 outline-none cursor-pointer shadow-sm transition-all hover:brightness-95 ${STATUS_COLORS[lead.status ?? 'NEW']}`}
+                          >
+                            {(Object.keys(STATUS_LABELS) as LeadStatus[]).map((s) => (
+                              <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="px-4 py-4">
+                          <p className="text-xs font-bold text-gray-500 truncate max-w-[120px]">
+                            {boothMap[lead.boothId] ?? lead.boothId}
+                          </p>
+                        </td>
+                        <td className="px-4 py-4">
+                          <p className="text-[11px] font-bold text-gray-400 uppercase">
+                            {new Date(lead.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </p>
+                        </td>
+                        <td className="px-4 py-4 min-w-[180px]">
+                          <p className="text-xs text-gray-500 truncate max-w-[180px]">
+                            {lead.memo || <span className="text-gray-300">-</span>}
+                          </p>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                            <button
+                              onClick={() => openEditModal(lead)}
+                              className="p-2 text-gray-300 hover:text-brand-500 hover:bg-brand-50 rounded-xl transition-all"
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(lead.id)}
+                              className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -634,6 +667,122 @@ export default function AdminLeadsPage() {
               <button onClick={handleAddLead}
                 className="flex-1 h-10 text-sm font-bold bg-brand-600 text-white rounded-xl hover:bg-brand-500 transition-all shadow-lg shadow-brand-100">
                 추가
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Bottom Sheet */}
+      {selectedLead && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div
+            className="absolute inset-0 bg-black/50 animate-fade-in"
+            onClick={() => setSelectedLead(null)}
+          />
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl animate-slide-up-sheet max-h-[85vh] flex flex-col">
+            {/* Handle bar */}
+            <div className="flex justify-center pt-3 pb-1">
+              <div className="w-10 h-1 bg-gray-200 rounded-full" />
+            </div>
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 pb-3 border-b border-gray-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500">
+                  {(selectedLead.name ?? selectedLead.email ?? '?')[0]}
+                </div>
+                <div>
+                  <p className="text-base font-bold text-gray-900">{selectedLead.name ?? '이름 없음'}</p>
+                  {selectedLead.company && <p className="text-xs text-gray-400">{selectedLead.company}</p>}
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedLead(null)}
+                className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+              {/* Status + Source row */}
+              <div className="flex items-center gap-2">
+                <select
+                  value={selectedLead.status ?? 'NEW'}
+                  onChange={(e) => {
+                    handleStatusChange(selectedLead.id, e.target.value as LeadStatus);
+                    setSelectedLead({ ...selectedLead, status: e.target.value as LeadStatus });
+                  }}
+                  className={`h-8 text-[11px] font-bold rounded-lg px-2 border-0 outline-none cursor-pointer ${STATUS_COLORS[selectedLead.status ?? 'NEW']}`}
+                >
+                  {(Object.keys(STATUS_LABELS) as LeadStatus[]).map((s) => (
+                    <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+                  ))}
+                </select>
+                <span className={`h-6 px-2 rounded-lg text-[10px] font-bold inline-flex items-center gap-1 ${SOURCE_COLORS[selectedLead.source]}`}>
+                  {SOURCE_ICONS[selectedLead.source]}
+                  {SOURCE_LABELS[selectedLead.source]}
+                </span>
+              </div>
+
+              {/* Info rows */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  <Mail className="w-4 h-4 text-gray-400 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-bold text-gray-400 uppercase mb-0.5">이메일</p>
+                    <p className="text-sm text-gray-700 truncate">{selectedLead.email ?? '-'}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  <PhoneCall className="w-4 h-4 text-gray-400 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-bold text-gray-400 uppercase mb-0.5">전화번호</p>
+                    <p className="text-sm text-gray-700">{selectedLead.phone ?? '-'}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  <Users className="w-4 h-4 text-gray-400 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-bold text-gray-400 uppercase mb-0.5">부스</p>
+                    <p className="text-sm text-gray-700 truncate">{boothMap[selectedLead.boothId] ?? selectedLead.boothId}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  <ClipboardList className="w-4 h-4 text-gray-400 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-bold text-gray-400 uppercase mb-0.5">수집일</p>
+                    <p className="text-sm text-gray-700">
+                      {new Date(selectedLead.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    </p>
+                  </div>
+                </div>
+                {selectedLead.memo && (
+                  <div className="p-3 bg-gray-50 rounded-xl">
+                    <p className="text-[11px] font-bold text-gray-400 uppercase mb-1">메모</p>
+                    <p className="text-sm text-gray-700 leading-relaxed">{selectedLead.memo}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 px-5 py-4 border-t border-gray-100">
+              <button
+                onClick={() => { openEditModal(selectedLead); setSelectedLead(null); }}
+                className="flex-1 h-11 text-sm font-bold bg-white border border-gray-200 text-gray-700 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50 transition-all"
+              >
+                <Pencil className="w-4 h-4" />
+                수정
+              </button>
+              <button
+                onClick={() => { handleDelete(selectedLead.id); setSelectedLead(null); }}
+                className="h-11 px-5 text-sm font-bold text-red-500 bg-red-50 border border-red-100 rounded-xl flex items-center justify-center gap-2 hover:bg-red-100 transition-all"
+              >
+                <Trash2 className="w-4 h-4" />
+                삭제
               </button>
             </div>
           </div>
