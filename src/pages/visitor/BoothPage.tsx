@@ -400,9 +400,9 @@ export default function BoothPage() {
                 <Calendar className={`w-5 h-5 ${ev.status.order === 0 ? 'text-emerald-600' : 'text-gray-500'}`} />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1">
                   <p className={`text-sm font-bold ${ev.status.order === 2 ? 'text-gray-400' : 'text-gray-900'}`}>{ev.title}</p>
-                  <span className={`inline-flex items-center h-5 px-1.5 rounded text-[11px] font-bold ${ev.status.color}`}>
+                  <span className={`inline-flex items-center h-5 px-1.5 rounded text-[11px] font-bold whitespace-nowrap shrink-0 ${ev.status.color}`}>
                     {ev.status.label}
                   </span>
                 </div>
