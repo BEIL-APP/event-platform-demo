@@ -28,14 +28,14 @@ export function Modal({ open, onClose, title, headerRight, children, size = 'sm'
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6"
+      className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-6"
       onClick={onClose}
     >
       <div className="absolute inset-0 bg-black/40 animate-fade-in" />
 
       <div
-        className={`relative bg-white shadow-modal w-full max-h-[85vh] flex flex-col rounded-t-2xl rounded-b-none animate-slide-up sm:rounded-xl sm:max-h-none sm:mx-auto sm:overflow-hidden sm:animate-scale-in ${
-          size === 'md' ? 'sm:max-w-md' : 'sm:max-w-sm'
+        className={`relative bg-white shadow-modal w-full max-h-[85vh] flex flex-col rounded-t-2xl rounded-b-none animate-slide-up md:rounded-xl md:max-h-none md:mx-auto md:overflow-hidden md:animate-scale-in ${
+          size === 'md' ? 'md:max-w-md' : 'md:max-w-sm'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
