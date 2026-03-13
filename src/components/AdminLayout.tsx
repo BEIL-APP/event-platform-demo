@@ -216,8 +216,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         </main>
 
         {/* Mobile bottom navigation */}
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 border-t border-gray-200 bg-white/95 backdrop-blur-xl shadow-[0_-8px_24px_rgba(0,0,0,0.05)]">
-          <div className="grid grid-cols-5 px-2 pt-2 pb-5">
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 border-t border-gray-200 bg-white/95 backdrop-blur-xl shadow-[0_-8px_24px_rgba(0,0,0,0.05)] safe-area-pb">
+          <div className="grid grid-cols-5 px-2 pt-2 pb-3">
             {navItems.map((item) => {
               const active = location.pathname.startsWith(item.to);
               const Icon = item.icon;
