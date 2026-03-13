@@ -132,9 +132,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
       {/* Tablet sidebar overlay */}
       {sidebarOpen && (
-        <div className="hidden md:block fixed inset-0 z-50 lg:hidden">
+        <div className="hidden md:block fixed inset-0 z-50 lg:hidden h-screen h-[100dvh]">
           <div
-            className="absolute inset-0 bg-black/50 animate-fade-in"
+            className="absolute inset-0 h-full bg-black/50 backdrop-blur-[0.25px] animate-fade-in"
             onClick={() => setSidebarOpen(false)}
           />
           <aside className="absolute inset-y-0 left-0 w-[260px] h-screen h-[100dvh] bg-gray-950 flex flex-col overflow-y-auto shadow-2xl animate-slide-in-left">
