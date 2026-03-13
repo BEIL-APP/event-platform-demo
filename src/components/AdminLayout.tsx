@@ -68,26 +68,26 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
   const sidebarContent = (
     <>
-      <div className="h-12 flex items-center px-4 border-b border-white/[0.06]">
+      <div className="h-11 lg:h-12 flex items-center px-3 lg:px-4 border-b border-white/[0.06]">
         <Link to="/admin/dashboard" className="flex items-center gap-2">
           <div className="w-6 h-6 bg-brand-600 rounded-md flex items-center justify-center">
             <QrCode className="w-3 h-3 text-white" />
           </div>
-          <span className="text-sm font-semibold text-white tracking-tight">BoothLiner</span>
+          <span className="text-[13px] lg:text-sm font-semibold text-white tracking-tight">BoothLiner</span>
         </Link>
       </div>
 
-      <div className="px-3 pt-3 pb-1">
+      <div className="px-3 pt-2.5 lg:pt-3 pb-1">
         <Link
           to="/admin/booths/new"
-          className="flex items-center gap-2 w-full bg-brand-600 text-white text-[13px] font-medium rounded-lg px-3 h-9 hover:bg-brand-500 transition-colors"
+          className="flex items-center gap-2 w-full bg-brand-600 text-white text-xs lg:text-[13px] font-medium rounded-lg px-3 h-8 lg:h-9 hover:bg-brand-500 transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />
           새 부스 만들기
         </Link>
       </div>
 
-      <nav className="flex-1 px-2 py-3 space-y-0.5">
+      <nav className="flex-1 px-2 py-2.5 lg:py-3 space-y-0.5">
         {navItems.map((item) => {
           const active = location.pathname.startsWith(item.to);
           const Icon = item.icon;
@@ -95,7 +95,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             <Link
               key={item.to}
               to={item.to}
-              className={`flex items-center gap-2.5 px-2.5 h-9 rounded-lg text-[13px] font-medium transition-colors ${
+              className={`flex items-center gap-2.5 px-2.5 h-8 lg:h-9 rounded-lg text-xs lg:text-[13px] font-medium transition-colors ${
                 active
                   ? 'bg-white/10 text-white'
                   : 'text-gray-400 hover:text-gray-200 hover:bg-white/[0.05]'
@@ -108,10 +108,10 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         })}
       </nav>
 
-      <div className="px-2 py-3 border-t border-white/[0.06] space-y-0.5">
+      <div className="px-2 pt-2.5 lg:pt-3 pb-5 lg:pb-8 border-t border-white/[0.06] space-y-0.5">
         <Link
           to="/admin/settings"
-          className={`flex items-center gap-2.5 w-full px-2.5 h-8 rounded-lg text-[13px] transition-colors ${
+          className={`flex items-center gap-2.5 w-full px-2.5 h-7.5 lg:h-8 rounded-lg text-xs lg:text-[13px] transition-colors ${
             location.pathname === '/admin/settings'
               ? 'bg-white/10 text-white font-medium'
               : 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.05]'
@@ -122,14 +122,14 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         </Link>
         <Link
           to="/explore"
-          className="flex items-center gap-2.5 w-full px-2.5 h-8 rounded-lg text-[13px] text-gray-500 hover:text-gray-300 hover:bg-white/[0.05] transition-colors"
+          className="flex items-center gap-2.5 w-full px-2.5 h-7.5 lg:h-8 rounded-lg text-xs lg:text-[13px] text-gray-500 hover:text-gray-300 hover:bg-white/[0.05] transition-colors"
         >
           <ExternalLink className="w-3.5 h-3.5" />
           관람객 탐색
         </Link>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2.5 w-full px-2.5 h-8 rounded-lg text-[13px] text-gray-500 hover:text-gray-300 hover:bg-white/[0.05] transition-colors"
+          className="flex items-center gap-2.5 w-full px-2.5 h-7.5 lg:h-8 rounded-lg text-xs lg:text-[13px] text-gray-500 hover:text-gray-300 hover:bg-white/[0.05] transition-colors"
         >
           <LogOut className="w-3.5 h-3.5" />
           로그아웃
@@ -152,7 +152,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             className="absolute inset-0 h-full bg-black/50 backdrop-blur-[0.25px] animate-fade-in"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside className="absolute inset-y-0 left-0 w-[260px] h-screen h-[100dvh] bg-gray-950 flex flex-col overflow-y-auto shadow-2xl animate-slide-in-left">
+          <aside className="absolute inset-y-0 left-0 w-[260px] h-screen h-[100dvh] bg-gray-950 flex flex-col overflow-hidden shadow-2xl animate-slide-in-left">
             <button
               onClick={() => setSidebarOpen(false)}
               className="absolute top-3.5 right-3 w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors z-10"
