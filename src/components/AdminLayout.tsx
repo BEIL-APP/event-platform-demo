@@ -106,9 +106,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             </Link>
           );
         })}
-      </nav>
 
-      <div className="px-2 pt-2.5 lg:pt-3 pb-5 lg:pb-8 border-t border-white/[0.06] space-y-0.5">
+        <div className="mx-2 my-2 border-t border-white/[0.08]" />
+
         <Link
           to="/admin/settings"
           className={`flex items-center gap-2.5 w-full px-2.5 h-7.5 lg:h-8 rounded-lg text-xs lg:text-[13px] transition-colors ${
@@ -134,7 +134,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           <LogOut className="w-3.5 h-3.5" />
           로그아웃
         </button>
-      </div>
+      </nav>
     </>
   );
 
