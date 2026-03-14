@@ -1,0 +1,19 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- QR Corner Pattern - Top Left -->
+  <rect x="2" y="2" width="8" height="8" rx="1.5" fill="#2563EB" />
+  <rect x="5" y="5" width="2" height="2" rx="0.2" fill="#2563EB" />
+  
+  <!-- QR Corner Pattern - Top Right -->
+  <rect x="14" y="2" width="8" height="8" rx="1.5" fill="#2563EB" />
+  <rect x="17" y="5" width="2" height="2" rx="0.2" fill="#2563EB" />
+  
+  <!-- QR Corner Pattern - Bottom Left -->
+  <rect x="2" y="14" width="8" height="8" rx="1.5" fill="#2563EB" />
+  <rect x="5" y="17" width="2" height="2" rx="0.2" fill="#2563EB" />
+  
+  <!-- Data Pixels & Liner Connection -->
+  <rect x="14" y="14" width="3" height="3" rx="0.5" fill="#2563EB" />
+  <rect x="19" y="14" width="3" height="3" rx="0.5" fill="#2563EB" />
+  <rect x="14" y="19" width="3" height="3" rx="0.5" fill="#2563EB" />
+  <rect x="18" y="18" width="4" height="4" rx="1" fill="#2563EB" opacity="0.6" />
+</svg>
