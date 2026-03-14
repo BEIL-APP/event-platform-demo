@@ -16,6 +16,12 @@ npm run preview    # 빌드 결과 로컬 확인
 
 > 데이터 초기화: 개발자 도구 → Application → Local Storage → `bep_seeded` 삭제 후 새로고침
 
+## AWS 배포
+
+- AWS Amplify Hosting 기준 설정 파일: [`amplify.yml`](/Users/wonyong/Desktop/myproject/b2b-event-platform-demo/amplify.yml)
+- 이관 런북: [`docs/aws-amplify-migration.md`](/Users/wonyong/Desktop/myproject/b2b-event-platform-demo/docs/aws-amplify-migration.md)
+- 데모 배포와 정식 제품 배포 방향 정리: [`docs/aws-demo-and-future-deployment.md`](/Users/wonyong/Desktop/myproject/b2b-event-platform-demo/docs/aws-demo-and-future-deployment.md)
+
 ---
 
 ## 페이지 구조
